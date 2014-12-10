@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="meshFIM_CUDA_tet_64_cellassembly_aniso_metis" root=".">
+      <df name="include">
+        <in>CUDADefines.h</in>
+        <in>Vec.h</in>
+        <in>meshFIM.h</in>
+        <in>mycutil.h</in>
+        <in>myerror.h</in>
+        <in>tetgen.h</in>
+        <in>tetmesh.h</in>
+      </df>
+      <df name="levelset">
+        <in>levelset.cu</in>
+      </df>
+      <df name="lib">
+      </df>
+      <df name="metis-4.0.3">
+        <df name="Lib">
+          <in>balance.c</in>
+          <in>ccgraph.c</in>
+          <in>coarsen.c</in>
+          <in>compress.c</in>
+          <in>debug.c</in>
+          <in>defs.h</in>
+          <in>estmem.c</in>
+          <in>fm.c</in>
+          <in>fortran.c</in>
+          <in>frename.c</in>
+          <in>graph.c</in>
+          <in>initpart.c</in>
+          <in>kmetis.c</in>
+          <in>kvmetis.c</in>
+          <in>kwayfm.c</in>
+          <in>kwayrefine.c</in>
+          <in>kwayvolfm.c</in>
+          <in>kwayvolrefine.c</in>
+          <in>macros.h</in>
+          <in>match.c</in>
+          <in>mbalance.c</in>
+          <in>mbalance2.c</in>
+          <in>mcoarsen.c</in>
+          <in>memory.c</in>
+          <in>meshpart.c</in>
+          <in>metis.h</in>
+          <in>mfm.c</in>
+          <in>mfm2.c</in>
+          <in>mincover.c</in>
+          <in>minitpart.c</in>
+          <in>minitpart2.c</in>
+          <in>mkmetis.c</in>
+          <in>mkwayrefine.c</in>
+          <in>mmatch.c</in>
+          <in>mmd.c</in>
+          <in>mpmetis.c</in>
+          <in>mrefine2.c</in>
+          <in>mutil.c</in>
+          <in>myqsort.c</in>
+          <in>ometis.c</in>
+          <in>parmetis.c</in>
+          <in>pmetis.c</in>
+          <in>pqueue.c</in>
+          <in>proto.h</in>
+          <in>refine.c</in>
+          <in>rename.h</in>
+          <in>separator.c</in>
+          <in>srefine.c</in>
+          <in>struct.h</in>
+          <in>timing.c</in>
+          <in>util.c</in>
+        </df>
+        <df name="Programs">
+          <in>graphchk.c</in>
+          <in>io.c</in>
+          <in>kmetis.c</in>
+          <in>mesh2dual.c</in>
+          <in>mesh2nodal.c</in>
+          <in>oemetis.c</in>
+          <in>onmetis.c</in>
+          <in>partdmesh.c</in>
+          <in>partnmesh.c</in>
+          <in>pmetis.c</in>
+          <in>smbfactor.c</in>
+        </df>
+        <df name="Test">
+          <in>mtest.c</in>
+        </df>
+      </df>
+      <df name="src">
+        <in>CUDA_kernels.cu</in>
+        <in>meshFIM.cu</in>
+        <in>predicates.cu</in>
+        <in>tetgen.cu</in>
+        <in>tetmesh.cu</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
