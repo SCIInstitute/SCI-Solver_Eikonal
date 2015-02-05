@@ -1,6 +1,8 @@
 SCI-Solver_Eikonal-3D
 =====================
 
+**Currently in pre-alpha stage, estimated stable release: March 2015**
+
 SCI-Solver_Eikonal-3D is a C++/CUDA library written to solve the Eikonal equation on a 3D triangular mesh. It uses the fast iterative method (FIM) to solve efficiently, and uses GPU hardware.
 
 The code was written by Zhisong Fu. The theory behind this code is published in the paper: "A Fast Iterative Method for Solving the Eikonal Equation on Tetrahedral Domains"
