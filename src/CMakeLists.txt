@@ -6,7 +6,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 
-SET(BUILD_EIKONAL3D_SOLVER_EXAMPLES false CACHE BOOL "Checking this will build sample executables that demonstrate Eikonal 3D Solver usage")
+SET(BUILD_EXAMPLES false CACHE BOOL "Checking this will build sample executables that demonstrate Eikonal 3D Solver usage")
 
 find_package(CUDA REQUIRED)
 
@@ -17,7 +17,7 @@ include_directories(
 add_subdirectory(externals)
 add_subdirectory(core)
 
-if (${BUILD_EIKONAL3D_SOLVER_EXAMPLES})
+if (${BUILD_EXAMPLES})
   add_subdirectory(examples)
 endif()
 
