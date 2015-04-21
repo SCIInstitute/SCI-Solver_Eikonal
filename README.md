@@ -1,4 +1,4 @@
-SCI-Solver_Eikonal-3D
+SI-Solver_Eikonal-3D
 =====================
 
 **Currently in pre-alpha stage, estimated stable release: Sep 2015**
@@ -69,7 +69,7 @@ Running Examples
 You will need to enable examples in your build to compile and run them
 
 ```c++
-cmake -DBUILD_EIKONAL3D_SOLVER_EXAMPLES=ON ../src
+cmake -DBUILD_EXAMPLES=ON ../src
 make
 ```
 
