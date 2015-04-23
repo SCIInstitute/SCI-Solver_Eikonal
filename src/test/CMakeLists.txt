@@ -12,7 +12,7 @@ ExternalProject_Add( gtest
   BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
   INSTALL_COMMAND ""
   CMAKE_ARGS 
-    -Dgtest_build_test:BOOL=OFF
+    -Dgtest_build_tests:BOOL=OFF
     -Dgtest_force_shared_crt:BOOL=${GTEST_SHARED_ARG}
 )                   
 ExternalProject_Add_Step( gtest copy_deps
