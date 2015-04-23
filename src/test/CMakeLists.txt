@@ -1,9 +1,9 @@
 # gtest external download
 set(GTEST_INSTALL_DIR "${EXTERNAL_DIR}/gtest")
 if (WIN32)
-   set(GTEST_CMAKE_ARGS "-Dgtest_build_tests:BOOL=OFF -Dgtest_force_shared_crt:BOOL=ON")
+   set(GTEST_CMAKE_ARGS "-Dgtest_build_tests:BOOL=OFF ; -Dgtest_force_shared_crt:BOOL=ON")
 else()
-   set(GTEST_CMAKE_ARGS "-Dgtest_build_tests:BOOL=OFF -Dgtest_force_shared_crt:BOOL=OFF")
+   set(GTEST_CMAKE_ARGS "-Dgtest_build_tests:BOOL=OFF ; -Dgtest_force_shared_crt:BOOL=OFF")
 endif()
 ExternalProject_Add( gtest
   PREFIX "${GTEST_INSTALL_DIR}"
