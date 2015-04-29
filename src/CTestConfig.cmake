@@ -1,6 +1,6 @@
-SET(CTEST_PROJECT_NAME "SCI-Solver_Eikonal-3d_Testing")
+SET(CTEST_PROJECT_NAME "SCI-Solver_Eikonal")
 SET(CTEST_NIGHTLY_START_TIME "00:00:00 MDT")
 SET(CTEST_DROP_METHOD "http")
 SET(CTEST_DROP_SITE "my.cdash.org")
-SET(CTEST_DROP_LOCATION "/submit.php?project=SCI-Solver_Eikonal-3D")
+SET(CTEST_DROP_LOCATION "/submit.php?project=SCI-Solver_Eikonal")
 SET(CTEST_DROP_SITE_CDASH TRUE)
