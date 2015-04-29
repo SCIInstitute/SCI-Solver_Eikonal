@@ -358,7 +358,6 @@ bool TetMesh::IsNonObtuse(int v, Tet t)
 	float div = al*bl*cl + (a ^ b)*cl + (a ^ c)*bl + (b ^ c)*al;
 	float at = atan2(det, div);
 	if(at < 0) at += M_PI; // If det>0 && div<0 atan2 returns < 0, so add pi.
-	float omega = 2.0f * at;
 
 	//return omega < M_PI / 2.0;
 	return 1;
