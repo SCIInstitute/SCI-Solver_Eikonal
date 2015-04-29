@@ -8,12 +8,12 @@ TriMesh.h
 Class for triangle meshes.
 */
 
-#define  LARGENUM  10000.0
+#define  LARGENUM_TET  10000.0
 #define  SMALLNUM  0.00000001
 #define  ONE       1 
 #define  CURVATURE 2 
 #define  NOISE     3
-#define  SPEEDTYPE NOISE
+#define  SPEEDTYPE_TET NOISE
 
 #include "Vec.h"
 #include "math.h"
@@ -181,7 +181,7 @@ public:
 	//vector<float> noiseOnFace;
 	
 
-	//int SPEEDTYPE;
+	//int SPEEDTYPE_TET;
 	// Compute all this stuff...
 	//void setSpeedType(int st)
 	//{
@@ -231,7 +231,7 @@ public:
 
 		for (int v = 0; v < nv; v++)
 		{			
-			this->vertT[currentVert].push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
+			this->vertT[currentVert].push_back(LARGENUM_TET);  //modified from this->vertT[v] = 1000000.0)
 		}
 
 		//vector<int> nb;

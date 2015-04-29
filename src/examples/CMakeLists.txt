@@ -8,7 +8,7 @@ include_directories(
 CUDA_ADD_EXECUTABLE(Example1 example1.cu)
 TARGET_LINK_LIBRARIES(Example1 Eikonal-3D_CORE)
 
-CUDA_ADD_EXECUTABLE(Example2 example3.cu)
+CUDA_ADD_EXECUTABLE(Example2 example2.cu)
 TARGET_LINK_LIBRARIES(Example2 Eikonal-2D_CORE)
 
 add_custom_command(TARGET Example1 PRE_BUILD

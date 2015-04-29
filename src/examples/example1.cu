@@ -26,48 +26,10 @@ int main(int argc, char *argv[])
   if (argc < 2)
     std::cerr << "USAGE: ./levelset_d MESH_FILENAME" << std::endl;
 
-  clock_t starttime, endtime;
-
-
-
-  //const char *filename = "sphereR40_iso.ply";
-  //const char *filename = "sphereR60_1k.ply";
-  //const char *filename = "Atrium.ply";
-  //const char *filename = "sphereR60_147237.ply";
-
-  //const char *filename = "square.1.ply";
-  //const char *filename = "dragon.ts_removedIsolated.ply";
-  //const char *filename = "dragon.tx_maxSF0.5_removeIsolated.ply";
-  //const char *filename = "Atrium_smoothed.ply";
-
-  //const char *filename = "sphere_10968verts.ply";
-  //const char *filename = "sphere_59021verts.ply";
-  //const char *filename = "sphere_72202verts.ply";
-  //const char *filename = "dragon_iso_ascii_halfsize_removeComp.ply";
-  //const char *filename = "sphere_98687verts.ply";
-  //const char *filename = "square.2closehole.ply";
-  //const char *filename = "SquareMesh_size1024.ply";
+  clock_t starttime = clock(), endtime;
 
   tetgenio in, addin, bgmin,out;
-
-
-
-  //in.load_tetmesh("mouseBone.1");
-  //in.load_tetmesh("long_lens260k");
-  //in.load_tetmesh("lensall");
-  //in.load_tetmesh("Heart_SF.5T.1_tetgen");
-  //in.load_tetmesh("cube_unstruc_size256_s5");
-  in.load_tetmesh("example_data/CubeMesh_size256step16");
-  //in.load_tetmesh("lavalamp277k");
-  //in.load_tetmesh(argv[1]);
-  //in.load_tetmesh("CubeMesh_size256step4");
-  //int meshsize = 64;
-  //in.load_tetmesh("sphereR60_1k.1");
-
-  //const char* filename = argv[1];
-
-  //printf("Input file name: ");
-  //scanf("%s", filename);
+  in.load_tetmesh((char*)"example_data/CubeMesh_size256step16");
 
   TetMesh themesh;
   themesh.init(in.pointlist, in.numberofpoints, in.trifacelist, in.numberoffacets,  in.tetrahedronlist, in.numberoftetrahedra, in.numberoftetrahedronattributes, in.tetrahedronattributelist );
@@ -119,7 +81,7 @@ int main(int argc, char *argv[])
   int numBlockWidth  = (squareWidth / squareBlockWidth);
   int numBlockDepth  = (squareDepth / squareBlockDepth);
   int numBlock = numBlockLength * numBlockWidth*numBlockDepth;
-  int maxNumBlockVerts = squareBlockLength * squareBlockWidth * squareBlockDepth;
+  //int maxNumBlockVerts = squareBlockLength * squareBlockWidth * squareBlockDepth;
 
   //int maxNumBlockVerts = 64;
   //int numBlock = 64;  //10200 for longlen260k, 7500 for Heart_SF.5T.1_tetgen, 3300 for center of unstruc_s5
@@ -131,10 +93,10 @@ int main(int argc, char *argv[])
   //FIMPtr->InitializePartition(numBlock);
   FIMPtr->GenerateData();
 
-  //endtime = clock();
-  //double duration = (double)(endtime - starttime) *1000 / CLOCKS_PER_SEC;
+  endtime = clock();
+  double duration = (double)(endtime - starttime) *1000 / CLOCKS_PER_SEC;
 
-  //printf("Computing time : %.10lf ms\n",duration);
+  printf("Computing time : %.10lf ms\n",duration);
 
 
   ////FILE* vtkfile;
@@ -195,11 +157,6 @@ int main(int argc, char *argv[])
 
   //////double avgr = rsum / FIMPtr->m_meshPtr->faces.size();
 
-
-
-
-  /////////////////////////////////////////////////////////////////////////
-
   ////for (int i=0;i<themesh->vertices.size();i++)
   ////{
   ////  float computedvalue = FIMPtr->m_meshPtr->vertT[0][i];
@@ -220,12 +177,6 @@ int main(int argc, char *argv[])
   ////  squaresum += localerror*localerror;
 
   ////  fprintf(errorfile,"%f\n",localerror);
-  ////
-
-  ////
-  ////
-  ////
-
   ////}
 
   ////
@@ -239,8 +190,6 @@ int main(int argc, char *argv[])
   //////printf("avg radius of inscribed circles is: %f\n",avgr);
 
   ////fclose(errorfile);
-
-
   ////compute min max average valance
   //int nv = FIMPtr->m_meshPtr->vertices.size();
   //int minval = 10000000, minvaltrue = 100000000;
@@ -254,37 +203,8 @@ int main(int argc, char *argv[])
   //  maxvaltrue = max((int)maxvaltrue, (int)FIMPtr->m_meshPtr->vertOneringFaces[i].size());
   //  sum += FIMPtr->m_meshPtr->adjacentfaces[i].size();
   //  sumtrue += FIMPtr->m_meshPtr->vertOneringFaces[i].size();
-
-
   //}
-
   //printf("minval is: %d\nmaxval is: %d\nminvaltrue is: %d\nmaxvaltrue is %d\naverage is %f\naveragetrue is: %f\n", minval,maxval,minvaltrue,maxvaltrue,(float)sum / (float)nv,(float)sumtrue / (float)nv);
-
-
-
-
   return 0;
-
-  //glutCreateWindow("mesh_view");
-  //glutDisplayFunc(redraw);
-  //glutMouseFunc(mousebuttonfunc);
-  //glutMotionFunc(mousemotionfunc);
-  //glutKeyboardFunc(keyboardfunc);
-  //glutIdleFunc(idle);
-
-  //resetview();
-
-  //glutMainLoop();
-
-
-
-
-
-
-
-
-
-
-
 }
 

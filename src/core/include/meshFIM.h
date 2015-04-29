@@ -131,7 +131,7 @@ class meshFIM
     void FindSeedPointLavalamp()
     {
       m_SeedPoints.clear();
-      double minx = LARGENUM;
+      double minx = LARGENUM_TET;
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
         double x = m_meshPtr->vertices[i][0];
@@ -169,7 +169,6 @@ class meshFIM
       float x1, y1, z1, x2, y2, z2;
       float K1, K2;
       K1 = 40.5;
-      float meshsize = 256.0;
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
         //x1 = m_meshPtr->vertices[i][0] - meshsize / 2.0;

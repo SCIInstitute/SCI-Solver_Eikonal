@@ -10577,7 +10577,7 @@ void tetgenmesh::flip22(triface* flipface, queue* flipqueue)
   face adseg, dbseg, bcseg, caseg;  // Coplanar segs.
   face aeseg, deseg, beseg, ceseg;  // Above segs.
   face afseg, dfseg, bfseg, cfseg;  // Below segs.
-  point pa, pb, pc, pd, pe, pf;
+  point pa, pb, pc, pd;
   int mirrorflag, i;
 
   adjustedgering(*flipface, CCW); // 'flipface' is bae.
@@ -10593,7 +10593,6 @@ void tetgenmesh::flip22(triface* flipface, queue* flipqueue)
   pb = dest(abce);
   pc = apex(abce);
   pd = apex(bade);
-  pe = oppo(bade);
 #ifdef SELF_CHECK
   assert(oppo(abce) == pe);
 #endif
@@ -10614,7 +10613,6 @@ void tetgenmesh::flip22(triface* flipface, queue* flipqueue)
     for (i = 0; (i < 3) && (org(abdf) != pa); i++) {
       enextself(abdf);
     }
-    pf = oppo(bacf);
 #ifdef SELF_CHECK
     assert(oppo(abdf) == pf);
 #endif
@@ -11197,7 +11195,7 @@ long tetgenmesh::flip(queue* flipqueue, badface **plastflip)
   point pa, pb, pc, pd, pe;
   enum fliptype fc;
   REAL sign, bakepsilon;
-  long flipcount, maxfaces;
+  long flipcount;
   int epscount, fcount;
   int ia, ib, ic, id, ie;
 
@@ -11207,7 +11205,6 @@ long tetgenmesh::flip(queue* flipqueue, badface **plastflip)
 
   flipcount = flip23s + flip32s + flip22s + flip44s;
   if (checksubfaces) {
-    maxfaces = (4l * tetrahedrons->items + hullsize) / 2l;
     fcount = 0;
   }
 
@@ -16491,7 +16488,9 @@ void tetgenmesh::incrflipdelaunay(triface* oldtet, point* insertarray,
   REAL det, n[3];
   REAL attrib, volume;
   int i, j;
+#ifdef SELF_CHECK
   clock_t loc_start, loc_end;
+#endif
 
   if (b->verbose > 0) {
     printf("  Creating initial tetrahedralization.\n");
@@ -22805,7 +22804,10 @@ void tetgenmesh::formcavity(list* missingshlist, list* crossedgelist,
   triface starttet, spintet, neightet, worktet;
   face startsh, neighsh, worksh, workseg;
   point torg, tdest, tapex, workpt[3];
-  REAL checksign, orgori, destori;
+  REAL checksign, orgori;
+#ifdef SELF_CHECK
+  triface destori;
+#endif
   bool crossflag, inlistflag;
   bool belowflag, aboveflag;
   int idx, share;
@@ -22827,8 +22829,8 @@ void tetgenmesh::formcavity(list* missingshlist, list* crossedgelist,
              pointmark(org(starttet)), pointmark(dest(starttet)));
     }
     orgori = orient3d(torg, tdest, tapex, org(starttet));
-    destori = orient3d(torg, tdest, tapex, dest(starttet));
 #ifdef SELF_CHECK
+    destori = orient3d(torg, tdest, tapex, dest(starttet));
     assert(orgori * destori < 0.0); 
 #endif
     spintet = starttet;
@@ -23144,14 +23146,14 @@ void tetgenmesh::constrainedfacets()
   missingshlist = new list(sizeof(face), NULL);
   boundedgelist = new list(sizeof(face), NULL);
   crossedgelist = new list(sizeof(triface), NULL);
-  equatptlist = new list("point *");
+  equatptlist = new list((char*)"point *");
   crossshlist = new list(sizeof(face), NULL);
   crosstetlist = new list(sizeof(triface), NULL);
   belowfacelist = new list(sizeof(triface), NULL);
   abovefacelist = new list(sizeof(triface), NULL);
-  horizptlist = new list("point *");
-  belowptlist = new list("point *");
-  aboveptlist = new list("point *");
+  horizptlist = new list((char*)"point *");
+  belowptlist = new list((char*)"point *");
+  aboveptlist = new list((char*)"point *");
   frontlist = new list(sizeof(triface), NULL);
   misfrontlist = new list(sizeof(triface), NULL);
   newtetlist = new list(sizeof(triface), NULL);
@@ -27116,7 +27118,7 @@ long tetgenmesh::reconstructmesh()
   // Find the acute vertices and set them be type ACUTEVERTEX.
 
   // Indentify facets and set the facet marker (1-based) for subfaces.
-  markerlist = new list("int");
+  markerlist = new list((char*)"int");
   
   subfaces->traversalinit();
   subloop.sh = shellfacetraverse(subfaces);
@@ -30632,7 +30634,7 @@ void tetgenmesh::optimizemesh(bool optflag)
 {
   list *splittetlist, *tetlist, *ceillist;
   badface *remtet, *lastentry;
-  REAL maxdihed, objdihed, curdihed;
+  REAL objdihed, curdihed;
   long oldnum;
   int iter, i;
 
@@ -30656,7 +30658,6 @@ void tetgenmesh::optimizemesh(bool optflag)
     cosmaxdihed = cos(b->maxdihedral * PI / 180.0);
     cosmindihed = cos(b->mindihedral * PI / 180.0);
     // The radian of the maximum dihedral angle.
-    maxdihed = b->maxdihedral / 180.0 * PI;
     // A sliver has an angle large than 'objdihed' will be split.
     objdihed = b->maxdihedral + 5.0;
     if (objdihed < 170.0) objdihed = 170.0;
