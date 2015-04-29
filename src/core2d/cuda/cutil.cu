@@ -2,7 +2,6 @@
 #include <cuda_runtime.h>
 #include <cutil.h>
 #include <thrust/scan.h>
-#include <error.h>
 
 template<typename IndexType, typename ValueType>
 void __global__ neighbor_count_kernel(IndexType* tri0, IndexType* tri1, IndexType* tri2, IndexType ne, IndexType* nbcount)
