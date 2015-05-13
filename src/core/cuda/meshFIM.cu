@@ -621,20 +621,21 @@ void meshFIM::GenerateData(void)
 
 #endif
 
+  //FILE* resultfile = fopen("resultXX.txt", "w+");
   for(int i = 0; i < m_numBlock; i++)
   {
     for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
     {
+      //fprintf(resultfile, "%.8f\n", h_vertT[i * m_maxNumInVert + j]);
       m_meshPtr->vertT[0][m_PartitionInVerts[i][j]] = h_vertT[i * m_maxNumInVert + j];
     }
   }
+  //fclose(resultfile);
 
-  FILE* resultfile = fopen("result.txt", "w+");
+  FILE * resultfile = fopen("result.txt", "w+");
   for(int i = 0; i < numVert; i++)
   {
     fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[0][i]);
-
-
   }
 
   fclose(resultfile);

@@ -1305,6 +1305,16 @@ void meshFIM::GenerateData(int numBlock)
 
 
   }
+  FILE * resultfile = fopen("result2D.txt", "w+");
+  for(int i = 0; i < numVert; i++)
+  {
+    fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[i]);
+  }
+
+  fclose(resultfile);
+
+
+
 
 
   printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );

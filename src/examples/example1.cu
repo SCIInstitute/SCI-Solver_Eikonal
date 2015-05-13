@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   clock_t starttime = clock(), endtime;
 
   tetgenio in, addin, bgmin,out;
-  in.load_tetmesh((char*)"example_data/CubeMesh_size256step16");
+  in.load_tetmesh((char*)"example_data/CubeMesh_size16");
 
   TetMesh themesh;
   themesh.init(in.pointlist, in.numberofpoints, in.trifacelist, in.numberoffacets,  in.tetrahedronlist, in.numberoftetrahedra, in.numberoftetrahedronattributes, in.tetrahedronattributelist );
@@ -60,11 +60,15 @@ int main(int argc, char *argv[])
 
   meshFIM* FIMPtr = new meshFIM;
 
-  //    vector<int> seedPointList(1,0/*133152*//*20181*//*2184*/);//20181 for unstruc_s5
-  //    FIMPtr->SetSeedPoint(seedPointList);
+  vector<int> seedPointList;//(/*1,0*//*133152*//*20181*//*2184*/);//20181 for unstruc_s5
+  seedPointList.push_back(10);
+  seedPointList.push_back(20);
+  seedPointList.push_back(30);
+  seedPointList.push_back(40);
+  FIMPtr->SetSeedPoint(seedPointList);
 
   FIMPtr->SetMesh(&themesh);
-  FIMPtr->FindSeedPoint();
+  //FIMPtr->FindSeedPoint();
   //FIMPtr->FindSeedPointEllipse();
   FIMPtr->InitSpeedMat();
   //FIMPtr->FindSeedPointLavalamp();
