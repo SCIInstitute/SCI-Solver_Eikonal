@@ -26,7 +26,7 @@ enum LabelType { FarPoint = 0,ActivePoint, MaskPoint, SeedPoint,
   StopPoint, AlivePoint,ToBeAlivePoint };
 
 
-class meshFIM {
+class meshFIM2d {
 
   public:
 
@@ -241,10 +241,10 @@ class meshFIM {
 
 
 
-    meshFIM(){
+    meshFIM2d(){
       m_meshPtr = NULL;
     };
-    ~meshFIM(){};
+    ~meshFIM2d(){};
 
 
 

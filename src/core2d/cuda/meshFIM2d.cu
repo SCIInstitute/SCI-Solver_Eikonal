@@ -78,7 +78,7 @@ bool InitCUDA(void)
 
 /////////////////////////////////////////////////////////////////////////////
 
-void meshFIM::GraphPartition_METIS(char* partfilename, int numBlock)  //read a metis result .mesh.npart.N file and store into PartitionLabel
+void meshFIM2d::GraphPartition_METIS(char* partfilename, int numBlock)  //read a metis result .mesh.npart.N file and store into PartitionLabel
 {
   int numVert = m_meshPtr->vertices.size();
   //m_PartitionLabel = new int[numVert];
@@ -149,7 +149,7 @@ void meshFIM::GraphPartition_METIS(char* partfilename, int numBlock)  //read a m
 
 }
 
-void meshFIM::partnmesh(char * meshfile, int nparts) {
+void meshFIM2d::partnmesh(char * meshfile, int nparts) {
   int ne, nn, etype, numflag=0, edgecut;
   idxtype *elmnts, *epart, *npart;
   timer IOTmr, DUALTmr;
@@ -195,7 +195,7 @@ void meshFIM::partnmesh(char * meshfile, int nparts) {
   free(npart);
 }
 
-void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //create .mesh file from trimesh faces and call partnmesh method to partition and create intermediate mesh.npart.N file and then read this file
+void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //create .mesh file from trimesh faces and call partnmesh method to partition and create intermediate mesh.npart.N file and then read this file
 {
 
   FILE * outf;
@@ -381,7 +381,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //cre
 
 }
 
-void meshFIM::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth)
+void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth)
 {
   int numVert = m_meshPtr->vertices.size();
   //m_PartitionLabel = new int[numVert];
@@ -449,7 +449,7 @@ void meshFIM::GraphPartition_Square(int squareLength,int squareWidth, int blockL
 
 }
 
-void meshFIM::PartitionFaces(int numBlock)
+void meshFIM2d::PartitionFaces(int numBlock)
 {
   /////////////////////////////////////step 3: partition faces//////////////////////////////////////
   m_PartitionFaces.resize(numBlock);
@@ -578,7 +578,7 @@ void meshFIM::PartitionFaces(int numBlock)
 
 
 
-void meshFIM::GenerateData(int numBlock)
+void meshFIM2d::GenerateData(int numBlock)
 {
 
   int numVert = m_meshPtr->vertices.size();

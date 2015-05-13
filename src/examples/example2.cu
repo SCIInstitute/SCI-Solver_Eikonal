@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   //themesh->need_faceedges();
   //themesh->need_across_edge();
 
-  meshFIM* FIMPtr = new meshFIM;
+  meshFIM2d* FIMPtr = new meshFIM2d;
 
   starttime = clock ();
 
