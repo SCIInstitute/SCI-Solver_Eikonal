@@ -8,6 +8,8 @@ FILE(GLOB src cuda/*)
 FILE(GLOB hdr include/*)
 
 CUDA_ADD_LIBRARY(Eikonal-2D_CORE STATIC ${src} ${hdr})
+ADD_DEPENDENCIES(Eikonal-2D_CORE metis)
+TARGET_LINK_LIBRARIES(Eikonal-2D_CORE ${METIS_LIBRARY})
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
   TARGET_LINK_LIBRARIES(Eikonal-2D_CORE -ldl)
 endif()

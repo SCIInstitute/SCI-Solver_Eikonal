@@ -225,6 +225,7 @@ class meshFIM {
     }
 
 
+    void partnmesh(char * meshfile, int nparts);
     void GenerateData(int numBlock);
 
 
