@@ -149,52 +149,6 @@ void meshFIM2d::GraphPartition_METIS(char* partfilename, int numBlock)  //read a
 
 }
 
-void meshFIM2d::partnmesh(char * meshfile, int nparts) {
-  int ne, nn, etype, numflag=0, edgecut;
-  idxtype *elmnts, *epart, *npart;
-  timer IOTmr, DUALTmr;
-  char etypestr[4][5] = {"TRI", "TET", "HEX", "QUAD"};
-
-  cleartimer(IOTmr);
-  cleartimer(DUALTmr);
-
-  starttimer(IOTmr);
-  elmnts = ReadMesh(meshfile, &ne, &nn, &etype);
-  stoptimer(IOTmr);
-
-  char str[] = "main: epart";
-  char str2[] = "main: npart";
-  epart = idxmalloc(ne, str);
-  npart = idxmalloc(nn, str2);
-
-  printf("**********************************************************************\n");
-  printf("%s", METISTITLE);
-  printf("Mesh Information ----------------------------------------------------\n");
-  printf("  Name: %s, #Elements: %d, #Nodes: %d, Etype: %s\n\n",
-      meshfile, ne, nn, etypestr[etype-1]);
-  printf("Partitioning Nodal Graph... -----------------------------------------\n");
-
-  starttimer(DUALTmr);
-  METIS_PartMeshNodal(&ne, &nn, elmnts, &etype, &numflag, &nparts, &edgecut, epart, npart);
-  stoptimer(DUALTmr);
-
-  printf("  %d-way Edge-Cut: %7d, Balance: %5.2f\n",
-      nparts, edgecut, ComputeElementBalance(ne, nparts, epart));
-
-  starttimer(IOTmr);
-  WriteMeshPartition(meshfile, nparts, ne, epart, nn, npart);
-  stoptimer(IOTmr);
-
-
-  printf("\nTiming Information --------------------------------------------------\n");
-  printf("  I/O:          \t\t %7.3f\n", gettimer(IOTmr));
-  printf("  Partitioning: \t\t %7.3f\n", gettimer(DUALTmr));
-  //GKfree(&elmnts, &epart, &npart, LTERM);
-  free(elmnts);
-  free(epart);
-  free(npart);
-}
-
 void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //create .mesh file from trimesh faces and call partnmesh method to partition and create intermediate mesh.npart.N file and then read this file
 {
 
