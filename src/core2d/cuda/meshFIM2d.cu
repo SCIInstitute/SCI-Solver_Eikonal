@@ -11,7 +11,6 @@
 #include "meshFIM2d.h"
 #include "Vec.h"
 #include <math.h>
-#include <metis.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +25,9 @@
 #else
 #include <unistd.h>
 #endif
+extern "C" {
+#include <metis.h>
+}
 
 
 
