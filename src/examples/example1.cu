@@ -78,15 +78,15 @@ int main(int argc, char *argv[])
 
   meshFIM* FIMPtr = new meshFIM;
 
-  //vector<int> seedPointList(1,0/*133152*//*20181*//*2184*/);//20181 for unstruc_s5
+  vector<int> seedPointList(1,0/*133152*//*20181*//*2184*/);//20181 for unstruc_s5
   //seedPointList.push_back(10);
   //seedPointList.push_back(20);
   //seedPointList.push_back(30);
   //seedPointList.push_back(40);
-  //FIMPtr->SetSeedPoint(seedPointList);
+  FIMPtr->SetSeedPoint(seedPointList);
 
   FIMPtr->SetMesh(&themesh);
-  FIMPtr->FindSeedPoint();
+  //FIMPtr->FindSeedPoint();
   FIMPtr->InitSpeedMat();
 
   int squareLength = 16;
@@ -99,8 +99,12 @@ int main(int argc, char *argv[])
   int numBlockWidth  = (squareWidth / squareBlockWidth);
   int numBlockDepth  = (squareDepth / squareBlockDepth);
   int numBlock = numBlockLength * numBlockWidth*numBlockDepth;
+  //numBlock = 10003;
+  //int maxNumBlockVerts = 64;
+
   FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth,
       squareBlockLength, squareBlockWidth, squareBlockDepth);
+  //FIMPtr->GraphPartition_METIS2( numBlock , maxNumBlockVerts);
 
   FIMPtr->m_numBlock = numBlock;
   FIMPtr->PartitionTets(numBlock);

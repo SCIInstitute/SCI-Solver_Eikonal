@@ -619,37 +619,15 @@ void meshFIM2d::GenerateData(int numBlock)
   cudaSafeCall( cudaMalloc((void**) &d_vertMem, sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock));
 
   cudaSafeCall( cudaMalloc((void**) &d_BlockSizes, sizeof(int) * numBlock));
-  //cudaSafeCall( cudaMalloc((void**) &d_out, sizeof(int) * VERTMEMLENGTH));
-
-
-
-
-
-
-
-
-
-
   /////////////////initialize cpu memories//////////////////////////////
-
-
-
   vector< vector<int> > blockVertMapping;
   blockVertMapping.resize(numVert);     //for each vertex, store the addresses where it appears in the global triMem array.
-
-
   for( int i = 0; i <  numBlock; i++)
   {
     int blockIdx = i * m_maxNumTotalFaces * TRIMEMLENGTH;
     int numPF = m_PartitionFaces[i].size();
     for(int j = 0; j< numPF; j++)
     {
-
-      // printf("%d %f\n",m_PartitionFaces[i][j], m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[0]);
-      //h_triMem[blockIdx + j*TRIMEMLENGTH + 0] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[0];
-      //h_triMem[blockIdx + j*TRIMEMLENGTH + 1] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[1];
-      //h_triMem[blockIdx + j*TRIMEMLENGTH + 2] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[2];
-
       h_edgeMem0[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[0];
       h_edgeMem1[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[1];
       h_edgeMem2[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[2];
@@ -708,59 +686,33 @@ void meshFIM2d::GenerateData(int numBlock)
         blockVertMapping[m_meshPtr->faces[m_PartitionNbFaces[i][k]][1]].push_back(blockIdx + j*TRIMEMLENGTH + 1);
         blockVertMapping[m_meshPtr->faces[m_PartitionNbFaces[i][k]][2]].push_back(blockIdx + j*TRIMEMLENGTH + 2);
 
-
-
         k++;
-
       }
-
-
       else if (j < numPF + numPNF + numPVF)
       {
         h_edgeMem0[i * m_maxNumTotalFaces + j]= m_PartitionVirtualFaces[i][l].edgeLens[0];
         h_edgeMem1[i * m_maxNumTotalFaces + j]= m_PartitionVirtualFaces[i][l].edgeLens[1];
         h_edgeMem2[i * m_maxNumTotalFaces + j] = m_PartitionVirtualFaces[i][l].edgeLens[2];
 
-
         h_triMem[blockIdx + j*TRIMEMLENGTH + 0] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 1] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 2] = LARGENUM;
         h_speed[i * m_maxNumTotalFaces + j]  =m_PartitionVirtualFaces[i][l].speedInv;
-
-
 
         blockVertMapping[m_PartitionVirtualFaces[i][l][0]].push_back(blockIdx + j*TRIMEMLENGTH + 0);
         blockVertMapping[m_PartitionVirtualFaces[i][l][1]].push_back(blockIdx + j*TRIMEMLENGTH + 1);
         blockVertMapping[m_PartitionVirtualFaces[i][l][2]].push_back(blockIdx + j*TRIMEMLENGTH + 2);
 
         l++;
-
-
       }
       else
       {
-
         h_triMem[blockIdx + j*TRIMEMLENGTH + 0] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 1] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 2] = LARGENUM;
-        //h_triMem[blockIdx + j*TRIMEMLENGTH + 3] = LARGENUM;
-        //h_triMem[blockIdx + j*TRIMEMLENGTH + 4] = LARGENUM;
-        //h_triMem[blockIdx + j*TRIMEMLENGTH + 5] = LARGENUM;
-        //h_triMem[blockIdx + j*TRIMEMLENGTH + 6] = LARGENUM;
-
       }
     }
-
-
-
-
-
   }
-
-
-
-
-
 
   m_maxNumVertMapping = 0;
   for(int i =0; i < numVert; i++)
@@ -897,19 +849,6 @@ void meshFIM2d::GenerateData(int numBlock)
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   h_ActiveList = (int*)malloc(sizeof(int)*numBlock);
   cudaSafeCall( cudaMalloc((void**) &d_ActiveList, sizeof(int) * numBlock));
 
@@ -1032,79 +971,20 @@ void meshFIM2d::GenerateData(int numBlock)
     FIMCuda<<<dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+m_maxNumVert*VERTMEMLENGTH*sizeof(short)>>>( d_triMem,d_triMemOut, d_vertMem,d_vertMemOutside,d_edgeMem0,d_edgeMem1,d_edgeMem2, d_speed, d_BlockSizes, d_con,d_ActiveList, numActive,m_maxNumTotalFaces, m_maxNumVert, m_StopDistance);
     cudaCheckErrors();
 
-    //cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) * m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
-    //vec_triMem.resize(m_maxNumTotalFaces * numBlock * 3);
-    //float maxVertT = 0;
-    //for(int i = 0 ; i <  m_maxNumTotalFaces * numBlock; i++)
-    //{
-
-    //
-    //  vec_triMem[3*i + 0] =  h_triMem[i*TRIMEMLENGTH + 3];
-    //  vec_triMem[3*i + 1] =  h_triMem[i*TRIMEMLENGTH + 4];
-    //  vec_triMem[3*i + 2] =  h_triMem[i*TRIMEMLENGTH + 5];
-
-    //  if(h_triMem[i*TRIMEMLENGTH + 3] >= LARGENUM)
-    //    vec_triMem[3*i + 0] = -2;
-    //  if(h_triMem[i*TRIMEMLENGTH + 4] >= LARGENUM)
-    //    vec_triMem[3*i + 1] = -2;
-    //  if(h_triMem[i*TRIMEMLENGTH + 5] >= LARGENUM)
-    //    vec_triMem[3*i + 2] = -2;
-
-
-    //  maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
-    //}
-
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("FIMCuda Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
-
-
     //////////////////////step 2: reduction////////////////////////////////////////////////
-
-
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-
-    //cudaSafeCall( cutStartTimer( timer));
 
     dimBlock = dim3(REDUCTIONSHARESIZE / 2 , 1);
     run_reduction<<<dimGrid, dimBlock/*, sizeof(int)*m_maxNumVert*/>>>(d_con, d_blockCon,d_ActiveList, numActive, d_BlockSizes);
     cudaCheckErrors();
-
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("run reduction Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
-
-
 
     //////////////////////////////////////////////////////////////////
     // 3. check neighbor tiles of converged tile
     // Add any active block of neighbor of converged block is inserted
     // to the list
 
-
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-
-    //cudaSafeCall( cutStartTimer( timer));
-
-
     cudaSafeCall( cudaMemcpy(h_blockCon, d_blockCon, numBlock*sizeof(int), cudaMemcpyDeviceToHost) );
 
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("compute neighbor copy Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
     int nOldActiveBlock = numActive;
-
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-
-    //cudaSafeCall( cutStartTimer( timer));
-
-    //vector<int> tmpActiveBlock;
 
     for(uint i=0; i<nOldActiveBlock; i++)
     {
@@ -1129,37 +1009,15 @@ void meshFIM2d::GenerateData(int numBlock)
           }
         }
       }
-      /*        else
-                h_ActiveList[numActive++] = currBlkIdx;*/   // if active block is not convergent, add it to active list and computer again next iter. a bug here: if the acitve block happen to be convengent at next iteration, there will be no active block after check_neighbor.
 
     }
-
-
-
-
-
-
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("compute neighbor Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
-
     //////////////////////////////////////////////////////////////////
     // 4. run solver only once for neighbor blocks of converged block
     // current active list contains active blocks and neighbor blocks of
     // any converged blocks
     //
 
-
     cudaSafeCall( cudaMemcpy(d_ActiveList, h_ActiveList, numActive*sizeof(int), cudaMemcpyHostToDevice) );
-
-
-
-
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-
-    //cudaSafeCall( cutStartTimer( timer));
 
     dimGrid = dim3(numActive, 1);
     dimBlock = dim3(m_maxNumTotalFaces, 1);
@@ -1169,50 +1027,21 @@ void meshFIM2d::GenerateData(int numBlock)
     cudaCheckErrors();
 
 
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("check neighbor Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
-
-
-
     //////////////////////////////////////////////////////////////////
     // 5. reduction
-
-
-
 
     dimGrid = dim3(numActive, 1);
     dimBlock = dim3(REDUCTIONSHARESIZE / 2 , 1);
 
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-    //cudaSafeCall( cutStartTimer( timer));
-
     run_reduction<<<dimGrid, dimBlock/*, sizeof(int)*m_maxNumVert*/>>>(d_con, d_blockCon,d_ActiveList,numActive, d_BlockSizes);
     cudaCheckErrors();
-
-
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("reduction2 Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
-
 
     //////////////////////////////////////////////////////////////////
     // 6. update active list
     // read back active volume from the device and add
     // active block to active list on the host memory
 
-
-    //timer = 0;
-    //cudaSafeCall( cutCreateTimer( &timer));
-
-    //cudaSafeCall( cutStartTimer( timer));
-
-
     numActive = 0;
-    //m_ActiveBlocks.clear();
 
     cudaSafeCall( cudaMemcpy(h_blockCon, d_blockCon, numBlock*sizeof(int), cudaMemcpyDeviceToHost) );
     for(uint i=0; i<numBlock; i++)
@@ -1221,16 +1050,9 @@ void meshFIM2d::GenerateData(int numBlock)
       {
         h_BlockLabel[i] = ACTIVE;
         h_ActiveList[numActive++] = i;
-        //m_ActiveBlocks.insert(m_ActiveBlocks.end(), i);
-        //printf("Block %d added\n", i);
       }
       else h_BlockLabel[i] = FARP;
     }
-
-    //cudaSafeCall( cudaThreadSynchronize() );
-    //cudaSafeCall( cutStopTimer( timer));
-    //printf("Compute active Processing time: %f (ms)\n", cutGetTimerValue( timer));
-
 
   }
 
@@ -1302,56 +1124,24 @@ void meshFIM2d::GenerateData(int numBlock)
   fclose(resultfile);
 
 
-
-
-
   printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );
-  //printf("The vertT 259 is: %f\n", m_meshPtr->vertT[259] );
-
-
-  //
-  //printf("%s\n", h_vertT);
-
-  //cudaSafeCall( cudaFree(d_Vertices));
-
-  //cudaSafeCall( cudaFree(d_vertT));
-  //cudaSafeCall( cudaFree(d_Faces));
-  //cudaSafeCall( cudaFree(d_VertLabel));
   cudaSafeCall( cudaFree(d_ActiveList));
   cudaSafeCall( cudaFree(d_triMem));
   cudaSafeCall( cudaFree(d_vertMem));
   cudaSafeCall( cudaFree(d_edgeMem0));
   cudaSafeCall( cudaFree(d_edgeMem1));
   cudaSafeCall( cudaFree(d_edgeMem2));
-
   cudaSafeCall( cudaFree(d_speed));
-
   cudaSafeCall( cudaFree(d_con));
-
   cudaSafeCall( cudaFree(d_blockCon));
-
-  //cudaSafeCall( cudaFree(d_Neighbors));
-
-  //free(h_Vertices);
-  //free(h_vertT);
-  //free(h_Faces);
   free(h_ActiveList);
-  //free(h_VertLabel);
   free(h_edgeMem0);
   free(h_edgeMem1);
   free(h_edgeMem2);
-
   free(h_speed);
-
   free(h_triMem);
   free(h_vertMem);
-  //free(h_Neighbors);
   free(h_BlockLabel);
   free(h_blockCon);
   free(h_BlockSizes);
-
-
-
-
-
 }

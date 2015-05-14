@@ -22,6 +22,9 @@
 #include "CUDADefines.h"
 #include <time.h>
 #include <mycutil.h>
+extern "C" {
+#include <metis.h>
+}
 
 
 /////declaration for cuda kernels///////////////////////////
@@ -100,7 +103,7 @@ bool InitCUDA(void)
 
 /////////////////////////////////////////////////////////////////////////////
 
-void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //create .mesh file from trimesh faces and call partnmesh.exe program to partition and create intermediate mesh.npart.N file and then read this file
+void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //create .mesh file from trimesh faces and call partnmesh function to partition and create intermediate mesh.npart.N file and then read this file
 {
 
   FILE * outf;
@@ -129,9 +132,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //creat
 
   char outputFileName[512];
 
-
-
-  char cmd[512];
+  char meshfile[] = "tmp.mesh";
 
   if(numBlock == 0)
   {
@@ -147,13 +148,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //creat
       {
         m_BlockSizes[i] = 0;
       }
-
-      sprintf(cmd, "partnmesh.exe tmp.mesh %d", numBlock);
-      //printf("running partition command: %s\n", cmd);
-
-      system(cmd);
-
-
+      partnmesh(meshfile,numBlock);
 
       sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
@@ -209,12 +204,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //creat
       m_BlockSizes[i] = 0;
     }
 
-    sprintf(cmd, "partnmesh.exe tmp.mesh %d", numBlock);
-    //printf("running partition command: %s\n", cmd);
-
-    system(cmd);
-
-
+    partnmesh(meshfile, numBlock);
 
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
@@ -551,7 +541,6 @@ void meshFIM::GenerateData(void)
     printf("numActiveNew = %d\n", h_ActiveListNew.size());
     if(h_ActiveListNew.size() > 0)
     {
-
       int numActiveNew = h_ActiveListNew.size();
 
       cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveListNew[0], numActiveNew * sizeof(int), cudaMemcpyHostToDevice));
@@ -598,8 +587,6 @@ void meshFIM::GenerateData(void)
   cudaSafeCall(cudaThreadSynchronize());
 
   printf("num of max active %d\n", maxActive);
-  //  printf("Total Processing time: %f (ms)\n", cutGetTimerValue( timerTotal));
-  //  printf("Total Processing time and copy time: %f (ms)\n", cutGetTimerValue( timerTotalplusCopy));
 
   m_meshPtr->vertT.resize(1);
   m_meshPtr->vertT[0].resize(numVert);
