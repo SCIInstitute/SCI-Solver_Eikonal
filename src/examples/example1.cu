@@ -1,16 +1,35 @@
-/*
-   Szymon Rusinkiewicz
-   Princeton University
-
-   mesh_view.cc
-   Simple viewer
- */
+//-------------------------------------------------------------------
+//
+//  Copyright (C) 2015
+//  Scientific Computing & Imaging Institute
+//  University of Utah
+//
+//  Permission is  hereby  granted, free  of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files  ( the "Software" ),  to  deal in  the  Software without
+//  restriction, including  without limitation the rights to  use,
+//  copy, modify,  merge, publish, distribute, sublicense,  and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is  furnished  to do  so,  subject  to  the following
+//  conditions:
+//
+//  The above  copyright notice  and  this permission notice shall
+//  be included  in  all copies  or  substantial  portions  of the
+//  Software.
+//
+//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
+//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
+//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
+//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
+//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+//  USE OR OTHER DEALINGS IN THE SOFTWARE.
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include "TriMesh.h"
-//#include "XForm.h"
-//#include "GLCamera.h"
 #include <string>
 #include "meshFIM.h"
 #include <math.h>
@@ -23,40 +42,39 @@ using std::string;
 
 int main(int argc, char *argv[])
 {
-  if (argc < 2)
-    std::cerr << "USAGE: ./levelset_d MESH_FILENAME" << std::endl;
-
+  //Verbose option
+  bool verbose = false;
+  //input filename (minus extension)
+  std::string filename;
+  for (int i = 0; i < argc; i++)
+    if (strcmp(argv[i],"-v") == 0) {
+      verbose = true;
+    } else if (strcmp(argv[i],"-i") == 0) {
+      if (i+1 >= argc) break;
+      filename = std::string(argv[i+1]);
+      i++;
+    }
+  if (filename.empty())
+    filename = "example_data/CubeMesh_size16";
   clock_t starttime = clock(), endtime;
 
   tetgenio in, addin, bgmin,out;
-  in.load_tetmesh((char*)"example_data/CubeMesh_size16");
+  in.load_tetmesh((char*)filename.c_str());
 
   TetMesh themesh;
-  themesh.init(in.pointlist, in.numberofpoints, in.trifacelist, in.numberoffacets,  in.tetrahedronlist, in.numberoftetrahedra, in.numberoftetrahedronattributes, in.tetrahedronattributelist );
-
-
+  themesh.init(
+      in.pointlist,
+      in.numberofpoints,
+      in.trifacelist,
+      in.numberoffacets,
+      in.tetrahedronlist,
+      in.numberoftetrahedra,
+      in.numberoftetrahedronattributes,
+      in.tetrahedronattributelist );
 
   themesh.need_neighbors();
   themesh.need_adjacenttets();
   themesh.need_tet_virtual_tets();
-  //themesh.need_oneringtets();
-  //themesh.need_oneringstrip();
-
-
-  //if (!themesh)
-  //  usage(argv[0]);
-  ////themesh->need_normals();
-  //themesh->need_tstrips();
-  //themesh->need_bsphere();
-  ////themesh->need_across_edge();
-  //meshes.push_back(themesh);
-
-  //string xffilename = xfname(filename);
-  //xffilenames.push_back(xffilename);
-
-  //xforms.push_back(xform());
-  //visible.push_back(true);
-
 
   meshFIM* FIMPtr = new meshFIM;
 
@@ -69,11 +87,7 @@ int main(int argc, char *argv[])
 
   FIMPtr->SetMesh(&themesh);
   FIMPtr->FindSeedPoint();
-  //FIMPtr->FindSeedPointEllipse();
   FIMPtr->InitSpeedMat();
-  //FIMPtr->FindSeedPointLavalamp();
-
-
 
   int squareLength = 16;
   int squareWidth = 16;
@@ -85,130 +99,19 @@ int main(int argc, char *argv[])
   int numBlockWidth  = (squareWidth / squareBlockWidth);
   int numBlockDepth  = (squareDepth / squareBlockDepth);
   int numBlock = numBlockLength * numBlockWidth*numBlockDepth;
-  //int maxNumBlockVerts = squareBlockLength * squareBlockWidth * squareBlockDepth;
-
-  //int maxNumBlockVerts = 64;
-  //int numBlock = 64;  //10200 for longlen260k, 7500 for Heart_SF.5T.1_tetgen, 3300 for center of unstruc_s5
-  FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth, squareBlockLength, squareBlockWidth, squareBlockDepth);
-  //FIMPtr->GraphPartition_METIS2(numBlock, maxNumBlockVerts);
+  FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth,
+      squareBlockLength, squareBlockWidth, squareBlockDepth);
 
   FIMPtr->m_numBlock = numBlock;
   FIMPtr->PartitionTets(numBlock);
-  //FIMPtr->InitializePartition(numBlock);
   FIMPtr->GenerateData();
 
   endtime = clock();
   double duration = (double)(endtime - starttime) *1000 / CLOCKS_PER_SEC;
 
-  printf("Computing time : %.10lf ms\n",duration);
+  if (verbose)
+    printf("Computing time : %.10lf ms\n",duration);
 
-
-  ////FILE* vtkfile;
-  ////if(fopen_s(&vtkfile,"Atrium_NOISE.vtk","a+") != 0)
-  ////  printf_s("The vtk file was not opened\n");
-
-
-  ////fprintf_s(vtkfile,"POINT_DATA %d\nSCALARS traveltime float 1\nLOOKUP_TABLE default\n", FIMPtr->m_meshPtr->vertices.size());
-
-  //float result = 0;
-  //int vertIndex = 0;
-  //for (int i=0;i<1/*themesh->vertices.size()*/;i++)
-  //{
-  //  for (int j=0;j<themesh->vertices.size();j++)
-  //  {
-  //    float tmp = FIMPtr->m_meshPtr->vertT[i][j];
-  //    //fprintf_s(vtkfile,"%f\n",tmp);
-  //    if (tmp>result)
-  //    {
-  //      result = tmp;
-  //      vertIndex = j;
-  //    }
-  //
-  //  }
-  //  printf("T for vert %d: %f, Vert index: %d\n", i, result, vertIndex);
-  //
-  //  result = 0;
-  //}
-
-  ////fclose(vtkfile);
-
-
-  ////float maxerror = 0.0;
-  ////float exactvalue = 0.0;
-  ////FILE* errorfile;
-  ////vector<float> errors;
-  //////errorfile = fopen("errorfile_square16_s2.txt","w+");
-  ////errorfile = fopen("errorfile_SphereR60_8k_seed4511.txt","w+");
-
-  ////point seed = FIMPtr->m_meshPtr->vertices[4511];
-  ////point origin = point(120,120,120);
-  //////point origin = point(0,0,0);
-  ////float Radius = 60.0;
-  //////errors.resize(themesh->vertices.size());
-  ////float squaresum = 0;
-
-  //////////////////coompute average radius of inscribed circle//////////
-
-  //////FIMPtr->m_meshPtr->need_Rinscribe();
-  //////
-  //////vector<double> rins = FIMPtr->m_meshPtr->radiusInscribe;
-
-  //////double rsum = 0.0;
-  //////for (int i =0; i<rins.size(); i++)
-  //////{
-  //////  rsum+=rins[i];
-  //////}
-
-  //////double avgr = rsum / FIMPtr->m_meshPtr->faces.size();
-
-  ////for (int i=0;i<themesh->vertices.size();i++)
-  ////{
-  ////  float computedvalue = FIMPtr->m_meshPtr->vertT[0][i];
-  ////  point vert = FIMPtr->m_meshPtr->vertices[i];
-  ////  point OS = seed - origin;
-  ////  point OV = vert - origin;
-
-  ////  float lenOS = sqrt( OS DOT OS);
-  ////  float lenOV = sqrt( OV DOT OV);
-
-  ////  float costheta = (OS DOT OV) / (lenOS*lenOV);
-  ////  float theta = acos(costheta);
-
-  ////  exactvalue = theta * Radius;
-  ////  //exactvalue = sqrt(vert[0] * vert[0] + vert[1] * vert[1]);
-  ////  float localerror = abs(exactvalue - computedvalue);
-  ////  maxerror = max(maxerror, localerror);
-  ////  squaresum += localerror*localerror;
-
-  ////  fprintf(errorfile,"%f\n",localerror);
-  ////}
-
-  ////
-  //////fprintf(errorfile,"avg radius of inscribed circles is: %f\n",avgr);
-
-  ////fprintf(errorfile,"max error is: %f\n",maxerror);
-  ////fprintf(errorfile,"rms error is: %f\n",sqrt(squaresum/(themesh->vertices.size()-1)) );
-  //////fprintf(errorfile,"T for vert 0: %f, Vert index: %d\n",  result, vertIndex);
-  ////printf("max error is: %f\n",maxerror);
-  ////printf("rms error is: %f\n",sqrt(squaresum/(themesh->vertices.size()-1)));
-  //////printf("avg radius of inscribed circles is: %f\n",avgr);
-
-  ////fclose(errorfile);
-  ////compute min max average valance
-  //int nv = FIMPtr->m_meshPtr->vertices.size();
-  //int minval = 10000000, minvaltrue = 100000000;
-  //int maxval = 0, maxvaltrue = 0;
-  //int sum =0, sumtrue =0;
-  //for (int i =0; i<FIMPtr->m_meshPtr->vertices.size(); i++)
-  //{
-  //  minval = min((int)minval, (int)FIMPtr->m_meshPtr->adjacentfaces[i].size());
-  //  minvaltrue = min((int)minvaltrue, (int)FIMPtr->m_meshPtr->vertOneringFaces[i].size());
-  //  maxval = max((int)maxval, (int)FIMPtr->m_meshPtr->adjacentfaces[i].size());
-  //  maxvaltrue = max((int)maxvaltrue, (int)FIMPtr->m_meshPtr->vertOneringFaces[i].size());
-  //  sum += FIMPtr->m_meshPtr->adjacentfaces[i].size();
-  //  sumtrue += FIMPtr->m_meshPtr->vertOneringFaces[i].size();
-  //}
-  //printf("minval is: %d\nmaxval is: %d\nminvaltrue is: %d\nmaxvaltrue is %d\naverage is %f\naveragetrue is: %f\n", minval,maxval,minvaltrue,maxvaltrue,(float)sum / (float)nv,(float)sumtrue / (float)nv);
   return 0;
 }
 

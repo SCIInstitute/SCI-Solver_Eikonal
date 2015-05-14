@@ -1,3 +1,33 @@
+//-------------------------------------------------------------------
+//
+//  Copyright (C) 2015
+//  Scientific Computing & Imaging Institute
+//  University of Utah
+//
+//  Permission is  hereby  granted, free  of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files  ( the "Software" ),  to  deal in  the  Software without
+//  restriction, including  without limitation the rights to  use,
+//  copy, modify,  merge, publish, distribute, sublicense,  and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is  furnished  to do  so,  subject  to  the following
+//  conditions:
+//
+//  The above  copyright notice  and  this permission notice shall
+//  be included  in  all copies  or  substantial  portions  of the
+//  Software.
+//
+//  THE SOFTWARE IS  PROVIDED  "AS IS",  WITHOUT  WARRANTY  OF ANY
+//  KIND,  EXPRESS OR IMPLIED, INCLUDING  BUT NOT  LIMITED  TO THE
+//  WARRANTIES   OF  MERCHANTABILITY,  FITNESS  FOR  A  PARTICULAR
+//  PURPOSE AND NONINFRINGEMENT. IN NO EVENT  SHALL THE AUTHORS OR
+//  COPYRIGHT HOLDERS  BE  LIABLE FOR  ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+//  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+//  USE OR OTHER DEALINGS IN THE SOFTWARE.
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "TriMesh.h"
@@ -9,20 +39,22 @@
 /* main                                                           */
 /************************************************************************/
 int main(int argc, char* argv[]) {
-  std::string filename;
+  //Verbose option
   bool verbose = false;
-  for(int i = 1;i < argc; i++) {
-    if (strcmp(argv[i],"-v") == 0)
+  //input filename (minus extension)
+  std::string filename;
+  for (int i = 0; i < argc; i++)
+    if (strcmp(argv[i],"-v") == 0) {
       verbose = true;
-    else if (strcmp(argv[i],"-i") == 0) {
+    } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;
       filename = std::string(argv[i+1]);
       i++;
     }
-  }
-  clock_t starttime, endtime;
   if (filename.empty())
     filename = "../example_data/SquareMesh_size16.ply";
+  clock_t starttime, endtime;
+
   TriMesh *themesh = TriMesh::read(filename.c_str());
 
   //themesh->need_normals();
@@ -52,19 +84,11 @@ int main(int argc, char* argv[]) {
   FIMPtr->SetMesh(themesh);
   FIMPtr->SetStopDistance(50000.0);
   FIMPtr->GraphPartition_METIS2( numBlock, maxNumBlockVerts);
-  //FIMPtr->GraphPartition_Square(squareLength,squareWidth,
-  //squareBlockLength, squareBlockWidth);
-
-  //FIMPtr->GraphPartition_Simple(4,numBlock);
-  //FIMPtr->GraphPartition_METIS("sphere_10968verts.mesh.npart.180", numBlock);
 
   FIMPtr->PartitionFaces(numBlock);
   FIMPtr->InitializeLabels(numBlock);
 
   FIMPtr->GenerateData(numBlock);
-
-  //for (int i = 0; i<themesh->vertices.size(); i++)
-  //  vertT[currentVert][i] = FIMPtr->m_meshPtr->vertT[i];
 
   endtime = clock();
   double duration = (double)(endtime - starttime) * 1000/ CLOCKS_PER_SEC;
