@@ -100,11 +100,11 @@ int main(int argc, char *argv[])
   int numBlockDepth  = (squareDepth / squareBlockDepth);
   int numBlock = numBlockLength * numBlockWidth*numBlockDepth;
   //numBlock = 10003;
-  //int maxNumBlockVerts = 64;
+  int maxNumBlockVerts = 64;
 
-  FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth,
-      squareBlockLength, squareBlockWidth, squareBlockDepth);
-  //FIMPtr->GraphPartition_METIS2( numBlock , maxNumBlockVerts);
+  //FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth,
+  //    squareBlockLength, squareBlockWidth, squareBlockDepth);    //use this for regular meshes
+  FIMPtr->GraphPartition_METIS2( numBlock , maxNumBlockVerts); // use this for irregular meshes
 
   FIMPtr->m_numBlock = numBlock;
   FIMPtr->PartitionTets(numBlock);
