@@ -155,7 +155,7 @@ class meshFIM
       if (m_SeedPoints.empty())
         printf("seed pionts list empty!!\n");
       else
-        printf("Number of seed points is %d\n", m_SeedPoints.size());
+        printf("Number of seed points is %lu\n", m_SeedPoints.size());
 
     }
 

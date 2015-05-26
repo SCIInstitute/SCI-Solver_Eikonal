@@ -383,7 +383,7 @@ void meshFIM::GenerateData(void)
 
   ////////////////////initialize the seed points for h_tetT//////////////////////////
 
-  printf("Seed size is %d, source block is %d\n", m_SeedPoints.size(),
+  printf("Seed size is %lu, source block is %d\n", m_SeedPoints.size(),
       m_PartitionLabel.empty()?-1:
       (m_PartitionLabel[m_SeedPoints.empty()?0:m_SeedPoints[0]]));
   for(int i = 0; i < m_SeedPoints.size(); i++)
@@ -475,20 +475,27 @@ void meshFIM::GenerateData(void)
 
     dimBlock = dim3(m_maxNumInVert, 1);
     CopyOutBack << <dimGrid, dimBlock >> >(d_tetT, d_vertT, d_vertMem, d_vertMemOutside, d_BlockSizes, d_ActiveList, m_maxNumInVert, m_maxNumTotalTets, m_maxVertMappingInside, m_maxVertMappingOutside);
-    //
+    //////////////////////step 2: reduction////////////////////////////////////////////////
     dimBlock = dim3(m_maxNumInVert, 1);
     run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActive, d_BlockSizes);
-    //
+
+    //////////////////////////////////////////////////////////////////
+    // 3. check neighbor tiles of converged tile
+    // Add any active block of neighbor of converged block is inserted
+    // to the list
     cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
-    //
+
     int nOldActiveBlock = numActive;
-    //int numActiveNew = 0;
+    
     numActive = 0;
+    
     h_ActiveListNew.clear();
-    //vector<int >  tmpActive;
+
     for(uint i = 0; i < nOldActiveBlock; i++)
     {
+      // check neighbors of current active tile
       uint currBlkIdx = h_ActiveList[i];
+      
       h_BlockLabel[currBlkIdx] = FARP;
       if(!h_blockCon[currBlkIdx]) // if not converged
       {
@@ -538,7 +545,7 @@ void meshFIM::GenerateData(void)
     //      // 4. run solver only once for neighbor blocks of converged block
     //      // current active list contains active blocks and neighbor blocks of
     //      // any converged blocks
-    printf("numActiveNew = %d\n", h_ActiveListNew.size());
+    printf("numActiveNew = %lu\n", h_ActiveListNew.size());
     if(h_ActiveListNew.size() > 0)
     {
       int numActiveNew = h_ActiveListNew.size();
