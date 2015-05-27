@@ -421,7 +421,7 @@ void meshFIM::GenerateData(void)
   cudaSafeCall((cudaMalloc((void**)&d_tetMem1, sizeof(float)* 3 * m_maxNumTotalTets * m_numBlock)));
   cudaSafeCall((cudaMalloc((void**)&d_tetT, sizeof(float)* 4 * m_maxNumTotalTets * m_numBlock)));
   cudaSafeCall((cudaMalloc((void**)&d_vertT, sizeof(float)* m_maxNumInVert * m_numBlock)));
-  //  cudaSafeCall( cudaMalloc( (void**) &d_speedInv, sizeof(float) * m_maxNumTotalTets * m_numBlock) );
+  cudaSafeCall( cudaMalloc( (void**) &d_speedInv, sizeof(float) * m_maxNumTotalTets * m_numBlock) );
   cudaSafeCall((cudaMalloc((void**)&d_vertMem, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingInside)));
   cudaSafeCall((cudaMalloc((void**)&d_vertMemOutside, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingOutside)));
   cudaSafeCall((cudaMalloc((void**)&d_BlockSizes, sizeof(int)* m_numBlock)));
@@ -686,6 +686,7 @@ void meshFIM::GenerateData(void)
   cudaSafeCall(cudaFree(d_con));
   cudaSafeCall(cudaFree(d_blockCon));
   cudaSafeCall(cudaFree(d_BlockSizes));
+  cudaSafeCall(cudaFree(d_speedInv));
 
 
 
