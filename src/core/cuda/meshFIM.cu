@@ -514,7 +514,7 @@ void meshFIM::GenerateData(void)
     //      // current active list contains active blocks and neighbor blocks of
     //      // any converged blocks
 
-    cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveListNew[0], numActive * sizeof(int), cudaMemcpyHostToDevice));
+    cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveList[0], numActive * sizeof(int), cudaMemcpyHostToDevice));
     dimGrid = dim3(numActive, 1);
     dimBlock = dim3(m_maxNumTotalTets, 1);
 
