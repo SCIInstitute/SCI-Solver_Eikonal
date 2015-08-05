@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
   FIMPtr->SetSeedPoint(seedPointList);
   FIMPtr->SetMesh(themesh);
   FIMPtr->SetStopDistance(50000.0);
-  FIMPtr->GraphPartition_METIS2( numBlock, maxNumBlockVerts);
+  FIMPtr->GraphPartition_METIS2( numBlock, maxNumBlockVerts, verbose);
 
   FIMPtr->PartitionFaces(numBlock);
   FIMPtr->InitializeLabels(numBlock);

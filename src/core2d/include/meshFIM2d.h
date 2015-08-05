@@ -230,7 +230,7 @@ class meshFIM2d {
 
     //void GraphPartition_Simple(int Kring, int numBlock);
     void GraphPartition_METIS(char* partfilename,int numBlock);
-    void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts);
+    void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth);
 
     void GraphColoring();

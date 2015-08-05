@@ -102,8 +102,9 @@ bool InitCUDA(void)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-
-void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //create .mesh file from trimesh faces and call partnmesh function to partition and create intermediate mesh.npart.N file and then read this file
+//create .mesh file from trimesh faces and call partnmesh function 
+//to partition and create intermediate mesh.npart.N file and then read this file
+void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose) 
 {
 
   FILE * outf;
@@ -148,7 +149,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //creat
       {
         m_BlockSizes[i] = 0;
       }
-      partnmesh(meshfile,numBlock);
+      partnmesh(meshfile,numBlock,verbose?1:0);
 
       sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
@@ -204,7 +205,7 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts) //creat
       m_BlockSizes[i] = 0;
     }
 
-    partnmesh(meshfile, numBlock);
+    partnmesh(meshfile, numBlock,verbose?1:0);
 
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 

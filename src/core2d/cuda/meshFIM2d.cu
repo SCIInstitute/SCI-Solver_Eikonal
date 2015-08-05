@@ -151,8 +151,9 @@ void meshFIM2d::GraphPartition_METIS(char* partfilename, int numBlock)  //read a
 
 
 }
-
-void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //create .mesh file from trimesh faces and call partnmesh method to partition and create intermediate mesh.npart.N file and then read this file
+//create .mesh file from trimesh faces and call partnmesh method 
+//to partition and create intermediate mesh.npart.N file and then read this file
+void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
 {
 
   FILE * outf;
@@ -191,7 +192,7 @@ void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //c
       {
         m_BlockSizes[i] = 0;
       }
-      partnmesh(meshfile,numBlock);
+      partnmesh(meshfile,numBlock,verbose?1:0);
 
       sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
@@ -243,7 +244,7 @@ void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //c
       m_BlockSizes[i] = 0;
     }
 
-    partnmesh(meshfile,numBlock);
+    partnmesh(meshfile,numBlock,verbose?1:0);
 
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
@@ -286,27 +287,9 @@ void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //c
     unlink(outputFileName);
 
   }
-
-
-
-
   srand( (unsigned)time( NULL ) );
-
   printf("numBlock is : %d\n", numBlock);
-
-
-
-
-
-
-  //m_BlockSizes = new int[numBlock];
-  //for(int i =0; i<numBlock; i++)
-  // m_BlockSizes[i] = 0;
-
   float r,g,b;
-
-
-
   vector< Color > colors;
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
@@ -325,33 +308,17 @@ void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts)   //c
     m_meshPtr->colors[i] = colors[m_PartitionLabel[i]];
 
   }
-
   unlink("tmp.mesh");
-
-
-
-
-
-
-
-
-
 }
 
 void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth)
 {
   int numVert = m_meshPtr->vertices.size();
-  //m_PartitionLabel = new int[numVert];
   m_PartitionLabel.resize(numVert);
-
-  //int numBlockEdge = (squareSize / blockSize);
-  //int numBlock = numBlockEdge * numBlockEdge;
 
   int numBlockLength = (squareLength / blockLength);
   int numBlockWidth  = (squareWidth / blockWidth);
   int numBlock = numBlockLength * numBlockWidth;
-
-
 
   for(int i = 0; i< squareWidth; i++)
     for(int j =0; j< squareLength; j++)
@@ -361,14 +328,10 @@ void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int bloc
 
   m_BlockSizes.resize(numBlock);
 
-  //m_BlockSizes = new int[numBlock];
   for(int i =0; i<numBlock; i++)
     m_BlockSizes[i] = 0;
 
   float r,g,b;
-
-
-
   vector< Color > colors;
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
@@ -399,16 +362,11 @@ void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int bloc
     m_maxNumVert = MAX(m_maxNumVert, m_BlockSizes[i]);
   }
   printf("final number of blocks: %d\n", numBlock);
-
-
-
-
-
 }
 
 void meshFIM2d::PartitionFaces(int numBlock)
 {
-  /////////////////////////////////////step 3: partition faces//////////////////////////////////////
+  ///////////////////step 3: partition faces//////////////////////////////////////
   m_PartitionFaces.resize(numBlock);
   m_PartitionNbFaces.resize(numBlock);
 
@@ -443,10 +401,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
 
     }
 
-
-
-
-
     labelv0 = m_PartitionLabel[f[0]];
     labelv1 = m_PartitionLabel[f[1]];
     labelv2 = m_PartitionLabel[f[2]];
@@ -454,7 +408,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
     if(labelv0 == labelv1 && labelv1 == labelv2)
     {
       m_PartitionFaces[labelv0].push_back(i);
-      //virtualFaceCnt[labelv0] += vfCnt;
     }
     else if(labelv0 == labelv1 && labelv1 != labelv2)
     {
@@ -463,13 +416,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
 
       m_BlockNeighbor[labelv0].insert(m_BlockNeighbor[labelv0].end(), labelv2);
       m_BlockNeighbor[labelv2].insert(m_BlockNeighbor[labelv2].end(), labelv0);
-
-
-      //virtualFaceCnt[labelv0] += vfCnt;
-      //virtualFaceCnt[labelv2] += vfCnt;
-
-
-
     }
     else if(labelv0 != labelv1 && labelv1 == labelv2)
     {
@@ -478,11 +424,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
 
       m_BlockNeighbor[labelv0].insert(m_BlockNeighbor[labelv0].end(), labelv2);
       m_BlockNeighbor[labelv2].insert(m_BlockNeighbor[labelv2].end(), labelv0);
-
-      //virtualFaceCnt[labelv0] += vfCnt;
-      //virtualFaceCnt[labelv2] += vfCnt;
-
-
     }
 
     else if(labelv0 == labelv2 && labelv1 != labelv2)
@@ -492,10 +433,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
 
       m_BlockNeighbor[labelv0].insert(m_BlockNeighbor[labelv0].end(), labelv1);
       m_BlockNeighbor[labelv1].insert(m_BlockNeighbor[labelv1].end(), labelv0);
-
-      //virtualFaceCnt[labelv0] += vfCnt;
-      //virtualFaceCnt[labelv1] += vfCnt;
-
     }
 
     else      //all different
@@ -510,12 +447,6 @@ void meshFIM2d::PartitionFaces(int numBlock)
       m_BlockNeighbor[labelv1].insert(m_BlockNeighbor[labelv1].end(), labelv0);
       m_BlockNeighbor[labelv1].insert(m_BlockNeighbor[labelv1].end(), labelv2);
       m_BlockNeighbor[labelv2].insert(m_BlockNeighbor[labelv2].end(), labelv1);
-
-      //virtualFaceCnt[labelv0] += vfCnt;
-      //virtualFaceCnt[labelv1] += vfCnt;
-      //virtualFaceCnt[labelv2] += vfCnt;
-
-
     }
 
   }
@@ -532,18 +463,10 @@ void meshFIM2d::PartitionFaces(int numBlock)
   }
 }
 
-
-
-
 void meshFIM2d::GenerateData(int numBlock)
 {
-
   int numVert = m_meshPtr->vertices.size();
   int numFaces=m_meshPtr->faces.size();
-
-
-
-
 
   if(!InitCUDA()) {
     exit(1);
@@ -561,10 +484,7 @@ void meshFIM2d::GenerateData(int numBlock)
   float*      d_speed;
   float      *d_triMemOut;
   int         *d_vertMem;
-
   int         *d_BlockSizes;
-
-
 
   index       *h_ActiveList= 0;    //list of active blocks
   int         *h_BlockLabel = 0;   //block active or not
@@ -580,25 +500,16 @@ void meshFIM2d::GenerateData(int numBlock)
 
   /////////////////////////////malloc cpu memories///////////////////////////
   h_BlockLabel = (int*) malloc(sizeof(int) * numBlock);
-  //h_Neighbors = (int*) malloc(sizeof(int) * numVert * MAXNUMNEIGHBOR);
-  //h_NonObtuseNeighborFaces = (d_Face*)malloc(sizeof(d_Face) * numVert * MAXNUMNEIGHBOR);
 
   h_edgeMem0 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
   h_edgeMem1 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
   h_edgeMem2 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
   h_speed    = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
 
-
   h_triMem = (float*)malloc(sizeof(float) * TRIMEMLENGTH * m_maxNumTotalFaces * numBlock);
   h_vertMem = (int*)malloc(sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock);
   h_BlockSizes = (int*)malloc(sizeof(int) * numBlock);
-
   h_blockCon = (int*)malloc(sizeof(int) * numBlock);
-
-
-
-
-
   /////////////////////////malloc gpu memories//////////////////////////////
 
   cudaSafeCall( cudaMalloc((void**) &d_con, sizeof(int) * numBlock * REDUCTIONSHARESIZE));
@@ -615,8 +526,6 @@ void meshFIM2d::GenerateData(int numBlock)
 
   cudaSafeCall( cudaMalloc((void**) &d_speed,  sizeof(float)  * m_maxNumTotalFaces * numBlock));
 
-
-  //cudaSafeCall( cudaMalloc((void**) &d_triMem_forComputation,  sizeof(float) * TRIMEMLENGTH * m_maxNumTotalFaces * numBlock));
   cudaSafeCall( cudaMalloc((void**) &d_vertMem, sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock));
 
   cudaSafeCall( cudaMalloc((void**) &d_BlockSizes, sizeof(int) * numBlock));
@@ -633,25 +542,19 @@ void meshFIM2d::GenerateData(int numBlock)
       h_edgeMem1[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[1];
       h_edgeMem2[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[2];
 
-
       h_triMem[blockIdx + j*TRIMEMLENGTH + 0] = LARGENUM;
       h_triMem[blockIdx + j*TRIMEMLENGTH + 1] = LARGENUM;
       h_triMem[blockIdx + j*TRIMEMLENGTH + 2] = LARGENUM;
 
       h_speed[i * m_maxNumTotalFaces + j]  =  m_meshPtr->faces[m_PartitionFaces[i][j]].speedInv;
 
-
-
       blockVertMapping[m_meshPtr->faces[m_PartitionFaces[i][j]][0]].push_back(blockIdx + j*TRIMEMLENGTH + 0);
       blockVertMapping[m_meshPtr->faces[m_PartitionFaces[i][j]][1]].push_back(blockIdx + j*TRIMEMLENGTH + 1);
       blockVertMapping[m_meshPtr->faces[m_PartitionFaces[i][j]][2]].push_back(blockIdx + j*TRIMEMLENGTH + 2);
     }
-
   }
-
   for( int i = 0; i <  numBlock; i++)
   {
-
     h_blockCon[i] = 1;
 
     h_BlockLabel[i] = m_BlockLabel[i];
@@ -667,21 +570,16 @@ void meshFIM2d::GenerateData(int numBlock)
 
     for(int j = numPF; j< m_maxNumTotalFaces; j++)
     {
-
-
-
       if( j < numPF + numPNF)
       {
         h_edgeMem0[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionNbFaces[i][k]].edgeLens[0];
         h_edgeMem1[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionNbFaces[i][k]].edgeLens[1];
         h_edgeMem2[i * m_maxNumTotalFaces + j]= m_meshPtr->faces[m_PartitionNbFaces[i][k]].edgeLens[2];
 
-
         h_triMem[blockIdx + j*TRIMEMLENGTH + 0] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 1] = LARGENUM;
         h_triMem[blockIdx + j*TRIMEMLENGTH + 2] = LARGENUM;
         h_speed[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionNbFaces[i][k]].speedInv;
-
 
         blockVertMapping[m_meshPtr->faces[m_PartitionNbFaces[i][k]][0]].push_back(blockIdx + j*TRIMEMLENGTH + 0);
         blockVertMapping[m_meshPtr->faces[m_PartitionNbFaces[i][k]][1]].push_back(blockIdx + j*TRIMEMLENGTH + 1);
@@ -737,7 +635,6 @@ void meshFIM2d::GenerateData(int numBlock)
     m_maxNumVertMapping = MAX(m_maxNumVertMapping, blockVertMapping[i].size());
   }
 
-
   for(int i =0; i < numVert; i++)
   {
     int blockIndex = m_PartitionLabel[i];
@@ -749,8 +646,6 @@ void meshFIM2d::GenerateData(int numBlock)
       printf("beyond");
     }
   }
-
-
 
   vector< vector<int> > blockVertMappingInside;
   vector< vector<int> > blockVertMappingOutside;
@@ -777,9 +672,6 @@ void meshFIM2d::GenerateData(int numBlock)
           blockVertMappingOutside[m_PartitionVerts[i][m]].push_back(tmp[n]);
 
         }
-
-
-
       }
 
     }
@@ -817,7 +709,6 @@ void meshFIM2d::GenerateData(int numBlock)
 
     for(int m = m_PartitionVerts[i].size() * VERTMEMLENGTH; m < m_maxNumVert * VERTMEMLENGTH; m++)
     {
-      //h_vertMem[vertIdx + m] = -1;
       h_vertMem[vertIdx + m] = -1 + i*m_maxNumTotalFaces*TRIMEMLENGTH;
     }
   }
@@ -854,15 +745,8 @@ void meshFIM2d::GenerateData(int numBlock)
   cudaSafeCall( cudaMalloc((void**) &d_ActiveList, sizeof(int) * numBlock));
 
   //////////////////////////////////////////////////////////////////////////////////
-
-
   vector<int>  nb;
-
-
   int numActive;
-
-  //for(int currentVert = 0; currentVert < 1/*numVert*/; currentVert++)
-  //{
 
   for( int i = 0; i <  numBlock; i++)
   {
@@ -880,17 +764,11 @@ void meshFIM2d::GenerateData(int numBlock)
     int seed = m_SeedPoints[i];
     int seedBelongToBlock = m_PartitionLabel[seed];
     h_blockCon[seedBelongToBlock] = 0;
-    // int blockIdx = seedBelongToBlock * m_maxNumTotalFaces * TRIMEMLENGTH;
     for(int j = 0; j < blockVertMapping[seed].size(); j++)
     {
       h_triMem[blockVertMapping[seed][j]] = 0.0;
-
     }
-
-
   }
-
-
   /////////////copy triMem and verMem to a vector just for debugging/////////////////
   vector<float> vec_triMem;
   vector<int>   vec_vertMem;
@@ -904,8 +782,6 @@ void meshFIM2d::GenerateData(int numBlock)
 
   for(int i = 0; i< VERTMEMLENGTH * m_maxNumVert * numBlock; i++)
     vec_vertMem[i] = h_vertMem[i];
-
-
   for(int i = 0; i< VERTMEMLENGTHOUTSIDE * m_maxNumVert * numBlock; i++)
     vec_vertMemOutside[i] = h_vertMemOutside[i];
   ////////////////////////////////////////////////////////////////////////////
@@ -914,11 +790,9 @@ void meshFIM2d::GenerateData(int numBlock)
 
   numActive =m_ActiveBlocks.size();
 
-
   set<int>::iterator activeiter = m_ActiveBlocks.begin();
   for(int i =0; activeiter !=  m_ActiveBlocks.end(); activeiter++)
     h_ActiveList[i++] = *activeiter;
-
 
   cudaEvent_t start, stop, startCopy, stopCopy;
   cudaEventCreate(&start);
@@ -937,12 +811,10 @@ void meshFIM2d::GenerateData(int numBlock)
   cudaSafeCall( cudaMemcpy( d_edgeMem2,h_edgeMem2, sizeof(float) * m_maxNumTotalFaces * numBlock , cudaMemcpyHostToDevice));
 
   cudaSafeCall( cudaMemcpy( d_speed,h_speed, sizeof(float) * m_maxNumTotalFaces * numBlock , cudaMemcpyHostToDevice));
-  //cudaSafeCall( cudaMemcpy( d_triMem_forComputation,h_triMem, sizeof(float) * m_maxNumTotalFaces * numBlock * TRIMEMLENGTH, cudaMemcpyHostToDevice));
   cudaSafeCall( cudaMemcpy( d_vertMem,h_vertMem, sizeof(int) * m_maxNumVert * numBlock * VERTMEMLENGTH, cudaMemcpyHostToDevice));
   cudaSafeCall( cudaMemcpy( d_vertMemOutside,h_vertMemOutside, sizeof(int) * m_maxNumVert * numBlock * VERTMEMLENGTHOUTSIDE, cudaMemcpyHostToDevice));
   cudaSafeCall( cudaMemcpy( d_BlockSizes,h_BlockSizes, sizeof(int) * numBlock, cudaMemcpyHostToDevice));
   cudaSafeCall( cudaMemcpy( d_blockCon,h_blockCon, sizeof(int) * numBlock, cudaMemcpyHostToDevice));
-
 
   printf("max number of triangles per block: %d\n", m_maxNumTotalFaces);
   int nTotalIter = 0;
@@ -951,21 +823,17 @@ void meshFIM2d::GenerateData(int numBlock)
 
   int totalIterationNumber = 0;
 
-
   while ( numActive > 0)
   {
-
-
-    ///////////////////////////step 1: run solver //////////////////////////////////////////////////////////////////
+    ///////////step 1: run solver /////////////////////////////////////////////////////////////
 
     nTotalIter++;
 
     totalIterationNumber += numActive;
-    //printf("number of active block: %d\n", numActive);
+    printf("number of active block: %d\n", numActive);
 
     dim3 dimGrid(numActive, 1);
     dim3 dimBlock(m_maxNumTotalFaces, 1);
-
 
     cudaSafeCall( cudaMemcpy( d_ActiveList,h_ActiveList,sizeof(int) * numBlock, cudaMemcpyHostToDevice));
 
@@ -1112,7 +980,6 @@ void meshFIM2d::GenerateData(int numBlock)
   for(int i = 0 ; i <  m_maxNumTotalFaces * numBlock; i++)
   {
 
-
     vec_triMem[3*i + 0] =  h_triMem[i*TRIMEMLENGTH + 0];
     vec_triMem[3*i + 1] =  h_triMem[i*TRIMEMLENGTH + 1];
     vec_triMem[3*i + 2] =  h_triMem[i*TRIMEMLENGTH + 2];
@@ -1126,19 +993,15 @@ void meshFIM2d::GenerateData(int numBlock)
 
 
     maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
-
   }
 
   int vertIndex = 0;
 
   for(int i =0; i < numVert; i++)
   {
-
     m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
     if(m_meshPtr->vertT[i] == maxVertT)
       vertIndex = i;
-
-
   }
   printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );
   cudaSafeCall( cudaFree(d_ActiveList));

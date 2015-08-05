@@ -95,7 +95,7 @@ class meshFIM
 
 
     //void GraphPartition_Simple(int Kring, int numBlock);
-    void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts);
+    void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight);
 
     void GraphColoring();
