@@ -30,10 +30,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "TriMesh.h"
 #include <cstring>
-#include "meshFIM2d.h"
 #include <time.h>
+#include "TriMesh.h"
+#include "meshFIM2d.h"
 
 /************************************************************************/
 /* main                                                           */
@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
       printf("                [default ../example_data/sphere_4196verts.ply]\n");
+      exit(0);
     }
   if (filename.empty())
     filename = "../example_data/sphere_4196verts.ply";
@@ -80,7 +81,8 @@ int main(int argc, char* argv[]) {
   FIMPtr->PartitionFaces(numBlock);
   FIMPtr->InitializeLabels(numBlock);
 
-  FIMPtr->GenerateData(numBlock, verbose);
+  std::vector< std::vector< float > > results =
+    FIMPtr->GenerateData(numBlock, verbose);
 
   endtime = clock();
   double duration = (double)(endtime - starttime) * 1000/ CLOCKS_PER_SEC;

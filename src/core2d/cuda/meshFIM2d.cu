@@ -395,7 +395,7 @@ void meshFIM2d::PartitionFaces(int numBlock)
   }
 }
 
-void meshFIM2d::GenerateData(int numBlock, bool verbose)
+std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   int numFaces=m_meshPtr->faces.size();
@@ -753,6 +753,8 @@ void meshFIM2d::GenerateData(int numBlock, bool verbose)
 
   int totalIterationNumber = 0;
 
+  std::vector<std::vector<float> > iteration_values;
+
   while ( numActive > 0)
   {
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
@@ -861,31 +863,14 @@ void meshFIM2d::GenerateData(int numBlock, bool verbose)
       }
       else h_BlockLabel[i] = FARP;
     }
-    ////////////////////////DEBUG see if this is possible
+    ////////////////////////copy values from each iteration
     cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) *
           m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
     for(int i =0; i < numVert; i++) {
       m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
     }
-    std::stringstream fname;
-    fname << "result2D-";
-    size_t digits = 3;
-    int tmp = nTotalIter;
-
-    while (tmp / 10 > 0) {
-      digits --;
-      tmp /=10;
-    }
-    for (size_t i = 0; i < digits; i++)
-      fname << "0";
-    fname << nTotalIter << ".txt";
-    FILE * resultfile = fopen(fname.str().c_str(), "w+");
-    for(int i = 0; i < numVert; i++)
-    {
-      fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[i]);
-    }
-    fclose(resultfile);
-    ////////////////////////////////END DEBUG
+    iteration_values.push_back(m_meshPtr->vertT);
+    ////////////////////////////////END copy
   }
 
   cudaSafeCall( cudaThreadSynchronize() );
@@ -965,4 +950,5 @@ void meshFIM2d::GenerateData(int numBlock, bool verbose)
   free(h_BlockLabel);
   free(h_blockCon);
   free(h_BlockSizes);
+  return iteration_values;
 }
