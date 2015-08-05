@@ -151,9 +151,10 @@ static void pushback(const char *buf, FILE *f)
 
 // Read a TriMesh from a file.  Defined to use a helper function to make
 // subclassing easier.
-TriMesh *TriMesh::read(const char *filename)
+TriMesh *TriMesh::read(const char *filename, bool verbose)
 {
   TriMesh *mesh = new TriMesh();
+  TriMesh::verbose = verbose?1:0;
 
   if (read_helper(filename, mesh))
     return mesh;

@@ -147,7 +147,7 @@ class TriMesh {
     void need_face_virtual_faces();
 
     // Input and output
-    static TriMesh *read(const char *filename);
+    static TriMesh *read(const char *filename, bool verbose = false);
     void write(const char *filename);
 
     // Statistics

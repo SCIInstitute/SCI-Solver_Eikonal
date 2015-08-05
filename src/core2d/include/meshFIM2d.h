@@ -1,14 +1,12 @@
 #ifndef MESHFIM2D_H
 #define MESHFIM2D_H
 
-
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
-
 
 #include <typeinfo>
 #include <functional>
@@ -25,21 +23,12 @@ using namespace std;
 enum LabelType { FarPoint = 0,ActivePoint, MaskPoint, SeedPoint,
   StopPoint, AlivePoint,ToBeAlivePoint };
 
-
 class meshFIM2d {
 
   public:
-
-
     typedef int index;
-
-
-
-
     //  float Upwind(index vet);
     void MeshReader(char * filename);
-
-    //  float LocalSolver(index C, TriMesh::Face triangle);
 
     void SetSeedPoint(std::vector<index> SeedPoints)
     {
@@ -50,23 +39,6 @@ class meshFIM2d {
       if (m_meshPtr)
       {
         m_meshPtr->InitializeAttributes(m_SeedPoints);
-        /*if (!m_SeedPoints.empty())
-          {
-          int ns = m_SeedPoints.size();
-          for (int s = 0; s < ns; s++)
-          {
-
-          nb = m_meshPtr->neighbors[m_SeedPoints[s]];
-          for (int i = 0; i<nb.size();i++)
-          {
-          m_ActivePoints.push_back(nb[i]);
-          }
-
-
-          }
-
-
-          }*/
 
       }
     }
@@ -108,13 +80,7 @@ class meshFIM2d {
       else
       {
         m_meshPtr->InitializeAttributes(m_SeedPoints);  // if seed points are given, treat them differently
-
-
       }
-
-
-
-
     }
 
     void InitializeLabels(int numBlock)
@@ -152,101 +118,25 @@ class meshFIM2d {
         }
         else
           cout<< "Initialize seed points before labels!!!" << endl;
-
-        //if (!m_SeedPoints.empty())
-        //{
-        //  int ns = m_SeedPoints.size();
-        //  vector<index> nb;
-        //  for (int s = 0; s < ns; s++)
-        //  {
-
-        //    nb = m_meshPtr->neighbors[m_SeedPoints[s]];
-        //    for (int i = 0; i<nb.size();i++)
-        //    {
-        //      if (m_Label[nb[i]]!=SeedPoint)
-        //      {
-        //        m_ActivePoints.push_back(nb[i]);
-        //      }
-        //
-        //    }
-
-
-        //  }
-
-
-        //}
       }
     }
-
-    //void InitializeActivePoints()
-    //{
-    //  if (!m_SeedPoints.empty())
-    //  {
-    //    int ns = m_SeedPoints.size();
-    //    vector<index> nb;
-    //    for (int s = 0; s < ns; s++)
-    //    {
-
-    //      nb = m_meshPtr->neighbors[m_SeedPoints[s]];
-    //      for (int i = 0; i<nb.size();i++)
-    //      {
-    //        if (m_Label[nb[i]]!=SeedPoint)
-    //        {
-    //          m_ActivePoints.push_back(nb[i]);
-    //          m_Label[nb[i]] = ActivePoint;
-    //        }
-
-    //      }
-
-
-    //    }
-
-
-    //  }
-
-    //}
-
-    //float PointLength(point v)
-    //{
-    //  float length = 0;
-    //  for (int i = 0; i<3;i++)
-    //  {
-    //    length += v[i]*v[i];
-    //  }
-
-    //  return sqrt(length);
-    //
-    //}
 
     void SetStopDistance(float d)
     {
       m_StopDistance = d;
 
     }
-
-
-    void GenerateData(int numBlock);
-
-
-    //void GraphPartition_Simple(int Kring, int numBlock);
+    void GenerateData(int numBlock, bool verbose = false);
     void GraphPartition_METIS(char* partfilename,int numBlock);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth);
 
     void GraphColoring();
     void PartitionFaces(int numBlock);
-
-
-
-
-
     meshFIM2d(){
       m_meshPtr = NULL;
     };
     ~meshFIM2d(){};
-
-
-
 
     TriMesh*                                     m_meshPtr;
     vector< set<int> >                           m_BlockNbPts;
@@ -264,20 +154,11 @@ class meshFIM2d {
     int                                          m_maxNumVert;
     int                                          m_maxNumVertMapping;
     std::vector<int>                                     m_PartitionLabel;    // label of vertices belong to which partition
-
   protected:
-
     std::set<index>                              m_ActiveBlocks;
     std::vector<index>                           m_SeedPoints;
     std::vector<LabelType>                       m_VertLabel;             // label of all the vertices active or not
     vector<LabelType>                            m_BlockLabel;            // label of blocks active or not
-
-
     float                                        m_StopDistance;
-
-
-
 };
-
-
 #endif
