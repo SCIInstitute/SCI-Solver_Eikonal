@@ -18,6 +18,7 @@
 #include <cutil.h>
 #include "CUDADefines.h"
 
+#include <sstream>
 #include <time.h>
 #ifdef WIN32
 #include <io.h>
@@ -1053,7 +1054,31 @@ void meshFIM2d::GenerateData(int numBlock)
       }
       else h_BlockLabel[i] = FARP;
     }
+    ////////////////////////DEBUG see if this is possible
+    cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) *
+          m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
+    for(int i =0; i < numVert; i++) {
+      m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
+    }
+    std::stringstream fname;
+    fname << "result2D-";
+    size_t digits = 3;
+    int tmp = nTotalIter;
 
+    while (tmp / 10 > 0) {
+      digits --;
+      tmp /=10;
+    }
+    for (size_t i = 0; i < digits; i++)
+      fname << "0";
+    fname << nTotalIter << ".txt";
+    FILE * resultfile = fopen(fname.str().c_str(), "w+");
+    for(int i = 0; i < numVert; i++)
+    {
+      fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[i]);
+    }
+    fclose(resultfile);
+    ////////////////////////////////END DEBUG
   }
 
   cudaSafeCall( cudaThreadSynchronize() );
@@ -1115,15 +1140,6 @@ void meshFIM2d::GenerateData(int numBlock)
 
 
   }
-  FILE * resultfile = fopen("result2D.txt", "w+");
-  for(int i = 0; i < numVert; i++)
-  {
-    fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[i]);
-  }
-
-  fclose(resultfile);
-
-
   printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );
   cudaSafeCall( cudaFree(d_ActiveList));
   cudaSafeCall( cudaFree(d_triMem));
