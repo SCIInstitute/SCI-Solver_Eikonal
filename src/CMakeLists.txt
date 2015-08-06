@@ -27,7 +27,11 @@ ExternalProject_Add_Step( metis copy_deps
   DEPENDEES install
 )
 include_directories("${METIS_INSTALL_DIR}/include")
-SET(METIS_LIBRARY "${METIS_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}metis${CMAKE_STATIC_LIBRARY_SUFFIX}")
+find_file(METIS_LIBRARY "${CMAKE_STATIC_LIBRARY_PREFIX}metis${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	PATHS
+	"${METIS_INSTALL_DIR}/lib/"
+	"${METIS_INSTALL_DIR}/lib/Debug"
+	"${METIS_INSTALL_DIR}/lib/Release")
 ###################
 # Testing
 INCLUDE(CTest)
