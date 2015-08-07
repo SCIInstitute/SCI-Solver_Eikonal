@@ -61,6 +61,8 @@ int main(int argc, char* argv[]) {
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
+      //Number of blocks affects partitioning and convergence. 
+      //Adjust accordingly.
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       printf("  -t MAX_VERTS  Max # verts per block\n");
       printf("  -s            This is a structured mesh\n");
