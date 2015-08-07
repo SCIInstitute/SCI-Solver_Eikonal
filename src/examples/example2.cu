@@ -30,38 +30,53 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
 #include <Eikonal2D.h>
 
-/************************************************************************/
-/* main                                                           */
-/************************************************************************/
+void printGraph(std::vector< std::vector < float > > & results);
+
+/**************************************************************/
+/* main                                                       */
+/**************************************************************/
 int main(int argc, char* argv[]) {
-  //Verbose option
-  bool verbose = false;
-  //input filename (minus extension)
-  std::string filename;
-  for (int i = 0; i < argc; i++)
+  Eikonal::Eikonal2D data; 
+  for (int i = 1; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
-      verbose = true;
+      data.verbose_ = true;
     } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;
-      filename = std::string(argv[i+1]);
+      data.filename_ = std::string(argv[i+1]);
       i++;
+    } else if (strcmp(argv[i],"-b") == 0) {
+      if (i+1 >= argc) break;
+      data.maxBlocks_ = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-t") == 0) {
+      if (i+1 >= argc) break;
+      data.maxVertsPerBlock_  = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-s") == 0) {
+      data.isStructured_ = true;
     } else if (strcmp(argv[i],"-h") == 0) {
       printf("Usage: ./Example2 [OPTIONS]\n");
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
+      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
+      printf("  -t MAX_VERTS  Max # verts per block\n");
+      printf("  -s            This is a structured mesh\n");
       exit(0);
     }
-
-  Eikonal::Eikonal2D data(filename);
-  data.verbose_ = verbose;
 
   std::vector< std::vector <float> >
     results = Eikonal::solveEikonal2D(data);
 
+  printGraph(results);
+
+  return 0;
+}
+
+//this function depends on using the sphere examples in example_data
+void printGraph(std::vector< std::vector < float > > & results) {
   // find the analytical solution to each vertex and compare.
   std::vector< float > solution;
   solution.resize(Eikonal::mesh_->vertices.size());
@@ -118,6 +133,4 @@ int main(int argc, char* argv[]) {
   printf("  Converged to: %.4f\n",rmsError[rmsError.size() - 1]);
   printf("        |0    5    10    15    20    25    30    35\n");
   printf("                   Iteration\n");
-
-  return 0;
 }

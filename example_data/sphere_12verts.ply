@@ -1,0 +1,44 @@
+ply
+format ascii 1.0
+comment Generated PLY Sphere
+obj_info vtkPolyData points and polygons: vtk4.0
+element vertex 12
+property float x
+property float y
+property float z
+element face 21
+property list uchar int vertex_indices
+end_header
+54 54 73.58
+70.9568 54 63.79
+59.2399 70.1269 63.79
+40.2817 63.9669 63.79
+40.2817 44.0331 63.79
+59.2399 37.8731 63.79
+70.9568 54 44.21
+59.2399 70.1269 44.21
+40.2817 63.9669 44.21
+40.2817 44.0331 44.21
+59.2399 37.8731 44.21
+54 54 34.42
+3 0 1 2
+3 0 2 3
+3 0 3 4
+3 0 4 5
+3 0 5 1
+3 1 6 7
+3 1 7 2
+3 2 7 8
+3 2 8 3
+3 3 8 9
+3 3 9 4
+3 4 9 10
+3 4 10 5
+3 5 10 6
+3 5 6 1
+3 6 11 7
+3 7 11 8
+3 8 11 9
+3 9 11 10
+3 10 11 6
+3 6 11 7
