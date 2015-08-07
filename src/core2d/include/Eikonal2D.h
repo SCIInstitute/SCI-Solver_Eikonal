@@ -20,10 +20,10 @@ namespace Eikonal {
         stopDistance_(50000.f),
         isStructured_(false),
         speedType_(ONE),
-        squareLength_(1024),
-        squareWidth_(1024),
-        squareBlockLength_(8),
-        squareBlockWidth_(8)
+        squareLength_(16),
+        squareWidth_(16),
+        squareBlockLength_(1),
+        squareBlockWidth_(1)
         {}
       //2D data
       bool verbose_;
@@ -54,19 +54,23 @@ namespace Eikonal {
       clock_t starttime, endtime;
       starttime = clock ();
       mesh_ = TriMesh::read(data.filename_.c_str(), data.verbose_);
+	  if (!mesh_) exit(0);
       meshFIM2d FIMPtr;
       FIMPtr.SetSeedPoint(data.seedPointList_);
       FIMPtr.SetMesh(mesh_, data.speedType_);
       FIMPtr.SetStopDistance(data.stopDistance_);
-      if (data.isStructured_)
+      if (data.isStructured_) {
+		  data.maxBlocks_ = data.squareBlockLength_ *
+            data.squareBlockWidth_;
         FIMPtr.GraphPartition_Square(data.squareLength_,data.squareWidth_,
             data.squareBlockLength_,
             data.squareBlockWidth_,
             data.verbose_);
-      else
+
+	  } else {
         FIMPtr.GraphPartition_METIS2( data.maxBlocks_,
             data.maxVertsPerBlock_, data.verbose_);
-
+	  }
       FIMPtr.PartitionFaces(data.maxBlocks_);
       FIMPtr.InitializeLabels(data.maxBlocks_);
 

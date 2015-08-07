@@ -54,6 +54,22 @@ int main(int argc, char* argv[]) {
       if (i+1 >= argc) break;
       data.maxVertsPerBlock_  = atoi(argv[i+1]);
       i++;
+    } else if (strcmp(argv[i],"-l") == 0) {
+      if (i+1 >= argc) break;
+      data.squareLength_  = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-w") == 0) {
+      if (i+1 >= argc) break;
+      data.squareWidth_  = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-bl") == 0) {
+      if (i+1 >= argc) break;
+      data.squareBlockLength_  = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-bw") == 0) {
+      if (i+1 >= argc) break;
+      data.squareBlockWidth_  = atoi(argv[i+1]);
+      i++;
     } else if (strcmp(argv[i],"-s") == 0) {
       data.isStructured_ = true;
     } else if (strcmp(argv[i],"-h") == 0) {
@@ -63,8 +79,12 @@ int main(int argc, char* argv[]) {
       printf("  -i INPUT      Use this triangle mesh \n");
       //Number of blocks affects partitioning and convergence. 
       //Adjust accordingly.
-      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
-      printf("  -t MAX_VERTS  Max # verts per block\n");
+      printf("  -b  MAX_BLOCKS Max # of blocks to use\n");
+      printf("  -t  MAX_VERTS  Max # verts per block\n");
+      printf("  -l  SQ_LENGTH  The square length\n");
+      printf("  -w  SQ_WIDTH   The square width\n");
+      printf("  -bl BL_LENGTH  The block length\n");
+      printf("  -bw BL_WIDTH   The block width\n");
       printf("  -s            This is a structured mesh\n");
       exit(0);
     }
@@ -110,8 +130,8 @@ void printGraph(std::vector< std::vector < float > > & results) {
   float max_err = rmsError[0];
   float min_err = rmsError[rmsError.size() - 1];
   int max_log = -10, min_log = 10;
-  while (std::pow(10,max_log) < max_err) max_log++;
-  while (std::pow(10,min_log) > min_err) min_log--;
+  while (std::pow(static_cast<float>(10),max_log) < max_err) max_log++;
+  while (std::pow(static_cast<float>(10),min_log) > min_err) min_log--;
   // print the error graph
   printf("\n\nlog(Err)|\n");
   bool printTick = true;
@@ -122,8 +142,8 @@ void printGraph(std::vector< std::vector < float > > & results) {
       printf("        |");
     }
     for (size_t j = 0; j < results.size(); j++) {
-      if (rmsError[j] > std::pow(10,i) &&
-          rmsError[j] < std::pow(10,i+1))
+      if (rmsError[j] > std::pow(static_cast<float>(10),i) &&
+          rmsError[j] < std::pow(static_cast<float>(10),i+1))
         printf("*");
       else
         printf(" ");
