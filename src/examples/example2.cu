@@ -31,9 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
-#include <time.h>
-#include "TriMesh.h"
-#include "meshFIM2d.h"
+#include <Eikonal2D.h>
 
 /************************************************************************/
 /* main                                                           */
@@ -55,46 +53,18 @@ int main(int argc, char* argv[]) {
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
-      printf("                [default ../example_data/sphere_4196verts.ply]\n");
       exit(0);
     }
-  if (filename.empty())
-    filename = "../example_data/sphere_4196verts.ply";
-  clock_t starttime, endtime;
 
-  TriMesh *themesh = TriMesh::read(filename.c_str(), verbose);
+  Eikonal::Eikonal2D data(filename);
+  data.verbose_ = verbose;
 
-  meshFIM2d* FIMPtr = new meshFIM2d;
+  std::vector< std::vector <float> >
+    results = Eikonal::solveEikonal2D(data);
 
-  starttime = clock ();
-
-  std::vector<int> seedPointList(1,0/*,currentVert*/);
-
-  int numBlock = 10003;
-  int maxNumBlockVerts = 64;
-  float stopDist = 50000.f;
-
-  FIMPtr->SetSeedPoint(seedPointList);
-  FIMPtr->SetMesh(themesh);
-  FIMPtr->SetStopDistance(stopDist);
-  FIMPtr->GraphPartition_METIS2( numBlock, maxNumBlockVerts, verbose);
-
-  FIMPtr->PartitionFaces(numBlock);
-  FIMPtr->InitializeLabels(numBlock);
-
-  std::vector< std::vector< float > > results =
-    FIMPtr->GenerateData(numBlock, verbose);
-
-  endtime = clock();
-  double duration = (double)(endtime - starttime) * 1000/ CLOCKS_PER_SEC;
-
-  if (verbose)
-    printf("Computing time : %.10lf ms\n",duration);
-
-  delete FIMPtr;
   // find the analytical solution to each vertex and compare.
   std::vector< float > solution;
-  solution.resize(themesh->vertices.size());
+  solution.resize(Eikonal::mesh_->vertices.size());
   float radius = 19.58f; //we know the radius of these spheres.
   std::vector<float> center;
   //we know the center of these spheres.
@@ -102,16 +72,15 @@ int main(int argc, char* argv[]) {
   center.push_back(54.f);
   center.push_back(54.f);
   for (size_t i = 0; i < solution.size(); i++) {
-    float xDot = themesh->vertices[i][0] - center[0];
-    float yDot = themesh->vertices[i][1] - center[1];
-    float zDot = themesh->vertices[i][2] - center[2];
+    float xDot = Eikonal::mesh_->vertices[i][0] - center[0];
+    float yDot = Eikonal::mesh_->vertices[i][1] - center[1];
+    float zDot = Eikonal::mesh_->vertices[i][2] - center[2];
     solution[i] = radius * std::acos( zDot /
         std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
   }
   // now calculate the RMS error for each iteration
   std::vector<float> rmsError;
   rmsError.resize(results.size());
-  float max_err = 0.;
   for (size_t i = 0; i < results.size(); i++) {
     float sum = 0.f;
     for (size_t j = 0; j < solution.size(); j++) {
@@ -119,35 +88,35 @@ int main(int argc, char* argv[]) {
       sum +=  err * err;
     }
     rmsError[i] = std::sqrt(sum / static_cast<float>(solution.size()));
-    max_err = std::max(rmsError[i], max_err);
   }
-  for (size_t j = 0; j < results.size(); j++)
-    std::cout << std::log10(rmsError[j]) << ", " << rmsError[j] << std::endl;
+  //determine the log range
+  float max_err = rmsError[0];
+  float min_err = rmsError[rmsError.size() - 1];
+  int max_log = -10, min_log = 10;
+  while (std::pow(10,max_log) < max_err) max_log++;
+  while (std::pow(10,min_log) > min_err) min_log--;
   // print the error graph
-  printf("\n\nlog(ErrRMS)|\n");
-  int tick = 14;
-  for(size_t i = 0 ; i <= 14; i++) {
-    if (i % 2 == 0) {
-      printf("     1x10^%d|",tick / 2);
-      tick --;
+  printf("\n\nlog(Err)|\n");
+  bool printTick = true;
+  for(int i = max_log ; i >= min_log; i--) {
+    if (printTick) {
+      printf("   10^%2d|",i);
+    } else {
+      printf("        |");
     }
-    else
-      printf("           |");
     for (size_t j = 0; j < results.size(); j++) {
-      float thisTick = static_cast<float>(tick)*0.5f-.5f;
-      float nextTick = static_cast<float>(tick-1)*0.5f-.5f;
-      float logErr = std::log10(rmsError[j]);
-      if (logErr < thisTick &&
-          logErr > nextTick
-         )
+      if (rmsError[j] > std::pow(10,i) &&
+          rmsError[j] < std::pow(10,i+1))
         printf("*");
       else
         printf(" ");
     }
     printf("\n");
+    printTick = !printTick;
   }
-  printf("-----------|------------------------------------------\n");
-  printf("           |0    5    10    15    20    25    30    35\n");
+  printf("--------|------------------------------------------");
+  printf("  Converged to: %.4f\n",rmsError[rmsError.size() - 1]);
+  printf("        |0    5    10    15    20    25    30    35\n");
   printf("                   Iteration\n");
 
   return 0;

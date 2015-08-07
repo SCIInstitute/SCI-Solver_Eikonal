@@ -254,7 +254,7 @@ void meshFIM2d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
   unlink("tmp.mesh");
 }
 
-void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth)
+void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
@@ -298,7 +298,8 @@ void meshFIM2d::GraphPartition_Square(int squareLength,int squareWidth, int bloc
   {
     m_maxNumVert = MAX(m_maxNumVert, m_BlockSizes[i]);
   }
-  printf("final number of blocks: %d\n", numBlock);
+  if (verbose)
+    printf("final number of blocks: %d\n", numBlock);
 }
 
 void meshFIM2d::PartitionFaces(int numBlock)
