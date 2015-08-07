@@ -43,9 +43,10 @@ class meshFIM2d {
       }
     }
 
-    void SetMesh(TriMesh* mesh)
+    void SetMesh(TriMesh* mesh, int speed_type = ONE)
     {
       m_meshPtr = mesh;
+      m_meshPtr->speed_type_ = speed_type;
 
       orient(m_meshPtr);//  Manasi
 
@@ -60,12 +61,12 @@ class meshFIM2d {
       m_meshPtr->need_tstrips();//  Manasi
 
       // initialize mesh attributes: vertT, Face.T[], Face.speedInv
-      if (/*m_meshPtr->*/SPEEDTYPE == CURVATURE)
+      if (/*m_meshPtr->*/m_meshPtr->speed_type_ == CURVATURE)
       {
         m_meshPtr->need_curvatures();
 
       }
-      if (/*m_meshPtr->*/SPEEDTYPE == NOISE)
+      if (/*m_meshPtr->*/m_meshPtr->speed_type_ == NOISE)
       {
         m_meshPtr->need_noise();
 

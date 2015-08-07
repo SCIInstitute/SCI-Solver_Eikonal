@@ -72,10 +72,11 @@ int main(int argc, char* argv[]) {
 
   int numBlock = 10003;
   int maxNumBlockVerts = 64;
+  float stopDist = 50000.f;
 
   FIMPtr->SetSeedPoint(seedPointList);
   FIMPtr->SetMesh(themesh);
-  FIMPtr->SetStopDistance(50000.0);
+  FIMPtr->SetStopDistance(stopDist);
   FIMPtr->GraphPartition_METIS2( numBlock, maxNumBlockVerts, verbose);
 
   FIMPtr->PartitionFaces(numBlock);
@@ -91,5 +92,40 @@ int main(int argc, char* argv[]) {
     printf("Computing time : %.10lf ms\n",duration);
 
   delete FIMPtr;
+  // find the analytical solution to each vertex and compare.
+  std::vector< float > solution;
+  solution.resize(themesh->vertices.size());
+  float radius = 19.58f; //we know the radius of these spheres.
+  std::vector<float> center;
+  //we know the center of these spheres.
+  center.push_back(54.f);
+  center.push_back(54.f);
+  center.push_back(54.f);
+  for (size_t i = 0; i < solution.size(); i++) {
+    float xDot = themesh->vertices[i][0] - center[0];
+    float yDot = themesh->vertices[i][1] - center[1];
+    float zDot = themesh->vertices[i][2] - center[2];
+    solution[i] = radius * std::acos( zDot /
+        std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
+  }
+  // now calculate the RMS error for each iteration
+  std::vector<float> rmsError;
+  rmsError.resize(results.size());
+  size_t badVerts = 0;
+  for (size_t i = 0; i < results.size(); i++) {
+    float sum = 0.f;
+    for (size_t j = 0; j < solution.size(); j++) {
+      float err = std::abs(solution[j] - results[i][j]);
+      if (i == results.size() - 1 && err > stopDist) {
+        badVerts++;
+        err = 0.f;
+      }
+      sum +=  err * err;
+    }
+    rmsError[i] = std::sqrt(sum / static_cast<float>(solution.size()));
+    std::cout << rmsError[i] << std::endl;
+
+  }
+  std::cout << "# Bad vertex values: " << badVerts << std::endl;
   return 0;
 }

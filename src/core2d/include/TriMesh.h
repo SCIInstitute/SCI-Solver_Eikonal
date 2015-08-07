@@ -12,7 +12,6 @@
 #define  ONE       1
 #define  CURVATURE 2
 #define  NOISE     3
-#define  SPEEDTYPE ONE
 
 #include <cstdio>
 #include "Vec.h"
@@ -104,6 +103,9 @@ class TriMesh {
     vector<vec> cornerareas;
     vector<float> pointareas;
     vector<float> vertT;
+
+    //the type of speed on faces
+    int speed_type_;
 
     // Bounding structures
     BBox bbox;
@@ -229,7 +231,7 @@ class TriMesh {
 
       if (IsNonObtuse(v,f1))
       {
-        switch (SPEEDTYPE)
+        switch (this->speed_type_)
         {
 
 
@@ -269,7 +271,7 @@ class TriMesh {
 
       if (IsNonObtuse(v,f2))
       {
-        switch (SPEEDTYPE)
+        switch (this->speed_type_)
         {
 
 
@@ -408,7 +410,7 @@ class TriMesh {
     static int dprintf(const char *format, ...);
 
     // Constructor
-    TriMesh() : grid_width(-1), grid_height(-1), flag_curr(0)
+    TriMesh() : grid_width(-1), grid_height(-1), flag_curr(0), speed_type_(ONE)
   {}
 };
 
