@@ -60,8 +60,9 @@ namespace Eikonal {
       FIMPtr.SetMesh(mesh_, data.speedType_);
       FIMPtr.SetStopDistance(data.stopDistance_);
       if (data.isStructured_) {
-		  data.maxBlocks_ = data.squareBlockLength_ *
-            data.squareBlockWidth_;
+		  int numBlockLength = (data.squareLength_ / data.squareBlockLength_);
+		  int numBlockWidth  = (data.squareWidth_ / data.squareBlockWidth_);
+		  data.maxBlocks_ = numBlockLength * numBlockWidth;
         FIMPtr.GraphPartition_Square(data.squareLength_,data.squareWidth_,
             data.squareBlockLength_,
             data.squareBlockWidth_,
