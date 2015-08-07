@@ -105,25 +105,32 @@ A basic usage of the library links to the <code>libEikonal2D_CORE</code> or  <co
 includes the headers needed, which are usually no more than:
 
 ```c++
-#include "meshFIM.h"
+#include <Eikonal2D.h>
+// OR
+#include <Eikonal3D.h>
 ```
-TODO?:
 
-Then a program would setup the FEM parameters using the 
-<code>AMG_Config</code> object and call <code>setup_solver()</code> to generate
-the answer matrices.
+Then a program would setup the Eikonal parameters using the 
+<code>Eikonal::Eikonal2D -OR- Eikonal::Eikonal3D</code> object and call 
+<code>Eikonal::solveEikonal2D() -OR- Eikonal::solveEikonal3D()</code> to generate
+the array of vertex values per iteration.
 
-You will need to make sure your CMake/Makfile/Build setup knows where to point for the library and header files. See the examples and their CMakeLists.txt.
+You will need to make sure your CMake/Makfile/Build setup knows where 
+to point for the library and header files. See the examples and their CMakeLists.txt.
 
 Testing
 ==============
-The repo comes with a set of regression tests to see if recent changes break expected results. To build the tests, you will need to set <code>BUILD_TESTING</code> to "ON" in either <code>ccmake</code> or when calling CMake:
+The repo comes with a set of regression tests to see if recent changes break 
+expected results. To build the tests, you will need to set 
+<code>BUILD_TESTING</code> to "ON" in either <
+code>ccmake</code> or when calling CMake:
 
 ```c++
 cmake -DBUILD_TESTING=ON ../src
 ```
 <h4>Windows</h4>
-The gtest library included in the repo needs to be built with forced shared libraries on Windows, so use the following:
+The gtest library included in the repo needs to be built with 
+forced shared libraries on Windows, so use the following:
 
 ```c++
 cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
