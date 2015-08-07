@@ -111,21 +111,44 @@ int main(int argc, char* argv[]) {
   // now calculate the RMS error for each iteration
   std::vector<float> rmsError;
   rmsError.resize(results.size());
-  size_t badVerts = 0;
+  float max_err = 0.;
   for (size_t i = 0; i < results.size(); i++) {
     float sum = 0.f;
     for (size_t j = 0; j < solution.size(); j++) {
       float err = std::abs(solution[j] - results[i][j]);
-      if (i == results.size() - 1 && err > stopDist) {
-        badVerts++;
-        err = 0.f;
-      }
       sum +=  err * err;
     }
     rmsError[i] = std::sqrt(sum / static_cast<float>(solution.size()));
-    std::cout << rmsError[i] << std::endl;
-
+    max_err = std::max(rmsError[i], max_err);
   }
-  std::cout << "# Bad vertex values: " << badVerts << std::endl;
+  for (size_t j = 0; j < results.size(); j++)
+    std::cout << std::log10(rmsError[j]) << ", " << rmsError[j] << std::endl;
+  // print the error graph
+  printf("\n\nlog(ErrRMS)|\n");
+  int tick = 14;
+  for(size_t i = 0 ; i <= 14; i++) {
+    if (i % 2 == 0) {
+      printf("     1x10^%d|",tick / 2);
+      tick --;
+    }
+    else
+      printf("           |");
+    for (size_t j = 0; j < results.size(); j++) {
+      float thisTick = static_cast<float>(tick)*0.5f-.5f;
+      float nextTick = static_cast<float>(tick-1)*0.5f-.5f;
+      float logErr = std::log10(rmsError[j]);
+      if (logErr < thisTick &&
+          logErr > nextTick
+         )
+        printf("*");
+      else
+        printf(" ");
+    }
+    printf("\n");
+  }
+  printf("-----------|------------------------------------------\n");
+  printf("           |0    5    10    15    20    25    30    35\n");
+  printf("                   Iteration\n");
+
   return 0;
 }
