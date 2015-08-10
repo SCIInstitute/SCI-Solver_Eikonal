@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "Eikonal2D.h"
-TEST(Basic2D, NonMaxUnstructured) {
+TEST(Converge2D, Unstructured) {
   Eikonal::Eikonal2D data;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
   data.maxBlocks_ = 1000;
@@ -12,7 +12,7 @@ TEST(Basic2D, NonMaxUnstructured) {
     }
   }
 }
-TEST(Basic2D, NonMaxStructured) {
+TEST(Converge2D, Structured) {
   Eikonal::Eikonal2D data;
   data.filename_ = TEST_DATA_DIR + std::string("SquareMesh_size16.ply");
   data.squareLength_ = 16;
