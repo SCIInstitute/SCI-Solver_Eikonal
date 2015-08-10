@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Eikonal2D.h>
+#include <sstream>
 
 void printGraph(std::vector< std::vector < float > > & results);
 
@@ -38,7 +39,7 @@ void printGraph(std::vector< std::vector < float > > & results);
 /* main                                                       */
 /**************************************************************/
 int main(int argc, char* argv[]) {
-  Eikonal::Eikonal2D data; 
+  Eikonal::Eikonal2D data;
   for (int i = 1; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       data.verbose_ = true;
@@ -77,7 +78,7 @@ int main(int argc, char* argv[]) {
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
-      //Number of blocks affects partitioning and convergence. 
+      //Number of blocks affects partitioning and convergence.
       //Adjust accordingly.
       printf("  -b  MAX_BLOCKS Max # of blocks to use\n");
       printf("  -t  MAX_VERTS  Max # verts per block\n");
@@ -91,6 +92,8 @@ int main(int argc, char* argv[]) {
 
   std::vector< std::vector <float> >
     results = Eikonal::solveEikonal2D(data);
+
+  out.close();
 
   printGraph(results);
 
@@ -153,6 +156,6 @@ void printGraph(std::vector< std::vector < float > > & results) {
   }
   printf("--------|------------------------------------------");
   printf("  Converged to: %.4f\n",rmsError[rmsError.size() - 1]);
-  printf("        |0    5    10    15    20    25    30    35\n");
+  printf("        |1   5    10   15   20   25   30   35\n");
   printf("                   Iteration\n");
 }

@@ -1,5 +1,6 @@
 SCI-Solver_Eikonal
 =====================
+<img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20">
 
 **Currently in pre-alpha stage, estimated stable release: Oct 2015**
 
@@ -91,10 +92,11 @@ You will find the example binaries built in the <code>build/examples</code> dire
 Run the examples in the build directory:
 
 ```c++
-examples/Example1
-examples/Example2
+examples/Example1 
+examples/Example2  
 ...
 ```
+Each example has a <code>-h</code> flag that prints options for that example. <br/>
 
 Follow the example source code in <code>src/examples</code> to learn how to use the library.
 
