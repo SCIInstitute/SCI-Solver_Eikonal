@@ -20,7 +20,7 @@ Ross T. Whitaker(*a*) <br/>
 This library solves for the Eikional values on vertices located on a triangular mesh. Several mesh formats
 are supported, and are read by the <a href="http://graphics.stanford.edu/software/trimesh/">TriMesh Library</a>. 
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
-meshes. Otherwise, limited structured meshes are supported. <a href="https://code.google.com/p/googletest/">
+meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
 
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
