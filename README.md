@@ -18,8 +18,8 @@ Robert M. Kirby(*a*) <br/>
 Ross T. Whitaker(*a*) <br/>
 
 This library solves for the Eikional values on vertices located on a triangular mesh. Several mesh formats
-are supported, and are read by the <a href="http://graphics.stanford.edu/software/trimesh/">TriMesh Library</a>.
-The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS</a> is used to partition unstructured 
+are supported, and are read by the <a href="http://graphics.stanford.edu/software/trimesh/">TriMesh Library</a>. 
+The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. Otherwise, limited structured meshes are supported. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
 
@@ -70,18 +70,17 @@ cmake -DCUDA_TOOLKIT_ROOT_DIR="~/NVIDIA/CUDA-7.0" ../src
 ```
 (Assuming this is the location).
 
-**Note:** If you have compile errors such as <code>undefined reference: atomicAdd</code>, it is likely you need to set your compute capability manually. CMake outputs whether compute capability was determined automatically, or if you need to set it manually. The default (and known working) minimum compute capability is 2.0.
+**Note:** If you have compile errors such as <code>undefined reference: atomicAdd</code>, it is likely you need to set your compute capability manually. CMake outputs whether compute capability was determined automatically, or if you need to set it manually. The default minimum compute capability is 2.0.
 
 ```c++
 cmake -DCUDA_COMPUTE_CAPABILITY=20 ../src
 make
 ```
 
-
 Running Examples
 ==============
 
-You will need to enable examples in your build to compile and run them
+You will need to enable examples in your build to compile and run them.
 
 ```c++
 cmake -DBUILD_EXAMPLES=ON ../src
@@ -104,8 +103,8 @@ Follow the example source code in <code>src/examples</code> to learn how to use 
 Using the Library
 ==============
 
-A basic usage of the library links to the <code>libEikonal2D_CORE</code> or  <code>libEikonal3D_CORE</code> library during build and 
-includes the headers needed, which are usually no more than:
+A basic usage of the library links to the <code>Eikonal-2D_CORE</code> or  <code>Eikonal-3D_CORE</code> 
+library during build and includes the headers needed, which are usually no more than:
 
 ```c++
 #include <Eikonal2D.h>
@@ -125,8 +124,7 @@ Testing
 ==============
 The repo comes with a set of regression tests to see if recent changes break 
 expected results. To build the tests, you will need to set 
-<code>BUILD_TESTING</code> to "ON" in either <
-code>ccmake</code> or when calling CMake:
+<code>BUILD_TESTING</code> to "ON" in either <code>ccmake</code> or when calling CMake:
 
 ```c++
 cmake -DBUILD_TESTING=ON ../src
