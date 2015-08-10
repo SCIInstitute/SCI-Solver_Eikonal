@@ -21,4 +21,4 @@ ExternalProject_Add_Step( gtest copy_deps
 )
 include_directories("${GTEST_INSTALL_DIR}/include")
 SET(GTEST_LIBRARY "${GTEST_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${GTEST_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}")
-add_subdirectory(cli)
+add_subdirectory(2d)

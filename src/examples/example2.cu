@@ -93,8 +93,6 @@ int main(int argc, char* argv[]) {
   std::vector< std::vector <float> >
     results = Eikonal::solveEikonal2D(data);
 
-  out.close();
-
   printGraph(results);
 
   return 0;

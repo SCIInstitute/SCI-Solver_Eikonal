@@ -54,7 +54,7 @@ namespace Eikonal {
       clock_t starttime, endtime;
       starttime = clock ();
       mesh_ = TriMesh::read(data.filename_.c_str(), data.verbose_);
-	  if (!mesh_) exit(0);
+	  if (!mesh_) exit(1);
       meshFIM2d FIMPtr;
       FIMPtr.SetSeedPoint(data.seedPointList_);
       FIMPtr.SetMesh(mesh_, data.speedType_);
