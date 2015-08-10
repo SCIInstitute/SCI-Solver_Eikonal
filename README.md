@@ -10,7 +10,7 @@ University of Utah, Salt Lake City, USA. The theory behind this code is publishe
 Eikonal Equation on Triangulated Surfaces</a>**
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20">
 
-**AUTHORS:** <br/>
+**AUTHORS:**
 <br/>Zhisong Fu(*a*) <br/>
 Won-Ki Jeong(*b*) <br/>
 Yongsheng Pan(*a*) <br/>
@@ -26,7 +26,7 @@ Google Test</a> is used for testing.
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
 Solving the Eikonal Equation on Tetrahedral Domains</a>**
 
-**AUTHORS:** <br/>
+**AUTHORS:**
 Zhisong Fu(a,b) <br/>
 Robert M. Kirby(a,b) <br/>
 Ross T. Whitaker(a,b) <br/>
