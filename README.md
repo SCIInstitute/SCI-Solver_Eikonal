@@ -3,30 +3,33 @@ SCI-Solver_Eikonal
 
 SCI-Solver_Eikonal is a C++/CUDA library written to solve the Eikonal equation on a 3D tet meshes and 2D triangular meshes. It uses the fast iterative method (FIM) to solve efficiently, and uses GPU hardware.
 
-**"A Fast Iterative Method for Solving the Eikonal Equation on Triangulated Surfaces"**
+The code was written by Zhisong Fu at the Scientific Computing and Imaging Institute, 
+University of Utah, Salt Lake City, USA. The theory behind this code is published in the papers: 
+
+**<a href ="http://epubs.siam.org/doi/abs/10.1137/100788951">A Fast Iterative Method for Solving the 
+Eikonal Equation on Triangulated Surfaces</a>**
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20">
 
-**AUTHORS:** Zhisong Fu(*a*), Won-Ki Jeong(*b*), Yongsheng Pan(*a*), Robert M. Kirby(*a*), Ross T. Whitaker(*a*)
+**AUTHORS:** <br/>
+<br/>Zhisong Fu(*a*) <br/>
+Won-Ki Jeong(*b*) <br/>
+Yongsheng Pan(*a*) <br/>
+Robert M. Kirby(*a*) <br/>
+Ross T. Whitaker(*a*) <br/>
 
-  - Scientific Computing and Imaging Institute, University of Utah, Salt Lake City, USA
+This library solves for the Eikional values on vertices located on a triangular mesh. Several mesh formats
+are supported, and are read by the <a href="http://graphics.stanford.edu/software/trimesh/">TriMesh Library</a>.
+The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS</a> is used to partition unstructured 
+meshes. Otherwise, limited structured meshes are supported. <a href="https://code.google.com/p/googletest/">
+Google Test</a> is used for testing.
 
-  - Electrical and Computer Engineering, UNIST (Ulsan National Institute of Science and Technology), Ulju-gun Ulsan, Korea
+**<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
+Solving the Eikonal Equation on Tetrahedral Domains</a>**
 
-**ABSTRACT:**
-This paper presents an efficient, fine-grained parallel algorithm for solving the Eikonal equation on triangular meshes. The Eikonal equation, and the broader class of Hamilton–Jacobi equations to which it belongs, have a wide range of applications from geometric optics and seismology to biological modeling and analysis of geometry and images. The ability to solve such equations accurately and efficiently provides new capabilities for exploring and visualizing parameter spaces and for solving inverse problems that rely on such equations in the forward model. Efficient solvers on state-of-the-art, parallel architectures require new algorithms that are not, in many cases, optimal, but are better suited to synchronous updates of the solution. In previous work [W. K. Jeong and R. T. Whitaker, SIAM J. Sci. Comput., 30 (2008), pp. 2512–2534], the authors proposed the fast iterative method (FIM) to efficiently solve the Eikonal equation on regular grids. In this paper we extend the fast iterative method to solve Eikonal equations efficiently on triangulated domains on the CPU and on parallel architectures, including graphics processors. We propose a new local update scheme that provides solutions of first-order accuracy for both architectures. We also propose a novel triangle-based update scheme and its corresponding data structure for efficient irregular data mapping to parallel single-instruction multiple-data (SIMD) processors. We provide detailed descriptions of the implementations on a single CPU, a multicore CPU with shared memory, and SIMD architectures with comparative results against state-of-the-art Eikonal solvers.
-
-The code was written by Zhisong Fu. The theory behind this code is published in the papers: 
-
-**"A Fast Iterative Method for Solving the Eikonal Equation on Tetrahedral Domains"**
-
-**AUTHORS:** Zhisong Fu(a,b), Robert M. Kirby(a,b), Ross T. Whitaker(a,b)
-
-  - School of Computing, University of Utah, Salt Lake City, UT, USA
-
-  - Scientific Computing and Imaging Institute, University of Utah, Salt Lake City, USA
-
-**ABSTRACT:**
-Generating numerical solutions to the eikonal equation and its many variations has a broad range of applications in both the natural and computational sciences. Efficient solvers on cutting-edge, parallel architectures require new algorithms that may not be theoretically optimal, but that are designed to allow asynchronous solution updates and have limited memory access patterns. This paper presents a parallel algorithm for solving the eikonal equation on fully unstructured tetrahedral meshes. The method is appropriate for the type of fine-grained parallelism found on modern massively-SIMD architectures such as graphics processors and takes into account the particular constraints and capabilities of these computing platforms. This work builds on previous work for solving these equations on triangle meshes; in this paper we adapt and extend previous 2D strategies to accommodate three-dimensional, unstructured, tetrahedralized domains. These new developments include a local update strategy with data compaction for tetrahedral meshes that provides solutions on both serial and parallel architectures, with a generalization to inhomogeneous, anisotropic speed functions. We also propose two new update schemes, specialized to mitigate the natural data increase observed when moving to three dimensions, and the data structures necessary for efficiently mapping data to parallel SIMD processors in a way that maintains computational density. Finally, we present descriptions of the implementations for a single CPU, as well as multicore CPUs with shared memory and SIMD architectures, with comparative results against state-of-the-art eikonal solvers.
+**AUTHORS:** <br/>
+Zhisong Fu(a,b) <br/>
+Robert M. Kirby(a,b) <br/>
+Ross T. Whitaker(a,b) <br/>
 
 Requirements
 ==============
