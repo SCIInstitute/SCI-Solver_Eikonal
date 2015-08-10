@@ -7,7 +7,7 @@ TEST(Improve2D, DecreaseRMSError) {
   std::vector<float> rmsError;
   //lowest granularity
   data.filename_ = TEST_DATA_DIR + std::string("sphere_12verts.ply");
-  data.maxBlocks_ = 100;
+  data.maxBlocks_ = 2;
   EXPECT_NO_THROW((results[0] = Eikonal::solveEikonal2D(data)));
   // find the analytical solution to each vertex and compare.
   std::vector< float > solution;
@@ -34,7 +34,7 @@ TEST(Improve2D, DecreaseRMSError) {
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //mid granularity
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
-  data.maxBlocks_ = 1000;
+  data.maxBlocks_ = 11;
   EXPECT_NO_THROW((results[1] = Eikonal::solveEikonal2D(data)));
   // find the analytical solution to each vertex and compare.
   solution.resize(Eikonal::mesh_->vertices.size());
@@ -74,7 +74,7 @@ TEST(Improve2D, DecreaseRMSError) {
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //very high granularity
   data.filename_ = TEST_DATA_DIR + std::string("sphere_7418verts.ply");
-  data.maxBlocks_ = 217;
+  data.maxBlocks_ = 250;
   EXPECT_NO_THROW((results[3] = Eikonal::solveEikonal2D(data)));
   // find the analytical solution to each vertex and compare.
   solution.resize(Eikonal::mesh_->vertices.size());

@@ -3,7 +3,7 @@
 TEST(Basic2D, NonMaxUnstructured) {
   Eikonal::Eikonal2D data;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
-  data.maxBlocks_ = 1000;
+  data.maxBlocks_ = 11;
   data.stopDistance_ = 100.f;
   std::vector< std::vector <float> > results;
   EXPECT_NO_THROW((results = Eikonal::solveEikonal2D(data)));
