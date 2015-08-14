@@ -135,6 +135,7 @@ the array of vertex values per iteration.
       int squareBlockWidth_;            //if structued, CUDA block width      [Default 1]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
   };
+```
 <br/>
 You will need to make sure your CMake/Makfile/Build setup knows where 
 to point for the library and header files. See the examples and their CMakeLists.txt.<br/><br/>
