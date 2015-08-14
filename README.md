@@ -117,8 +117,31 @@ Then a program would setup the Eikonal parameters using the
 <code>Eikonal::solveEikonal2D() -OR- Eikonal::solveEikonal3D()</code> to generate
 the array of vertex values per iteration.
 
+<h3>Eikonal 2D Options</h3>
+
+```C++
+  class Eikonal2D {
+      bool verbose_;                    //option to set for runtime verbosity [Default false]
+      std::string filename_;            //the input triangle mesh filename    [Default ../src/test/test_data]
+      std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
+      int maxBlocks_;                   //the max # of blocks (patches)
+                                        //   on the convergence queue         [Default 10003]
+      int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
+      float stopDistance_;              //Distance to stop calculating        [Default 50000.0]
+      bool isStructured_;               //Whether the mesh is structured      [Default false]
+      int speedType_;                   //ONE (1), CURVATURE (2), NOISE (3)   [Default ONE]
+      int squareLength_, squareWidth_;  //if structured, the square size      [Default 16, 16]
+      int squareBlockLength_;           //if structued, CUDA block length     [Default 1]
+      int squareBlockWidth_;            //if structued, CUDA block width      [Default 1]
+      int maxIterations_;               //when to stop iterating if fail      [Default 1000]
+  };
+<br/>
 You will need to make sure your CMake/Makfile/Build setup knows where 
-to point for the library and header files. See the examples and their CMakeLists.txt.
+to point for the library and header files. See the examples and their CMakeLists.txt.<br/><br/>
+
+**NOTE** The maxBlocks_ parameter for both libraries often needs to be tuned per mesh. If the library fails
+to converge all vertices (reaches the max iterations), try a different number for this parameter. Various 
+possiblities per mesh ranging from 2-20,000 may improve error once a good range is determined.<br/>
 
 Testing
 ==============
