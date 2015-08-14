@@ -396,7 +396,8 @@ void meshFIM2d::PartitionFaces(int numBlock)
   }
 }
 
-std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, bool verbose)
+std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, 
+	int maxIterations, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   int numFaces=m_meshPtr->faces.size();
@@ -405,28 +406,28 @@ std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, bool ver
     exit(1);
   }
 
-  index       *d_ActiveList= 0;
+  index      *d_ActiveList= 0;
   int        *d_con;
-  int*   d_con_forComputaion;
+  int        *d_con_forComputaion;
   int        *d_blockCon;
-  float       *d_triMem;
+  float      *d_triMem;
   float      *d_edgeMem0;
   float      *d_edgeMem1;
   float      *d_edgeMem2;
-  float*      d_speed;
+  float      *d_speed;
   float      *d_triMemOut;
-  int         *d_vertMem;
-  int         *d_BlockSizes;
-  index       *h_ActiveList= 0;    //list of active blocks
-  int         *h_BlockLabel = 0;   //block active or not
-  float       *h_triMem;
+  int        *d_vertMem;
+  int        *d_BlockSizes;
+  index      *h_ActiveList= 0;    //list of active blocks
+  int        *h_BlockLabel = 0;   //block active or not
+  float      *h_triMem;
   float      *h_edgeMem0;
   float      *h_edgeMem1;
   float      *h_edgeMem2;
-  float*      h_speed;
-  int         *h_vertMem;
-  int         *h_blockCon;
-  int         *h_BlockSizes;
+  float      *h_speed;
+  int        *h_vertMem;
+  int        *h_blockCon;
+  int        *h_BlockSizes;
   /////////////////////////////malloc cpu memories///////////////////////////
   h_BlockLabel = (int*) malloc(sizeof(int) * numBlock);
 
@@ -761,6 +762,7 @@ std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, bool ver
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
 
     nTotalIter++;
+	if (nTotalIter > maxIterations) break;
 
     totalIterationNumber += numActive;
     if (verbose ) {

@@ -13,4 +13,4 @@ TARGET_LINK_LIBRARIES(Example2 Eikonal-2D_CORE)
 
 add_custom_command(TARGET Example1 PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                   ${CMAKE_SOURCE_DIR}/../example_data ${CMAKE_BINARY_DIR}/example_data)
+                   ${CMAKE_SOURCE_DIR}/test/test_data ${CMAKE_BINARY_DIR}/example_data)

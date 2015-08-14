@@ -122,7 +122,8 @@ the array of vertex values per iteration.
 ```C++
   class Eikonal2D {
       bool verbose_;                    //option to set for runtime verbosity [Default false]
-      std::string filename_;            //the input triangle mesh filename    [Default ../src/test/test_data]
+      std::string filename_;            //the input triangle mesh filename    [Default ../src/test/test_data/sphere_266verts.ply
+]
       std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
       int maxBlocks_;                   //the max # of blocks (patches)
                                         //   on the convergence queue         [Default 10003]

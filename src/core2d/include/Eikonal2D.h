@@ -10,7 +10,7 @@ namespace Eikonal {
   /** The class that represents all of the available options for Eikonal2D */
   class Eikonal2D {
     public:
-      Eikonal2D(std::string fname = "../example_data/sphere_602verts.ply",
+      Eikonal2D(std::string fname = "../src/test/test_data/sphere_266verts.ply",
           bool verbose = false) :
         verbose_(verbose),
         filename_(fname),
@@ -23,7 +23,8 @@ namespace Eikonal {
         squareLength_(16),
         squareWidth_(16),
         squareBlockLength_(1),
-        squareBlockWidth_(1)
+        squareBlockWidth_(1),
+		maxIterations_(1000)
         {}
       //2D data
       bool verbose_;
@@ -36,6 +37,7 @@ namespace Eikonal {
       int speedType_; // ONE (1), CURVATURE (2), NOISE (3)
       int squareLength_, squareWidth_;
       int squareBlockLength_, squareBlockWidth_;
+	  int maxIterations_;
   };
 
   //The static pointer to the mesh 
@@ -76,7 +78,7 @@ namespace Eikonal {
       FIMPtr.InitializeLabels(data.maxBlocks_);
 
       std::vector< std::vector< float > > results =
-        FIMPtr.GenerateData(data.maxBlocks_, data.verbose_);
+		  FIMPtr.GenerateData(data.maxBlocks_, data.maxIterations_, data.verbose_);
       endtime = clock();
       double duration = (double)(endtime - starttime) * 1000/ CLOCKS_PER_SEC;
 
