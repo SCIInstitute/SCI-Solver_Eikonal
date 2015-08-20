@@ -138,7 +138,7 @@ ENDIF()
 #END CMAKE SETTING CUDA_NVCC_FLAGS
 ###################
 # Core / Examples
-add_subdirectory(core)
+add_subdirectory(core3d)
 add_subdirectory(core2d)
 
 if (${BUILD_EXAMPLES})

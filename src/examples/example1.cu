@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include "meshFIM.h"
+#include "meshFIM3d.h"
 #include <math.h>
 #include "tetgen.h"
 #include "tetmesh.h"
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   themesh.need_adjacenttets();
   themesh.need_tet_virtual_tets();
 
-  meshFIM* FIMPtr = new meshFIM;
+  meshFIM3d* FIMPtr = new meshFIM3d;
 
   vector<int> seedPointList(1,0/*133152*//*20181*//*2184*/);//20181 for unstruc_s5
   //seedPointList.push_back(10);

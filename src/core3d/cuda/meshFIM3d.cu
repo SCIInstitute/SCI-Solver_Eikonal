@@ -8,7 +8,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "meshFIM.h"
+#include "meshFIM3d.h"
 #include "Vec.h"
 #include <math.h>
 #include <stdio.h>
@@ -41,12 +41,6 @@ extern __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMe
 extern __global__ void run_check_neghbor(float3* d_tetMem0, float3* d_tetMem1, float4* d_tetT, float* d_speedInv, int* d_vertMem, int* d_vertMemOutside,
     int* d_BlockSizes, bool* d_con, int* d_ActiveList,
     int m_maxNumInVert, int m_maxVertMappingInside, int m_maxNumOutVertMapping);
-
-
-
-
-
-
 
 #if __DEVICE_EMULATION__
 
@@ -86,7 +80,6 @@ bool InitCUDA(void)
     fprintf(stderr, "There is no device supporting CUDA.\n");
     return false;
   }
-  //cudaSetDevice(i);
 
   cudaDeviceProp props;
   cudaSafeCall(cudaSetDevice(0));
@@ -102,9 +95,9 @@ bool InitCUDA(void)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-//create .mesh file from trimesh faces and call partnmesh function 
+//create .mesh file from trimesh faces and call partnmesh function
 //to partition and create intermediate mesh.npart.N file and then read this file
-void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose) 
+void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
 {
 
   FILE * outf;
@@ -124,8 +117,6 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
 
   fclose(outf);
 
-
-  // m_meshPtr->tets.clear();
 
   int numVert = m_meshPtr->vertices.size();
 
@@ -160,23 +151,14 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
         printf("NO part file found!!!!\n");
         exit(1);
       }
-
-
-      //int tmp;
-
       for(int i = 0; i < numVert; i++)
       {
         fscanf(partFile, "%d", &m_PartitionLabel[i]);
-
-
       }
 
       for(int i = 0; i < numVert; i++)
       {
-
-
         m_BlockSizes[m_PartitionLabel[i]]++;
-
       }
       m_maxNumInVert = 0;
 
@@ -187,7 +169,6 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
       }
 
       fclose(partFile);
-
 
       sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
       unlink(outputFileName);
@@ -209,7 +190,6 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
 
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
 
-
     FILE* partFile = fopen(outputFileName, "r+");
     if(partFile == NULL)
     {
@@ -217,57 +197,34 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
       exit(1);
     }
 
-
-    //  int tmp;
-
     for(int i = 0; i < numVert; i++)
     {
       fscanf(partFile, "%d", &m_PartitionLabel[i]);
-
-
     }
 
     for(int i = 0; i < numVert; i++)
     {
-
-
       m_BlockSizes[m_PartitionLabel[i]]++;
-
     }
     m_maxNumInVert = 0;
 
     for(int i = 0; i < numBlock; i++)
     {
-
       m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
     }
 
     printf("max num vert is : %d\n", m_maxNumInVert);
     fclose(partFile);
 
-
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
     unlink(outputFileName);
     sprintf(outputFileName, "tmp.mesh.epart.%d", numBlock);
     unlink(outputFileName);
-
   }
-
-
-
 
   srand((unsigned)time(NULL));
 
   printf("numBlock is : %d\n", numBlock);
-
-
-
-
-
-
-  //m_BlockSizes = new int[numBlock];
-  //for(int i =0; i<numBlock; i++)
-  // m_BlockSizes[i] = 0;
 
   m_PartitionInVerts.resize(numBlock);
 
@@ -278,14 +235,10 @@ void meshFIM::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool ve
   unlink("tmp.mesh");
 }
 
-void meshFIM::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight)
+void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight)
 {
   int numVert = m_meshPtr->vertices.size();
-  //m_PartitionLabel = new int[numVert];
   m_PartitionLabel.resize(numVert);
-
-  //int numBlockEdge = (squareSize / blockSize);
-  //int numBlock = numBlockEdge * numBlockEdge;
 
   int numBlockLength = (squareLength / blockLength);
   int numBlockWidth = (squareWidth / blockWidth);
@@ -302,15 +255,11 @@ void meshFIM::GraphPartition_Square(int squareLength, int squareWidth, int squar
         int k2 = k;
         int i2 = i;
         int j2 = j;
-        //if(k==squareHeight-1)k2--;
-        //if(i==squareHeight-1)i2--;
-        //if(j==squareHeight-1)j2--;
         m_PartitionLabel[index] = (k2 / blockHeight) * numBlockLength * numBlockWidth + (i2 / blockWidth) * numBlockLength + (j2 / blockLength);
       }
 
   m_BlockSizes.resize(numBlock);
 
-  //m_BlockSizes = new int[numBlock];
   for(int i = 0; i < numBlock; i++)
     m_BlockSizes[i] = 0;
 
@@ -331,7 +280,7 @@ void meshFIM::GraphPartition_Square(int squareLength, int squareWidth, int squar
   printf("final number of blocks: %d\n", numBlock);
 }
 
-void meshFIM::GenerateData(void)
+void meshFIM3d::GenerateData(void)
 {
 
   printf("Start GenerateData!\n");
@@ -347,7 +296,6 @@ void meshFIM::GenerateData(void)
   float* h_tetMem1;
   float* h_tetT;
   float* h_vertT;
-  //float*       h_speedInv;
   int* h_vertMem;
   int* h_vertMemOutside;
   bool* h_blockCon;
@@ -492,7 +440,7 @@ void meshFIM::GenerateData(void)
     {
       // check neighbors of current active tile
       uint currBlkIdx = h_ActiveList[i];
-      
+
       if(h_blockCon[currBlkIdx]) // not active : converged
       {
         set<int> nb = m_BlockNeighbor[currBlkIdx];
@@ -520,7 +468,7 @@ void meshFIM::GenerateData(void)
     dimBlock = dim3(m_maxNumTotalTets, 1);
 
     sharedSize = sizeof(float4) * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
-    
+
     run_check_neghbor << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_speedInv, d_vertMem, d_vertMemOutside,
         d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside);
 
@@ -535,9 +483,9 @@ void meshFIM::GenerateData(void)
     // 6. update active list
     // read back active volume from the device and add
     // active block to active list on the host memory
-    
+
     numActive = 0;
-    
+
     cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
     for(uint i = 0; i < m_numBlock; i++)
     {
@@ -605,126 +553,17 @@ void meshFIM::GenerateData(void)
 
   printf("The iteration number: %d\n", nTotalIter);
   printf("The total iteration number: %d\n", totalIterationNumber);
-  //  printf("The total localsolver calls per vertex: %f\n", totalIterationNumber*m_maxNumTotalFaces*(NITER+1)*3.0 / (float)numVert);
-  //
-  //  vec_triMem.resize(m_maxNumTotalFaces * numBlock * 3);
-  //  float maxVertT = 0;
-  //  for(int i = 0 ; i <  m_maxNumTotalFaces * numBlock; i++)
-  //  {
-  //
-  //
-  //    vec_triMem[3*i + 0] =  h_triMem[i*TRIMEMLENGTH + 0];
-  //    vec_triMem[3*i + 1] =  h_triMem[i*TRIMEMLENGTH + 1];
-  //    vec_triMem[3*i + 2] =  h_triMem[i*TRIMEMLENGTH + 2];
-  //
-  //    if(h_triMem[i*TRIMEMLENGTH + 0] >= LARGENUM_TET)
-  //      vec_triMem[3*i + 0] = -2;
-  //    if(h_triMem[i*TRIMEMLENGTH + 1] >= LARGENUM_TET)
-  //      vec_triMem[3*i + 1] = -2;
-  //    if(h_triMem[i*TRIMEMLENGTH + 2] >= LARGENUM_TET)
-  //      vec_triMem[3*i + 2] = -2;
-  //
-  //
-  //    maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
-  //
-  //  }
-  //
-  //  int vertIndex = 0;
-  //
-  //  //for(int i =0; i < numVert; i++)
-  //  //{
-  //  //
-  //  //  m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
-  //  //  if(m_meshPtr->vertT[i] == maxVertT)
-  //  //    vertIndex = i;
-  //
-  //
-  //  //}
-  //
-  //
-  //  printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );
-  //  //printf("The vertT 259 is: %f\n", m_meshPtr->vertT[259] );
-  //
-  //
-  //  //
-  //  //printf("%s\n", h_vertT);
-
 
   cudaSafeCall(cudaFree(d_con));
   cudaSafeCall(cudaFree(d_blockCon));
   cudaSafeCall(cudaFree(d_BlockSizes));
   cudaSafeCall(cudaFree(d_speedInv));
 
-
-
   free(h_blockCon);
   free(h_BlockSizes);
-
-
-
-
-
-
 }
 
-
-//void meshFIM::InitializePartition(int numBlock)
-//{
-//  if (!m_meshPtr)
-//  {
-//    std::cout << "Label-vector size unknown, please set the mesh first..." << std::endl;
-//  }
-//  else
-//  {
-//    // initialize all labels to 'Far'
-//    int nv = m_meshPtr->vertices.size();
-//    //if (m_VertLabel.size() != nv) m_VertLabel.resize(nv);
-//    //if (m_BlockLabel.size() != numBlock) m_BlockLabel.resize(numBlock);
-//    //
-//    //for (int l = 0; l < nv; l++)
-//    //{
-//    //  m_VertLabel[l] = LabelType::FarPoint;
-//    //}
-//
-//    //for (int l = 0; l < numBlock; l++)
-//    //{
-//    //  m_BlockLabel[l] = LabelType::FarPoint;
-//    //}
-//
-//    // if seeed-points are present, treat them differently
-//    if (!m_SeedPoints.empty())
-//    {
-//      for (int s = 0; s < m_SeedPoints.size(); s++)
-//      {
-//        m_BlockLabel[m_PartitionLabel[m_SeedPoints[s]]] = LabelType::ActivePoint;//m_Label[s] = LabelType::SeedPoint;
-//        m_VertLabel[m_SeedPoints[s]] =  LabelType::SeedPoint;
-//        m_ActiveBlocks.insert(m_ActiveBlocks.end(), m_PartitionLabel[m_SeedPoints[s]]);
-//      }
-//    }
-//    else
-//      cout<< "Initialize seed points before labels!!!" << endl;
-//
-//
-//
-//    //m_BlockNeighbor.resize(numBlock);
-//    //for(int i=0; i<numBlock; i++)
-//    //  for(int j =0; j<m_PartitionInVerts[i].size(); j++)
-//    //  {
-//    //    vector<int> nbs = m_meshPtr->neighbors[m_PartitionInVerts[i][j]];
-//    //    for(int k=0; k<nbs.size(); k++)
-//    //    {
-//    //      if(m_PartitionLabel[nbs[k]] != i)
-//    //        m_BlockNeighbor[i].insert(m_BlockNeighbor[i].end(),m_PartitionLabel[nbs[k]]);
-//    //    }
-//
-//
-//
-//    //  }
-//
-//  }
-//}
-
-void meshFIM::PartitionTets(int numBlock)
+void meshFIM3d::PartitionTets(int numBlock)
 {
   ///////////////////////////////////step 3: partition faces//////////////////////////////////////
   printf("Start PartitionTets ...");
@@ -754,19 +593,12 @@ void meshFIM::PartitionTets(int numBlock)
       virtualTetCnt[m_PartitionLabel[t[obtusevert]]] += vfCnt;
       m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].insert(m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].end(), m_meshPtr->tetVirtualTets[i].begin(), m_meshPtr->tetVirtualTets[i].end());
     }
-
-
     labels.clear();
     for(int m = 0; m < 4; m++)
       labels.insert(labels.begin(), m_PartitionLabel[t[m]]);
-
-
     if(labels.size() == 1)
     {
       m_PartitionTets[*(labels.begin())].push_back(i);
-
-
-
     }
     else if(labels.size() > 1)
     {
@@ -774,24 +606,10 @@ void meshFIM::PartitionTets(int numBlock)
       for(set<int>::iterator it = labels.begin(); it != labels.end(); it++)
       {
         m_PartitionNbTets[*it].push_back(i);
-        //for(set<int>::iterator it2 = labels.begin(); it2 != labels.end(); it2++)
-        //{
-        //  if(*it != *it2)
-        //    m_BlockNeighbor[*it].insert(m_BlockNeighbor[*it].end(), *it2);
-
-        //}
-
-
-
       }
     }
     else
       printf("Error!!\n");
-
-
-
-
-
   }
 
   vector<int> PartitionToltalTets;
@@ -799,8 +617,6 @@ void meshFIM::PartitionTets(int numBlock)
   m_maxNumTotalTets = 0;
   for(int j = 0; j < numBlock; j++)
   {
-
-
     PartitionToltalTets[j] = m_PartitionTets[j].size() + m_PartitionNbTets[j].size() + virtualTetCnt[j];
     m_maxNumTotalTets = MAX(PartitionToltalTets[j], m_maxNumTotalTets);
   }
@@ -821,12 +637,10 @@ void meshFIM::PartitionTets(int numBlock)
     }
 
   }
-
-
   printf("done!\n");
 }
 
-bool meshFIM::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
+bool meshFIM3d::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
 {
   bool needswap = false;
   tetmem.resize(6);
@@ -839,30 +653,11 @@ bool meshFIM::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
   point AC = C - A;
   point AD = D - A;
 
-
-  //float tmp = ( (AB) CROSS (AC) )  DOT (AD);
-  //if(tmp< 0)
-  //{
-  //  needswap = true;
-  //  swap(B,C);
-  //
-
-  //}
-
-
   AC = C - A;
   AD = D - A;
   point BC = C - B;
   point CD = D - C;
   point BD = D - B;
-
-  //float M[] = {1.0, 0.0, 0.0, 4.0, 0.0, 9.0};
-  //tetmem[0] = vMv(AC, M, BC);
-  //tetmem[1] = vMv(BC, M, CD);
-  //tetmem[2] = vMv(AC, M, CD);
-  //tetmem[3] = vMv(AD, M, BD);
-  //tetmem[4] = vMv(AC, M, AD);
-  //tetmem[5] = vMv(BC, M, BD);
 
   tetmem[0] = vMv(AC, t.M, BC);
   tetmem[1] = vMv(BC, t.M, CD);
@@ -875,7 +670,7 @@ bool meshFIM::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
 
 }
 
-void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
+void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
 {
   h_tetMem0 = (float*)malloc(3 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
   h_tetMem1 = (float*)malloc(3 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
@@ -909,22 +704,16 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
       h_tetMem1[blockIdx + j * 3 + 1] = tetmem[4];
       h_tetMem1[blockIdx + j * 3 + 2] = tetmem[5];
 
-
-
-
-
       h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
       h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
       h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
       h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
-
 
       m_blockVertMapping[t[0]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
       m_blockVertMapping[t[3]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
 
       if(needswap)
       {
-
         m_blockVertMapping[t[1]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 2);
         m_blockVertMapping[t[2]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 1);
       }
@@ -940,14 +729,7 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
 
   for(int i = 0; i < m_numBlock; i++)
   {
-
-    // h_blockCon[i] = 1;
-
-    // h_BlockLabel[i] = m_BlockLabel[i];
-    // h_BlockSizes[i] = m_BlockSizes[i];
     int blockIdx = i * m_maxNumTotalTets * 3;
-
-
 
     int numPF = m_PartitionTets[i].size();
     int numPNF = m_PartitionNbTets[i].size();
@@ -958,8 +740,6 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
 
     for(int j = numPF; j < m_maxNumTotalTets; j++)
     {
-
-
 
       if(j < numPF + numPNF)
       {
@@ -976,25 +756,15 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         h_tetMem1[blockIdx + j * 3 + 1] = tetmem[4];
         h_tetMem1[blockIdx + j * 3 + 2] = tetmem[5];
 
-
-
-
-
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
 
-
-
-        //       h_speedInv[i * m_maxNumTotalTets + j] = t.speedInv;
-
-
         m_blockVertMapping[t[0]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
         m_blockVertMapping[t[3]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
         if(needswap)
         {
-
           m_blockVertMapping[t[1]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 2);
           m_blockVertMapping[t[2]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 1);
         }
@@ -1002,19 +772,11 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         {
           m_blockVertMapping[t[1]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 1);
           m_blockVertMapping[t[2]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 2);
-
         }
-
-
-
         k++;
-
       }
-
-
       else if(j < numPF + numPNF + numPVF)
       {
-
         t = m_PartitionVirtualTets[i][l];
         vector<float> tetmem;
         bool needswap = gettetmem(tetmem, t);
@@ -1032,15 +794,10 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
         h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
 
-
-
-        // h_speedInv[i * m_maxNumTotalTets + j] = t.speedInv;
-
         m_blockVertMapping[t[0]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
         m_blockVertMapping[t[3]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
         if(needswap)
         {
-
           m_blockVertMapping[t[1]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 2);
           m_blockVertMapping[t[2]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 1);
         }
@@ -1048,7 +805,6 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         {
           m_blockVertMapping[t[1]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 1);
           m_blockVertMapping[t[2]].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 2);
-
         }
         l++;
       }
@@ -1063,7 +819,7 @@ void meshFIM::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
   }
 }
 
-void meshFIM::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
+void meshFIM3d::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 {
 
   int numVert = m_meshPtr->vertices.size();
@@ -1092,13 +848,8 @@ void meshFIM::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
         else
         {
           m_blockVertMappingOutside[m_PartitionInVerts[i][m]].push_back(tmp[n]);
-
         }
-
-
-
       }
-
     }
   }
 
@@ -1112,7 +863,6 @@ void meshFIM::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 
   printf("maxVertMappingInside is: %d\n", m_maxVertMappingInside);
   printf("maxVertMappingOutside is: %d\n", m_maxVertMappingOutside);
-
 
   h_vertMem = (int*)malloc(sizeof(int)* m_maxVertMappingInside * m_maxNumInVert * m_numBlock);
   for(int i = 0; i < m_numBlock; i++)
@@ -1134,7 +884,6 @@ void meshFIM::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 
     for(int m = m_PartitionInVerts[i].size() * m_maxVertMappingInside; m < m_maxNumInVert * m_maxVertMappingInside; m++)
     {
-      //h_vertMem[vertIdx + m] = -1;
       h_vertMem[vertIdx + m] = -1 + i * m_maxNumTotalTets*TETMEMLENGTH;
     }
   }
@@ -1164,9 +913,5 @@ void meshFIM::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
       h_vertMemOutside[vertIdx + m] = -1;
     }
   }
-
   printf("Done GetVertMem!!\n");
-
-
-
 }

@@ -1,7 +1,7 @@
 project(Examples)
 
 include_directories(
-	"${CMAKE_SOURCE_DIR}/core/include"
+	"${CMAKE_SOURCE_DIR}/core3d/include"
 	"${CMAKE_SOURCE_DIR}/core2d/include"
 )
 

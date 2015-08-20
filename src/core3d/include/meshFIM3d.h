@@ -1,5 +1,5 @@
-#ifndef MESHFIM_H
-#define MESHFIM_H
+#ifndef __MESHFIM3D_H__
+#define __MESHFIM3D_H__
 
 
 #include <tetmesh.h>
@@ -23,21 +23,11 @@ enum LabelType
   FarPoint = 0, ActivePoint, MaskPoint, SeedPoint, StopPoint, AlivePoint, ToBeAlivePoint
 };
 
-class meshFIM
+class meshFIM3d
 {
   public:
-
-
     typedef int index;
-
-
-
-
-    //  float Upwind(index vet);
     void MeshReader(char * filename);
-
-    //  float LocalSolver(index C, TriMesh::Face triangle);
-
     void SetSeedPoint(std::vector<index> SeedPoints)
     {
       m_SeedPoints = SeedPoints;
@@ -47,24 +37,6 @@ class meshFIM
       if (m_meshPtr)
       {
         m_meshPtr->InitializeAttributes(0, m_SeedPoints);
-        /*if (!m_SeedPoints.empty())
-          {
-          int ns = m_SeedPoints.size();
-          for (int s = 0; s < ns; s++)
-          {
-
-          nb = m_meshPtr->neighbors[m_SeedPoints[s]];
-          for (int i = 0; i<nb.size();i++)
-          {
-          m_ActivePoints.push_back(nb[i]);
-          }
-
-
-          }
-
-
-          }*/
-
       }
     }
 
@@ -88,16 +60,9 @@ class meshFIM
     }
 
     void InitializePartition(int numBlock);
-
-
-
     void GenerateData(void);
-
-
-    //void GraphPartition_Simple(int Kring, int numBlock);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight);
-
     void GraphColoring();
     void PartitionTets(int numBlock);
 
@@ -107,25 +72,16 @@ class meshFIM
 
     void InitSpeedMat()
     {
-      //    FILE* speedMatFile = fopen("speedMat6m_1.txt", "r");
       int nt = m_meshPtr->tets.size();
-      //m_SpeedMat.resize(nt);
       for (int i = 0; i < nt; i++)
       {
-        //        fscanf(speedMatFile, "%f %f %f %f %f %f\n", &m_meshPtr->tets[i].M[0], &m_meshPtr->tets[i].M[1], &m_meshPtr->tets[i].M[2], &m_meshPtr->tets[i].M[3], &m_meshPtr->tets[i].M[4], &m_meshPtr->tets[i].M[5]);
         m_meshPtr->tets[i].M[0] = 1;
         m_meshPtr->tets[i].M[1] = 0;
         m_meshPtr->tets[i].M[2] = 0;
         m_meshPtr->tets[i].M[3] = 1;
         m_meshPtr->tets[i].M[4] = 0;
         m_meshPtr->tets[i].M[5] = 1;
-
-        //m_SpeedMat[i] = vector<float>(value, value + sizeof(value) / sizeof(float) );
       }
-
-      //    fclose(speedMatFile);
-
-
     }
 
     void FindSeedPointLavalamp()
@@ -136,12 +92,6 @@ class meshFIM
       {
         double x = m_meshPtr->vertices[i][0];
         minx = MIN(minx, x);
-        //if(abs(x+0.2) < _EPS)
-        //if(fabs(x) < 0.001 && fabs(y) < 0.001 &&fabs(z) < 0.001 )
-        //{
-        //  m_SeedPoints.push_back(i);
-        //  break;
-        //}
       }
       printf("Min X is %.12f\n", minx);
 
@@ -171,28 +121,15 @@ class meshFIM
       K1 = 40.5;
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
-        //x1 = m_meshPtr->vertices[i][0] - meshsize / 2.0;
-        //y1 = m_meshPtr->vertices[i][1] - meshsize / 2.0;
-        //z1 = m_meshPtr->vertices[i][2] - meshsize / 2.0;
         x1 = m_meshPtr->vertices[i][0];
         y1 = m_meshPtr->vertices[i][1];
         z1 = m_meshPtr->vertices[i][2];
 
         v1 = x1 * x1 / (K1 * K1) + y1 * y1 * 1 / (K1 * K1) + z1 * z1 * 1 / (K1 * K1) - 1;
-        //v1 = sqrt(x1*x1+ y1*y1 + z1*z1);
-        //if(v1 < 3.0)
-        //{
-        //  m_SeedPoints.push_back(i);
-        //  printf("Seed point is: vert %d.\n", i);
-        //  break;
-        //}
 
         vector< int > nbs = m_meshPtr->neighbors[i];
         for (int j = 0; j < nbs.size(); j++)
         {
-          ////x2 = m_meshPtr->vertices[nbs[j]][0] - meshsize / 2.0;
-          ////y2 = m_meshPtr->vertices[nbs[j]][1] - meshsize / 2.0;
-          ////z2 = m_meshPtr->vertices[nbs[j]][2] - meshsize / 2.0;
 
           x2 = m_meshPtr->vertices[nbs[j]][0];
           y2 = m_meshPtr->vertices[nbs[j]][1];
@@ -210,28 +147,17 @@ class meshFIM
           }
 
         }
-
-
-
-
       }
-
       printf("Done!\n");
-
     }
-
-    meshFIM()
+    meshFIM3d()
     {
       m_meshPtr = NULL;
     };
 
-    ~meshFIM()
+    ~meshFIM3d()
     {
     };
-
-
-
-
     TetMesh* m_meshPtr;
     vector< set<int> > m_BlockNbPts;
     vector< set<int> > m_BlockNeighbor;
@@ -240,7 +166,6 @@ class meshFIM
     vector<int> m_ColorLabel;
     int m_numColor;
     vector< vector<int> > m_PartitionTets;
-    //vector< vector<int> >                        m_PartitionVerts;
     vector< vector<int> > m_PartitionInVerts;
     vector< set<int> > m_PartitionOutVerts;
     vector< vector<int> > m_PartitionNbTets;
@@ -254,7 +179,6 @@ class meshFIM
 
     vector< vector<TetMesh::Tet> > m_PartitionVirtualTets;
     int m_maxNumTotalTets;
-    //int                                          m_maxNumVert;
     int m_maxNumInVert;
     int m_maxNumVertMapping;
     int m_maxVertMappingInside;

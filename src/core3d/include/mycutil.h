@@ -6,7 +6,7 @@
  * Checks for a cuda error and if one exists prints it,
  * the stack trace, and exits
  *********************************************************/
-#define FatalError(x) 
+#define FatalError(x)
 #define cudaCheckError() {                              \
   cudaError_t e=cudaGetLastError();                                 \
   char error_str[100];                                              \
