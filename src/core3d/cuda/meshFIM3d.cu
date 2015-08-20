@@ -44,7 +44,7 @@ extern __global__ void run_check_neghbor(float3* d_tetMem0, float3* d_tetMem1, f
 
 #if __DEVICE_EMULATION__
 
-bool InitCUDA(void)
+bool InitCUDA(bool verbose = false)
 {
   return true;
 }
@@ -52,7 +52,7 @@ bool InitCUDA(void)
 
 #else
 
-bool InitCUDA(void)
+bool InitCUDA(bool verbose = false)
 {
   int count = 0;
   int i = 0;
@@ -86,9 +86,11 @@ bool InitCUDA(void)
 
   cudaSafeCall(cudaGetDeviceProperties(&props, 0));
 
-  printf("Device 0: \"%s\" with Compute %d.%d capability\n",  props.name, props.major, props.minor);
+  if (verbose) {
+    printf("Device 0: \"%s\" with Compute %d.%d capability\n",  props.name, props.major, props.minor);
 
-  printf("CUDA initialized.\n");
+    printf("CUDA initialized.\n");
+  }
   return true;
 }
 
@@ -213,7 +215,8 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
       m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
     }
 
-    printf("max num vert is : %d\n", m_maxNumInVert);
+    if (verbose)
+      printf("max num vert is : %d\n", m_maxNumInVert);
     fclose(partFile);
 
     sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
@@ -224,7 +227,8 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
 
   srand((unsigned)time(NULL));
 
-  printf("numBlock is : %d\n", numBlock);
+  if (verbose)
+    printf("numBlock is : %d\n", numBlock);
 
   m_PartitionInVerts.resize(numBlock);
 
@@ -284,7 +288,7 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
 
-  if(!InitCUDA())
+  if(!InitCUDA(verbose))
   {
     exit(1);
   }
@@ -522,7 +526,8 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 
   cudaSafeCall(cudaThreadSynchronize());
 
-  printf("num of max active %d\n", maxActive);
+  if (verbose)
+    printf("num of max active %d\n", maxActive);
 
   m_meshPtr->vertT.resize(1);
   m_meshPtr->vertT[0].resize(numVert);
@@ -555,10 +560,11 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
   free(h_BlockSizes);
 }
 
-void meshFIM3d::PartitionTets(int numBlock)
+void meshFIM3d::PartitionTets(int numBlock, bool verbose)
 {
   ///////////////////////////////////step 3: partition faces//////////////////////////////////////
-  printf("Start PartitionTets ...");
+  if (verbose)
+    printf("Start PartitionTets ...");
   m_PartitionTets.resize(numBlock);
   m_PartitionNbTets.resize(numBlock);
 
@@ -613,7 +619,8 @@ void meshFIM3d::PartitionTets(int numBlock)
     m_maxNumTotalTets = MAX(PartitionToltalTets[j], m_maxNumTotalTets);
   }
 
-  printf("m_maxNumTotalTets is %d\n", m_maxNumTotalTets);
+  if (verbose)
+    printf("m_maxNumTotalTets is %d\n", m_maxNumTotalTets);
 
 
   //calculate block neighbors.
@@ -629,7 +636,8 @@ void meshFIM3d::PartitionTets(int numBlock)
     }
 
   }
-  printf("done!\n");
+  if (verbose)
+    printf("done!\n");
 }
 
 bool meshFIM3d::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
@@ -853,9 +861,6 @@ void meshFIM3d::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
     m_maxVertMappingOutside = MAX(m_maxVertMappingOutside, (m_blockVertMappingOutside[i].size()));
   }
 
-  printf("maxVertMappingInside is: %d\n", m_maxVertMappingInside);
-  printf("maxVertMappingOutside is: %d\n", m_maxVertMappingOutside);
-
   h_vertMem = (int*)malloc(sizeof(int)* m_maxVertMappingInside * m_maxNumInVert * m_numBlock);
   for(int i = 0; i < m_numBlock; i++)
   {
@@ -905,5 +910,4 @@ void meshFIM3d::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
       h_vertMemOutside[vertIdx + m] = -1;
     }
   }
-  printf("Done GetVertMem!!\n");
 }

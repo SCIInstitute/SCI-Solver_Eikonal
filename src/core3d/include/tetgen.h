@@ -401,7 +401,7 @@ class tetgenio {
     bool load_stl(char* filename);
     bool load_medit(char* filename);
     bool load_plc(char* filename, int object);
-    bool load_tetmesh(char* filename);
+    bool load_tetmesh(char* filename,bool verbose = false);
     bool load_voronoi(char* filename);
     void save_nodes(char* filename);
     void save_elements(char* filename);

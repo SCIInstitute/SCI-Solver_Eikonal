@@ -64,7 +64,7 @@ class meshFIM3d
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight);
     void GraphColoring();
-    void PartitionTets(int numBlock);
+    void PartitionTets(int numBlock, bool verbose = false);
 
     bool gettetmem(vector<float>& tetmem, TetMesh::Tet t);
     void GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT);

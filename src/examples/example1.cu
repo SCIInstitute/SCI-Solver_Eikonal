@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   clock_t starttime = clock(), endtime;
 
   tetgenio in, addin, bgmin,out;
-  in.load_tetmesh((char*)filename.c_str());
+  in.load_tetmesh((char*)filename.c_str(),verbose);
 
   TetMesh themesh;
   themesh.init(
@@ -80,26 +80,21 @@ int main(int argc, char *argv[])
       in.tetrahedronlist,
       in.numberoftetrahedra,
       in.numberoftetrahedronattributes,
-      in.tetrahedronattributelist );
+      in.tetrahedronattributelist, verbose );
 
-  themesh.need_neighbors();
-  themesh.need_adjacenttets();
-  themesh.need_tet_virtual_tets();
+  themesh.need_neighbors(verbose);
+  themesh.need_adjacenttets(verbose);
+  themesh.need_tet_virtual_tets(verbose);
 
   meshFIM3d* FIMPtr = new meshFIM3d;
 
-  vector<int> seedPointList(1,0/*133152*//*20181*//*2184*/);//20181 for unstruc_s5
-  //seedPointList.push_back(10);
-  //seedPointList.push_back(20);
-  //seedPointList.push_back(30);
-  //seedPointList.push_back(40);
+  vector<int> seedPointList(1,0);
   FIMPtr->SetSeedPoint(seedPointList);
 
   FIMPtr->SetMesh(&themesh);
-  //FIMPtr->FindSeedPoint();
   FIMPtr->InitSpeedMat();
 
-  int squareLength = 16;
+  /*int squareLength = 16;
   int squareWidth = 16;
   int squareDepth = 16;
   int squareBlockLength = 4;
@@ -107,17 +102,17 @@ int main(int argc, char *argv[])
   int squareBlockDepth  = 4;
   int numBlockLength = (squareLength / squareBlockLength);
   int numBlockWidth  = (squareWidth / squareBlockWidth);
-  int numBlockDepth  = (squareDepth / squareBlockDepth);
+  int numBlockDepth  = (squareDepth / squareBlockDepth);*/
   //numBlock = numBlockLength * numBlockWidth*numBlockDepth;
   //numBlock = 10003;
   int maxNumBlockVerts = 64;
 
   //FIMPtr->GraphPartition_Square(squareLength,squareWidth,squareDepth,
   //    squareBlockLength, squareBlockWidth, squareBlockDepth);    //use this for regular meshes
-  FIMPtr->GraphPartition_METIS2( numBlock , maxNumBlockVerts); // use this for irregular meshes
+  FIMPtr->GraphPartition_METIS2( numBlock , maxNumBlockVerts, verbose); // use this for irregular meshes
 
   FIMPtr->m_numBlock = numBlock;
-  FIMPtr->PartitionTets(numBlock);
+  FIMPtr->PartitionTets(numBlock, verbose);
   FIMPtr->GenerateData(maxIter,verbose);
 
   endtime = clock();

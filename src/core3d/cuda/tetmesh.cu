@@ -9,13 +9,15 @@
 using namespace std;
 
 
-void TetMesh::init(double* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, double* attrlist)
+void TetMesh::init(double* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, double* attrlist, bool verbose)
 {
   numVert = numpoint;
   numTet  = numtet;
 
-  printf("Total num of vertices is %d\n", numVert);
-  printf("Total num of tets is     %d\n", numTet);
+  if (verbose) {
+    printf("Total num of vertices is %d\n", numVert);
+    printf("Total num of tets is     %d\n", numTet);
+  }
   vertices.resize(numpoint);
   tets.resize(numtet);
   for(int i =0; i< numpoint; i++)
@@ -123,74 +125,19 @@ void TetMesh::init(double* pointlist, int numpoint, int*trilist, int numtri, int
 
   }
 
-
-  //if(numattr > 0)
-  //{
-  //  for(int i =0; i< numtet; i++)
-  //  {
-  //    int mat = (int)attrlist[i];
-  //    switch(mat)
-  //    {
-  //    case 1:
-  //      tets[i].speedInv = 1.0;
-  //      break;
-  //    case 2:
-  //      tets[i].speedInv = 1.52; // refractive index of glass 1.52
-  //      break;
-  //    case 3:
-  //      tets[i].speedInv = 1.0;
-  //      break;
-
-
-  //    }
-  //  }
-
-
-  //}
-  //else
-  //{
-  //  for(int i =0; i< numtet; i++)
-  //    tets[i].speedInv = 1.0;
-
-  //}
-
-
-  //for(int i =0; i< numtet; i++)
-  //{
-  //  tets[i].f[0] = Face(tets[i][0], tets[i][1], tets[i][2]);
-  //  tets[i].f[1] = Face(tets[i][1], tets[i][2], tets[i][3]);
-  //  tets[i].f[2] = Face(tets[i][2], tets[i][3], tets[i][0]);
-  //  tets[i].f[3] = Face(tets[i][3], tets[i][0], tets[i][1]);
-
-
-
-
-
-  //}
-
-
 }
 // Find the direct neighbors of each vertex
-void TetMesh::need_neighbors()
+void TetMesh::need_neighbors(bool verbose)
 {
   if (!neighbors.empty())
     return;
 
 
-  cout << "Finding vertex neighbors... " << endl;
+  if (verbose)
+    cout << "Finding vertex neighbors... " << endl;
   int nv = vertices.size(), nt = tets.size();
 
-  //vector<int> numneighbors(nv);
-  //for (int i = 0; i < nt; i++) {
-  //  numneighbors[tets[i][0]]++;
-  //  numneighbors[tets[i][1]]++;
-  //  numneighbors[tets[i][2]]++;
-  //  numneighbors[tets[i][3]]++;
-  //}
-
   neighbors.resize(nv);
-  //for (int i = 0; i < nv; i++)
-  //  neighbors[i].reserve(numneighbors[i]+2); // Slop for boundaries
 
   for (int i = 0; i < nt; i++) {
     for (int j = 0; j < 4; j++) {
@@ -207,36 +154,30 @@ void TetMesh::need_neighbors()
     }
   }
 
-  cout << "Done.\n" << endl;
+  if (verbose)
+    cout << "Done.\n" << endl;
 }
 
 
 // Find the tets touching each vertex
-void TetMesh::need_adjacenttets()
+void TetMesh::need_adjacenttets(bool verbose)
 {
   if (!adjacenttets.empty())
     return;
 
-  cout << "Finding vertex to triangle maps... " << endl;
+  if (verbose)
+    cout << "Finding vertex to triangle maps... " << endl;
   int nv = vertices.size(), nt = tets.size();
 
-  //vector<int> numadjacentfaces(nv);
-  //for (int i = 0; i < nt; i++) {
-  //  numadjacentfaces[tets[i][0]]++;
-  //  numadjacentfaces[tets[i][1]]++;
-  //  numadjacentfaces[tets[i][2]]++;
-  //}
-
   adjacenttets.resize(vertices.size());
-  //for (int i = 0; i < nv; i++)
-  //  adjacentfaces[i].reserve(numadjacentfaces[i]);
 
   for (int i = 0; i < nt; i++) {
     for (int j = 0; j < 4; j++)
       adjacenttets[tets[i][j]].push_back(i);
   }
 
-  cout << "Done.\n" << endl;
+  if (verbose)
+    cout << "Done.\n" << endl;
 }
 
 
@@ -244,94 +185,6 @@ void TetMesh::need_speed()
 {
 }
 
-
-//void TetMesh::need_oneringstrip()
-//{
-//
-//
-//  int numVert = vertices.size();
-//  //oneringstrip.clear();
-//  oneringstrips.resize(numVert);
-//  oneringspeedI.resize(numVert);
-//  for(int i =0; i<numVert; i++)
-//  {
-//    udword* topology;
-//    vector<int> adjtets = adjacenttets[i];
-//    //vector<Tet> adjtets = vertOneringTets[i];
-//    topology = (udword*)malloc(3*sizeof(udword)*adjtets.size());
-//    for(int j=0; j<adjtets.size(); j++)
-//    {
-//      int tmp=0;
-//      for(int k=0; k<4; k++)
-//      {
-//
-//        if(tets[adjtets[j]][k] != i)
-//        //if(adjtets[j][k] != i)
-//        {
-//          topology[j*3+tmp] = tets[adjtets[j]][k];
-//          //topology[j*3+tmp] = adjtets[j][k];
-//          tmp++;
-//        }
-//
-//
-//      }
-//
-//    }
-//
-//    STRIPERCREATE sc;
-//    sc.DFaces      = topology;
-//    sc.NbFaces      = adjtets.size();
-//    sc.AskForWords    = false;
-//    sc.ConnectAllStrips  = true;
-//    sc.OneSided      = false;
-//    sc.SGIAlgorithm    = true;
-//
-//    Striper Strip;
-//    Strip.Init(sc);
-//
-//    STRIPERRESULT sr;
-//    Strip.Compute(sr);
-//
-//    vector< vector<int> > strips;
-//    strips.resize(sr.NbStrips);
-//    udword* Refs = (udword*)sr.StripRuns;
-//
-//    oneringstrips[i].resize( sr.NbStrips);
-//
-//    for(udword k=0;k<sr.NbStrips;k++)
-//    {
-//
-//      udword NbRefs = sr.StripLengths[k];
-//      for(udword j=0;j<NbRefs;j++)
-//      {
-//        strips[k].push_back(*Refs++);
-//        //oneringstrip[i][k].push_back(*Refs++);
-//      }
-//
-//    }
-//
-//
-//    //printf("vert %d num strips: %d\n",i, sr.NbStrips);
-//
-//
-//    oneringstrips[i] = strips[0];
-//
-//
-//
-//
-//
-//
-//    free(topology);
-//
-//
-//
-//
-//
-//  }
-//
-//
-//
-//}
 
 bool TetMesh::IsNonObtuse(int v, Tet t)
 {
@@ -452,13 +305,14 @@ void TetMesh::SplitFace(vector<Tet> &acTets, int v, Tet ct, int nfAdj)
 }
 
 
-void TetMesh::need_across_face()
+void TetMesh::need_across_face(bool verbose)
 {
   if (!across_face.empty())
     return;
   need_adjacenttets();
 
-  printf("Finding across-face maps... ");
+  if (verbose)
+    printf("Finding across-face maps... ");
 
   int nt = tets.size();
   across_face.resize(nt, Tet(-1,-1,-1, -1));
@@ -496,7 +350,8 @@ void TetMesh::need_across_face()
     }
   }
 
-  printf("Done.\n");
+  if (verbose)
+    printf("Done.\n");
 }
 
 vector<TetMesh::Tet> TetMesh::GetOneRing(int v)
@@ -571,10 +426,8 @@ void TetMesh::need_oneringtets()
 
 }
 
-void TetMesh::need_tet_virtual_tets()
+void TetMesh::need_tet_virtual_tets(bool verbose)
 {
-
-
   need_across_face();
   vector<Tet> t_tets;
   Tet t;
@@ -604,8 +457,4 @@ void TetMesh::need_tet_virtual_tets()
 
     tetVirtualTets[i] = t_tets;
   }
-
-
-
-
 }
