@@ -44,11 +44,21 @@ int main(int argc, char *argv[])
 {
   //Verbose option
   bool verbose = false;
+  int numBlock = 10003;
+  size_t maxIter = 100;
   //input filename (minus extension)
   std::string filename;
   for (int i = 0; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       verbose = true;
+    } else if (strcmp(argv[i],"-m") == 0) {
+      if (i+1 >= argc) break;
+      maxIter = atoi(argv[i+1]);
+      i++;
+    } else if (strcmp(argv[i],"-b") == 0) {
+      if (i+1 >= argc) break;
+      numBlock = atoi(argv[i+1]);
+      i++;
     } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;
       filename = std::string(argv[i+1]);
@@ -98,7 +108,7 @@ int main(int argc, char *argv[])
   int numBlockLength = (squareLength / squareBlockLength);
   int numBlockWidth  = (squareWidth / squareBlockWidth);
   int numBlockDepth  = (squareDepth / squareBlockDepth);
-  int numBlock = numBlockLength * numBlockWidth*numBlockDepth;
+  //numBlock = numBlockLength * numBlockWidth*numBlockDepth;
   //numBlock = 10003;
   int maxNumBlockVerts = 64;
 
@@ -108,7 +118,7 @@ int main(int argc, char *argv[])
 
   FIMPtr->m_numBlock = numBlock;
   FIMPtr->PartitionTets(numBlock);
-  FIMPtr->GenerateData();
+  FIMPtr->GenerateData(maxIter,verbose);
 
   endtime = clock();
   double duration = (double)(endtime - starttime) *1000 / CLOCKS_PER_SEC;

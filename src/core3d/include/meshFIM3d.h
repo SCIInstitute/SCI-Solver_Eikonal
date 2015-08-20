@@ -60,7 +60,7 @@ class meshFIM3d
     }
 
     void InitializePartition(int numBlock);
-    void GenerateData(void);
+    void GenerateData(size_t maxIter = 1000, bool verbose = false);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight);
     void GraphColoring();

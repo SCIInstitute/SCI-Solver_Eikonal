@@ -9,10 +9,6 @@ __global__ void run_reduction(bool *con, bool *blockCon,int* ActiveList, int nAc
   int list_idx = blockIdx.y*gridDim.x + blockIdx.x;
   int maxblocksize = blockDim.x;
   int tx = threadIdx.x;
-
-
-  //if(list_idx < nActiveBlock)
-  //{
   int block_idx = ActiveList[list_idx];
 
   int blocksize = blockSizes[block_idx];
@@ -34,7 +30,6 @@ __global__ void run_reduction(bool *con, bool *blockCon,int* ActiveList, int nAc
   {
     blockCon[block_idx] = s_block_conv; // active list is negation of tile convergence (active = not converged)
   }
-  //}
 }
 
 __device__ bool operator==(const float3 & a, const float3 & b)
@@ -97,41 +92,23 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
     lambda1 = 0.0;
     lambda2 = (-q + sqrt(delta)) / (2.0*p);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = make_float3(lambda1, lambda2, 1.0);
 
     if(lambda2 >= 0 && lambda2 <= 1)
     {
       TE = TB*lambda2 + TC*lambda3;
       FaceTBC = MIN(FaceTBC,TE + sqrt(/*(lambda DOT theta) */(lambda2*BCBC+BCCD)* lambda2 + (lambda2*BCCD+CDCD)));
-
-
     }
-
     lambda1 = 0.0;
     lambda2 = (-q - sqrt(delta)) / (2.0*p);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda2 >= 0 && lambda2 <= 1)
     {
       TE = TB*lambda2  + TC*lambda3;
       FaceTBC = MIN(FaceTBC,TE + sqrt(/*(lambda DOT theta) */(lambda2*BCBC+BCCD)* lambda2 + (lambda2*BCCD+CDCD)));
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = make_float3(0.0, 1.0, 1.0);
-  //tmp2 = make_float3(0.0, 0.0, 1.0);
   FaceTBC = MIN(FaceTBC, MIN( TB + sqrt((BCBC+BCCD) + (BCCD+CDCD)), TC + sqrt(CDCD) ) );
-
-
-  //calculate FaceTAB, let lambda3 = 0
-
   float3 gamma = make_float3(ACAC-ACBC, ACBC-BCBC, ACCD-BCCD);
   p = (TAB*TAB*ACAC - gamma.x*gamma.x)  + ( BCBC*TAB*TAB - gamma.y*gamma.y ) - ( (ACBC+ACBC)*TAB*TAB - 2*gamma.x*gamma.y );
 
@@ -150,7 +127,6 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = 1-lambda1;
     lambda3 = 0.0;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1)
     {
@@ -163,28 +139,14 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = 1-lambda1;
     lambda3 = 0.0;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2;
-      //float v = sqrt((lambda DOT beta) * lambda1 + (lambda DOT theta) * lambda2) + (lambda DOT alpha);
       FaceTAB = MIN(FaceTAB,TE + sqrt( (lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD) ) );
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = point(0.0, 1.0, 1.0);
-  //tmp2 = point(1.0, 0.0, 1.0);
   FaceTAB = MIN(FaceTAB, MIN( TB + sqrt((BCBC+BCCD) + (BCCD+CDCD)), TA + sqrt((ACAC+ACCD) + (ACCD+CDCD)) ) );
-
-
-
   //calculate FaceTAC, let lambda2 = 0
   p = ACAC*TAC*TAC - ACAC*ACAC;
   q = (ACCD+ACCD)*TAC*TAC - 2*ACAC*ACCD;
@@ -197,38 +159,21 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = 0.0;
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
-
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TC*lambda3;
       FaceTAC = MIN(FaceTAC, TE + sqrt((lambda1*ACAC+ACCD) * lambda1 + (lambda1*ACCD+CDCD)));
-
-
     }
-
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = 0.0;
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       FaceTAC = MIN(FaceTAC, TE + sqrt((lambda1*ACAC+ACCD) * lambda1 + (lambda1*ACCD+CDCD)));
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = point(1.0, 0.0, 1.0);
-  //tmp2 = point(0.0, 0.0, 1.0);
-
-
   FaceTAC = MIN(FaceTAC, MIN( TA + sqrt((ACAC+ACCD) + (ACCD+CDCD)), TC + sqrt(CDCD) ) );
 
   ////////Done calculating FaceTAC/////////////////////////
@@ -254,46 +199,33 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = (s*lambda1 + t) / (h+SMALLNUM);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1 && lambda2 >= 0 && lambda2 <= 1 && lambda3 >= 0 && lambda3 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       TD = MIN(TD,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD)));
-
-
     }
 
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = (s*lambda1 + t) / (h+SMALLNUM);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1 && lambda2 >= 0 && lambda2 <= 1 && lambda3 >= 0 && lambda3 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       TD = MIN(TD,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD)));
-
-
     }
-
     TD = MIN(TD, MIN(FaceTBC, MIN(FaceTAB, FaceTAC)));
-
-
-
   }
   else
   {
     TD = MIN(TD, MIN(FaceTBC, MIN(FaceTAB, FaceTAC)));
-
   }
-
   return TD;
 }
 
 __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float ACBC, float ACCD, float BCBC, float BCCD, float CDCD)
 {
-
   if(TA >= LARGENUM_TET && TB >= LARGENUM_TET && TC >= LARGENUM_TET)
     return LARGENUM_TET;
   float p, q, r;
@@ -316,39 +248,23 @@ __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float
     lambda1 = 0.0;
     lambda2 = (-q + sqrt(delta)) / (2.0*p);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = make_float3(lambda1, lambda2, 1.0);
 
     if(lambda2 >= 0 && lambda2 <= 1)
     {
       TE = TB*lambda2 + TC*lambda3;
       FaceTBC = MIN(FaceTBC,TE + sqrt(/*(lambda DOT theta) */(lambda2*BCBC+BCCD)* lambda2 + (lambda2*BCCD+CDCD)));
-
-
     }
-
     lambda1 = 0.0;
     lambda2 = (-q - sqrt(delta)) / (2.0*p);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda2 >= 0 && lambda2 <= 1)
     {
       TE = TB*lambda2  + TC*lambda3;
       FaceTBC = MIN(FaceTBC,TE + sqrt(/*(lambda DOT theta) */(lambda2*BCBC+BCCD)* lambda2 + (lambda2*BCCD+CDCD)));
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = make_float3(0.0, 1.0, 1.0);
-  //tmp2 = make_float3(0.0, 0.0, 1.0);
   FaceTBC = MIN(FaceTBC, MIN( TB + sqrt((BCBC+BCCD) + (BCCD+CDCD)), TC + sqrt(CDCD) ) );
-
-
   //calculate FaceTAB, let lambda3 = 0
 
   float3 gamma = make_float3(ACAC-ACBC, ACBC-BCBC, ACCD-BCCD);
@@ -369,41 +285,22 @@ __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = 1-lambda1;
     lambda3 = 0.0;
-    //lambda = point(lambda1, lambda2, 1.0);
-
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2;
       FaceTAB = MIN(FaceTAB,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD) ) );
-
-
     }
-
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = 1-lambda1;
     lambda3 = 0.0;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2;
-      //float v = sqrt((lambda DOT beta) * lambda1 + (lambda DOT theta) * lambda2) + (lambda DOT alpha);
       FaceTAB = MIN(FaceTAB,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD) ) );
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = point(0.0, 1.0, 1.0);
-  //tmp2 = point(1.0, 0.0, 1.0);
   FaceTAB = MIN(FaceTAB, MIN( TB + sqrt((BCBC+BCCD) + (BCCD+CDCD)), TA + sqrt((ACAC+ACCD) + (ACCD+CDCD)) ) );
-
-
-
   //calculate FaceTAC, let lambda2 = 0
   p = ACAC*TAC*TAC - ACAC*ACAC;
   q = (ACCD+ACCD)*TAC*TAC - 2*ACAC*ACCD;
@@ -416,38 +313,22 @@ __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = 0.0;
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TC*lambda3;
       FaceTAC = MIN(FaceTAC, TE + sqrt((lambda1*ACAC+ACCD) * lambda1 + (lambda1*ACCD+CDCD)));
-
-
     }
 
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = 0.0;
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
-
     if(lambda1 >= 0 && lambda1 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       FaceTAC = MIN(FaceTAC, TE + sqrt((lambda1*ACAC+ACCD) * lambda1 + (lambda1*ACCD+CDCD)));
-
-
     }
-
-
-
-
   }
-
-  //tmp1 = point(1.0, 0.0, 1.0);
-  //tmp2 = point(0.0, 0.0, 1.0);
-
-
   FaceTAC = MIN(FaceTAC, MIN( TA + sqrt((ACAC+ACCD) + (ACCD+CDCD)), TC + sqrt(CDCD) ) );
 
   ////////Done calculating FaceTAC/////////////////////////
@@ -473,82 +354,43 @@ __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float
     lambda1 = (-q + sqrt(delta)) / (2.0*p);
     lambda2 = (s*lambda1 + t) / (h+SMALLNUM);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1 && lambda2 >= 0 && lambda2 <= 1 && lambda3 >= 0 && lambda3 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       TD = MIN(TD,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD)));
-
-
     }
-
     lambda1 = (-q - sqrt(delta)) / (2.0*p);
     lambda2 = (s*lambda1 + t) / (h+SMALLNUM);
     lambda3 = 1 - lambda1 - lambda2;
-    //lambda = point(lambda1, lambda2, 1.0);
 
     if(lambda1 >= 0 && lambda1 <= 1 && lambda2 >= 0 && lambda2 <= 1 && lambda3 >= 0 && lambda3 <= 1)
     {
       TE = TA*lambda1 + TB*lambda2 + TC*lambda3;
       TD = MIN(TD,TE + sqrt((lambda1*ACAC+lambda2*ACBC+ACCD) * lambda1 + (lambda1*ACBC+lambda2*BCBC+BCCD) * lambda2 + (lambda1*ACCD+lambda2*BCCD+CDCD)));
-
-
     }
-
     TD = MIN(TD, MIN(FaceTBC, MIN(FaceTAB, FaceTAC)));
-
-
-
   }
   else
   {
     TD = MIN(TD, MIN(FaceTBC, MIN(FaceTAB, FaceTAC)));
-
   }
-
   return TD;
-
-
-
-
-
 }
-
-
-
-
 extern __shared__ char s_array[];
 
 
 __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, float* d_vertT, float* d_speedInv, int* d_vertMem, int* d_vertMemOutside, int* d_BlockSizes, bool* d_con, int* d_ActiveList, int m_maxNumInVert, int m_maxVertMappingInside, int m_maxVertMappingOutside, int nIter)
 {
   int list_idx = blockIdx.y*gridDim.x + blockIdx.x;
-
-
   // retrieve actual block index from the active list
   int block_idx = d_ActiveList[list_idx];
   int block_size = d_BlockSizes[block_idx];
   int maxNumTotalTets = blockDim.x;
-
-
-  ////////////////////////////////////////initialize shared memory//////////////////////////////////////////
-
+  ///////////////////initialize shared memory//////////////////////////////////////////
   int tx = threadIdx.x;
   int tet_base = block_idx*maxNumTotalTets;
   int vert_base = block_idx*m_maxNumInVert;
-
-
-  //float* s_vertX = (float*)s_array;
-  //float* s_vertY = (float*)&s_vertX[numVert];
-  //float* s_vertZ = (float*)&s_vertY[numVert];
-  //float* s_vertT = (float*)&s_vertZ[numVert];
-  //int* s_strip = (int*)&s_vertT[numVert];
-
-  //s_vertX[tx] = d_vertX[vert_base_addr + tx];
-  //s_vertY[tx] = d_vertY[vert_base_addr + tx];
-  //s_vertZ[tx] = d_vertZ[vert_base_addr + tx];
-  //s_vertT[tx] = d_vertT[vert_base_addr + tx];
 
   float*      s_tetT = (float*)s_array;
   int*   s_vertMem = (int*)&s_tetT[maxNumTotalTets * 4];
@@ -560,8 +402,6 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
   s_tetT[tx*4 + 2] = tetT.z;
   s_tetT[tx*4 + 3] = tetT.w;
 
-
-
   if(tx < m_maxNumInVert)
     for(int i = 0; i< m_maxVertMappingInside; i++)
     {
@@ -571,33 +411,10 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
 
   __syncthreads();
 
-  //  /////////////////////////////////////////done shared memory copy//////////////////////////////////////////////////
-
-
-  //float a,b, delta, cosA, lamda1, lamda2, TC1, TC2;
-  //float TAB,TAC, TA, TB, TC, TD;
-  //float oldA, oldB, oldC, oldD;
-  //float squareAB;
-  //float LenAB, LenBC, LenAC, LenCD, LenAD;
-  //float EdgeTA, EdgeTB;
+  ////////////////done shared memory copy//////////////////////////////////////////////////
 
   float oldT, newT;
   float TD, TA, TB, TC;
-  //float a,b,c, delta;
-  //float TAB, TAC, TA, TB, TC, TD,TDTri,TDTet, TD1, TD2,TD3, TD4, TD5, TD6, lenAB, lenAC, lenBC, lenDA, lenDB, lenDC;
-  //float tmp, tmp1, tmp2, tmp3, tmp4;  //for square calculation
-  //int IdxA, IdxB, IdxC, IdxD;
-  //float sAEB, sBEC, sCEA, sABC;
-  //float3 CoordA, CoordB, CoordC, CoordD;
-  //
-
-
-  //  //float oldValues0;
-  //  //float oldValues1;
-  //  //float oldValues2;
-  //  //float oldValues[3];
-
-  //float speedInv = 1.0f; //d_speedInv[tet_base + tx];
 
   float3 tetmem0 = d_tetMem0[tet_base + tx];
   float3 tetmem1 = d_tetMem1[tet_base + tx];
@@ -611,17 +428,13 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
 
   float ADBC = ACBC + BCCD;
   float ACBD = ACBC + ACCD;
-  //float ABCD = ACCD - BCCD;
   float CDBD = ADBD - ACBD;
   float ADCD = ADBD - ADBC;
   float CDCD = ADCD - ACCD;
   float ADAD = ADCD + ACAD;
   float ACAC = ACAD - ACCD;
-  //float ACAB = ACAD - ACBD;
   float BDBD = BCBD + CDBD;
   float BCBC = BCBD - BCCD;
-
-
 
   for(int iter=0; iter< nIter; iter++)
   {
@@ -630,9 +443,7 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
       oldT = s_tetT[s_vertMem[tx*m_maxVertMappingInside+0]];
       TD = oldT;
     }
-
     __syncthreads();
-
 
     TA = s_tetT[tx*4+0];
     TB = s_tetT[tx*4+1];
@@ -646,19 +457,14 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
 
     __syncthreads();
 
-
     newT = LARGENUM_TET;
-
 
     if(tx < block_size)    //block_size is the vertices in this block and it is about warp size so there is no severe divergence
     {
-
       int tmp2;
       for(int j = 0; (j < m_maxVertMappingInside) && ( (tmp2 = s_vertMem[tx * m_maxVertMappingInside + j]) > -1); j++)                        // find the min and keep the old T for convergence check
       {
-
         newT = MIN(newT,s_tetT[tmp2]);
-
       }
 
       for(int j =0; (j < m_maxVertMappingInside) && ( (tmp2 = s_vertMem[tx * m_maxVertMappingInside + j]) > -1 ); j++) // update all the old to the min
@@ -666,7 +472,6 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
         s_tetT[tmp2] = newT;
       }
     }
-
     __syncthreads();
   }
 
@@ -675,20 +480,10 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
   if(tx < block_size)
   {
     float residue = oldT - newT;
-    //int tmpindex;
     d_con[vert_base + tx] = (residue < EPS) ? true : false;
-
     d_vertT[vert_base + tx] = newT;
-
-
-
   }
-
-
-
-
   __syncthreads();
-
 
 }
 
@@ -698,33 +493,17 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
     int* d_BlockSizes, bool* d_con, int* d_ActiveList,
     int m_maxNumInVert, int m_maxVertMappingInside, int m_maxNumOutVertMapping)
 {
-
   int list_idx = blockIdx.y*gridDim.x + blockIdx.x;
-
 
   // retrieve actual block index from the active list
   int block_idx = d_ActiveList[list_idx];
   int block_size = d_BlockSizes[block_idx];
   int maxNumTotalTets = blockDim.x;
-
-
-  ////////////////////////////////////////initialize shared memory//////////////////////////////////////////
+  //////////////////initialize shared memory//////////////////////////////////////////
 
   int tx = threadIdx.x;
   int tet_base = block_idx*maxNumTotalTets;
   int vert_base = block_idx*m_maxNumInVert;
-
-
-  //float* s_vertX = (float*)s_array;
-  //float* s_vertY = (float*)&s_vertX[numVert];
-  //float* s_vertZ = (float*)&s_vertY[numVert];
-  //float* s_vertT = (float*)&s_vertZ[numVert];
-  //int* s_strip = (int*)&s_vertT[numVert];
-
-  //s_vertX[tx] = d_vertX[vert_base_addr + tx];
-  //s_vertY[tx] = d_vertY[vert_base_addr + tx];
-  //s_vertZ[tx] = d_vertZ[vert_base_addr + tx];
-  //s_vertT[tx] = d_vertT[vert_base_addr + tx];
 
   float*      s_tetT = (float*)s_array;
   int*   s_vertMem = (int*)&s_tetT[maxNumTotalTets * 4];
@@ -736,8 +515,6 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
   s_tetT[tx*4 + 2] = tetT.z;
   s_tetT[tx*4 + 3] = tetT.w;
 
-
-
   if(tx < m_maxNumInVert)
     for(int i = 0; i< m_maxVertMappingInside; i++)
     {
@@ -747,26 +524,10 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
 
   __syncthreads();
 
-  //  /////////////////////////////////////////done shared memory copy//////////////////////////////////////////////////
-
+  /////////////done shared memory copy//////////////////////////////////////////////////
 
   float oldT, newT;
   float TD, TA, TB, TC;
-  //float a,b,c, delta;
-  //float TAB, TAC, TA, TB, TC, TD,TDTri,TDTet, TD1, TD2,TD3, TD4, TD5, TD6, lenAB, lenAC, lenBC, lenDA, lenDB, lenDC;
-  //float tmp, tmp1, tmp2, tmp3, tmp4;  //for square calculation
-  //int IdxA, IdxB, IdxC, IdxD;
-  //float sAEB, sBEC, sCEA, sABC;
-  //float3 CoordA, CoordB, CoordC, CoordD;
-  //
-
-
-  //  //float oldValues0;
-  //  //float oldValues1;
-  //  //float oldValues2;
-  //  //float oldValues[3];
-
-  //float speedInv = 1.0f; //d_speedInv[tet_base + tx];
 
   float3 tetmem0 = d_tetMem0[tet_base + tx];
   float3 tetmem1 = d_tetMem1[tet_base + tx];
@@ -780,18 +541,13 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
 
   float ADBC = ACBC + BCCD;
   float ACBD = ACBC + ACCD;
-  //float ABCD = ACCD - BCCD;
   float CDBD = ADBD - ACBD;
   float ADCD = ADBD - ADBC;
   float CDCD = ADCD - ACCD;
   float ADAD = ADCD + ACAD;
   float ACAC = ACAD - ACCD;
-  //float ACAB = ACAD - ACBD;
   float BDBD = BCBD + CDBD;
   float BCBC = BCBD - BCCD;
-
-
-
   for(int iter=0; iter< 1; iter++)
   {
     if(tx < block_size)
@@ -802,7 +558,6 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
 
     __syncthreads();
 
-
     TA = s_tetT[tx*4+0];
     TB = s_tetT[tx*4+1];
     TC = s_tetT[tx*4+2];
@@ -815,19 +570,14 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
 
     __syncthreads();
 
-
     newT = LARGENUM_TET;
-
 
     if(tx < block_size)    //block_size is the vertices in this block and it is about warp size so there is no severe divergence
     {
-
       int tmp2;
       for(int j = 0; (j < m_maxVertMappingInside) && ( (tmp2 = s_vertMem[tx * m_maxVertMappingInside + j]) > -1); j++)                        // find the min and keep the old T for convergence check
       {
-
         newT = MIN(newT,s_tetT[tmp2]);
-
       }
 
       for(int j =0; (j < m_maxVertMappingInside) && ( (tmp2 = s_vertMem[tx * m_maxVertMappingInside + j]) > -1 ); j++) // update all the old to the min
@@ -839,30 +589,17 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
     __syncthreads();
   }
 
-
   __syncthreads();
 
   if(tx < block_size)
   {
     float residue = oldT - newT;
-    //int tmpindex;
     d_con[vert_base + tx] = (residue < EPS) ? true : false;
-
-
-
-
   }
-
-
-
-
   __syncthreads();
 
-
-
 }
-//
-//
+
 __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMem, int* d_vertMemOutside, int* d_BlockSizes, int* d_ActiveList,int m_maxNumInVert,int m_maxNumTotalTets, int m_maxVertMappingInside, int m_maxVertMappingOutside)
 {
   int list_idx = blockIdx.y*gridDim.x + blockIdx.x;
@@ -870,9 +607,7 @@ __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMem, int*
   int block_idx = d_ActiveList[list_idx];
   int block_size = d_BlockSizes[block_idx];
 
-
-
-  ////////////////////////////////////////initialize shared memory//////////////////////////////////////////
+  ////////////initialize shared memory//////////////////////////////////////////
 
   int tx = threadIdx.x;
   int tet_base = block_idx*m_maxNumTotalTets;
@@ -903,18 +638,13 @@ __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMem, int*
       case 3:
         d_tetT[segment].w = T;
         break;
-
-
       }
       j++;
       tmpindex = d_vertMem[block_idx*m_maxVertMappingInside*m_maxNumInVert +  tx * m_maxVertMappingInside + j];
-
-
     }
 
     for(int j = 0; (j < m_maxVertMappingOutside) && ((tmpindex = d_vertMemOutside[block_idx*m_maxVertMappingOutside*m_maxNumInVert +  tx * m_maxVertMappingOutside + j]) > -1 ); j++) // update gloal memory outside all the old to the min
     {
-
       int segment = tmpindex / 4;
       int offset = tmpindex % 4;
       switch(offset)
@@ -931,12 +661,7 @@ __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMem, int*
       case 3:
         d_tetT[segment].w = T;
         break;
-
-
       }
     }
-
   }
-
-
 }

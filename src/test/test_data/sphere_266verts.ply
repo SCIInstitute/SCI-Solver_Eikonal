@@ -806,3 +806,12 @@ end_header
 3 263 265 264
 3 265 264 265
 3 264 265 259
+Surface Loop(2) = {1};
+Volume(3) = {2};
+Surface Loop(2) = {1};
+Volume(3) = {2};
+Delete {
+  Surface{1};
+}
+Surface Loop(2) = {1};
+Volume(3) = {2};

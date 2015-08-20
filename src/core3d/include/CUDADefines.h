@@ -17,7 +17,7 @@
 #define NITER 2   // best 7 for dragon.ts and 7 for dragon.ts_maxSF0.5 one,7 for dragon.ts_maxSF0.5 curvature,
 
 
-#define EPS (float)1e-06
+#define EPS 1e-5
 
 typedef unsigned int uint;
 typedef unsigned char uchar;

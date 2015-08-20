@@ -280,11 +280,8 @@ void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squ
   printf("final number of blocks: %d\n", numBlock);
 }
 
-void meshFIM3d::GenerateData(void)
+void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 {
-
-  printf("Start GenerateData!\n");
-
   int numVert = m_meshPtr->vertices.size();
 
   if(!InitCUDA())
@@ -332,9 +329,10 @@ void meshFIM3d::GenerateData(void)
 
   ////////////////////initialize the seed points for h_tetT//////////////////////////
 
-  printf("Seed size is %lu, source block is %d\n", m_SeedPoints.size(),
-      m_PartitionLabel.empty()?-1:
-      (m_PartitionLabel[m_SeedPoints.empty()?0:m_SeedPoints[0]]));
+  if (verbose)
+    printf("Seed size is %d, source block is %d\n", m_SeedPoints.size(),
+        m_PartitionLabel.empty()?-1:
+        (m_PartitionLabel[m_SeedPoints.empty()?0:m_SeedPoints[0]]));
   for(int i = 0; i < m_SeedPoints.size(); i++)
   {
     int seed = m_SeedPoints[i];
@@ -342,7 +340,6 @@ void meshFIM3d::GenerateData(void)
     m_ActiveBlocks.insert(m_ActiveBlocks.end(), seedBelongToBlock);
     h_blockCon[seedBelongToBlock] = false;
     h_BlockLabel[seedBelongToBlock] = ACTIVE;
-    // int blockIdx = seedBelongToBlock * m_maxNumTotalFaces * TRIMEMLENGTH;
     for(int j = 0; j < m_blockVertMapping[seed].size(); j++)
     {
       h_tetT[m_blockVertMapping[seed][j]] = 0.0;
@@ -351,7 +348,8 @@ void meshFIM3d::GenerateData(void)
 
   int numActive = m_ActiveBlocks.size();
 
-  printf("Active block number is %d.\n", numActive);
+  if (verbose)
+    printf("Active block number is %d.\n", numActive);
 
 
   h_ActiveList.resize(m_numBlock);
@@ -370,7 +368,7 @@ void meshFIM3d::GenerateData(void)
   cudaSafeCall((cudaMalloc((void**)&d_tetMem1, sizeof(float)* 3 * m_maxNumTotalTets * m_numBlock)));
   cudaSafeCall((cudaMalloc((void**)&d_tetT, sizeof(float)* 4 * m_maxNumTotalTets * m_numBlock)));
   cudaSafeCall((cudaMalloc((void**)&d_vertT, sizeof(float)* m_maxNumInVert * m_numBlock)));
-  cudaSafeCall( cudaMalloc( (void**) &d_speedInv, sizeof(float) * m_maxNumTotalTets * m_numBlock) );
+  //  cudaSafeCall( cudaMalloc( (void**) &d_speedInv, sizeof(float) * m_maxNumTotalTets * m_numBlock) );
   cudaSafeCall((cudaMalloc((void**)&d_vertMem, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingInside)));
   cudaSafeCall((cudaMalloc((void**)&d_vertMemOutside, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingOutside)));
   cudaSafeCall((cudaMalloc((void**)&d_BlockSizes, sizeof(int)* m_numBlock)));
@@ -382,7 +380,6 @@ void meshFIM3d::GenerateData(void)
   cudaSafeCall((cudaMemcpy(d_tetMem0, h_tetMem0, sizeof(float)* 3 * m_maxNumTotalTets * m_numBlock, cudaMemcpyHostToDevice)));
   cudaSafeCall((cudaMemcpy(d_tetMem1, h_tetMem1, sizeof(float)* 3 * m_maxNumTotalTets * m_numBlock, cudaMemcpyHostToDevice)));
   cudaSafeCall((cudaMemcpy(d_tetT, h_tetT, sizeof(float)* 4 * m_maxNumTotalTets * m_numBlock, cudaMemcpyHostToDevice)));
-  //  cudaSafeCall( cudaMemcpy( d_speedInv,h_speedInv, sizeof(float) * m_maxNumTotalTets * m_numBlock , cudaMemcpyHostToDevice));
   cudaSafeCall((cudaMemcpy(d_vertMem, h_vertMem, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingInside, cudaMemcpyHostToDevice)));
   cudaSafeCall((cudaMemcpy(d_vertMemOutside, h_vertMemOutside, sizeof(int)* m_maxNumInVert * m_numBlock * m_maxVertMappingOutside, cudaMemcpyHostToDevice)));
   cudaSafeCall((cudaMemcpy(d_BlockSizes, h_BlockSizes, sizeof(int)* m_numBlock, cudaMemcpyHostToDevice)));
@@ -404,18 +401,16 @@ void meshFIM3d::GenerateData(void)
   int totalIterationNumber = 0;
   timerstart = clock();
 
-  printf("Start Iteration!!\n");
-
   int maxActive = 0;
   while(numActive > 0)
   {
     maxActive = MAX(maxActive, numActive);
-    printf("nTotalIter = %d, numActive = %d\n", nTotalIter, numActive);
+    if (verbose)
+      printf("nTotalIter = %d, numActive = %d\n", nTotalIter, numActive);
     ///////step 1: run solver /////////////////////////////////////
     nTotalIter++;
     totalIterationNumber += numActive;
     dim3 dimGrid(numActive, 1);
-    //dim3 dimBlock(520, 1);
     dim3 dimBlock(m_maxNumTotalTets, 1);
     cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveList[0], sizeof(int)* m_numBlock, cudaMemcpyHostToDevice));
     int sharedSize = sizeof(float)* 4 * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
@@ -424,86 +419,105 @@ void meshFIM3d::GenerateData(void)
 
     dimBlock = dim3(m_maxNumInVert, 1);
     CopyOutBack << <dimGrid, dimBlock >> >(d_tetT, d_vertT, d_vertMem, d_vertMemOutside, d_BlockSizes, d_ActiveList, m_maxNumInVert, m_maxNumTotalTets, m_maxVertMappingInside, m_maxVertMappingOutside);
-    //////////////////////step 2: reduction////////////////////////////////////////////////
     dimBlock = dim3(m_maxNumInVert, 1);
     run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActive, d_BlockSizes);
-
-    //////////////////////////////////////////////////////////////////
-    // 3. check neighbor tiles of converged tile
-    // Add any active block of neighbor of converged block is inserted
-    // to the list
     cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
-
     int nOldActiveBlock = numActive;
+    numActive = 0;
+    h_ActiveListNew.clear();
+    for(uint i = 0; i < nOldActiveBlock; i++)
+    {
+      uint currBlkIdx = h_ActiveList[i];
+      h_BlockLabel[currBlkIdx] = FARP;
+      if(!h_blockCon[currBlkIdx]) // if not converged
+      {
+        h_BlockLabel[currBlkIdx] = ACTIVE;
+        //h_ActiveList[numActive++] = currBlkIdx;
+      }
+    }
 
     for(uint i = 0; i < nOldActiveBlock; i++)
     {
       // check neighbors of current active tile
       uint currBlkIdx = h_ActiveList[i];
 
-      if(h_blockCon[currBlkIdx]) // not active : converged
+      if(h_blockCon[currBlkIdx]) //converged
       {
+        //h_BlockLabel[currBlkIdx] == FARP;
         set<int> nb = m_BlockNeighbor[currBlkIdx];
 
         set<int>::iterator iter;
-        for( iter = nb.begin(); iter != nb.end() ; iter++)
+        for(iter = nb.begin(); iter != nb.end(); iter++)
         {
           int currIdx = *iter;
 
           if(h_BlockLabel[currIdx] == FARP)
           {
             h_BlockLabel[currIdx] = ACTIVE;
-            h_ActiveList[numActive++] = currIdx;
+            h_ActiveListNew.push_back(currIdx);
           }
         }
       }
     }
-    //      //////////////////////////////////////////////////////////////////
-    //      // 4. run solver only once for neighbor blocks of converged block
-    //      // current active list contains active blocks and neighbor blocks of
-    //      // any converged blocks
 
-    cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveList[0], numActive * sizeof(int), cudaMemcpyHostToDevice));
-    dimGrid = dim3(numActive, 1);
-    dimBlock = dim3(m_maxNumTotalTets, 1);
-
-    sharedSize = sizeof(float4) * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
-
-    run_check_neghbor << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_speedInv, d_vertMem, d_vertMemOutside,
-        d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside);
-
-    ////////////////////////////////////////////////////////////////
-    // 5. reduction
-    ///////////////////////////////////////////////////////////////
-    dimGrid = dim3(numActive, 1);
-    dimBlock = dim3(m_maxNumInVert, 1);
-    run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActive, d_BlockSizes);
-
-    //////////////////////////////////////////////////////////////////
-    // 6. update active list
-    // read back active volume from the device and add
-    // active block to active list on the host memory
-
-    numActive = 0;
-
-    cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
-    for(uint i = 0; i < m_numBlock; i++)
+    for(uint i = 0; i < nOldActiveBlock; i++)
     {
-      if(!h_blockCon[i]) // false : activate block (not converged)
+      uint currBlkIdx = h_ActiveList[i];
+      if(!h_blockCon[currBlkIdx]) // if not converged
       {
-        h_BlockLabel[i] = ACTIVE;
-        h_ActiveList[numActive++] = i;
+        h_ActiveList[numActive++] = currBlkIdx;
       }
-      else h_BlockLabel[i] = FARP;
     }
-  }
+    //////////////////////////////////////////////////////////////////
+    // 4. run solver only once for neighbor blocks of converged block
+    // current active list contains active blocks and neighbor blocks of
+    // any converged blocks
+    if (verbose)
+      printf("numActiveNew = %d\n", h_ActiveListNew.size());
+    if(h_ActiveListNew.size() > 0)
+    {
 
+      int numActiveNew = h_ActiveListNew.size();
+
+      cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveListNew[0], numActiveNew * sizeof(int), cudaMemcpyHostToDevice));
+      dim3 dimGrid(numActiveNew, 1);
+      dim3 dimBlock(m_maxNumTotalTets, 1);
+
+      int sharedSize = sizeof(float4) * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
+      run_check_neghbor << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_speedInv, d_vertMem, d_vertMemOutside,
+          d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside);
+
+      ////////////////////////////////////////////////////////////////
+      // 5. reduction
+      ///////////////////////////////////////////////////////////////
+      dimGrid = dim3(numActiveNew, 1);
+      dimBlock = dim3(m_maxNumInVert, 1);
+      run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActiveNew, d_BlockSizes);
+
+      //////////////////////////////////////////////////////////////////
+      // 6. update active list
+      // read back active volume from the device and add
+      // active block to active list on the host memory
+      cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
+      for(uint i = 0; i < h_ActiveListNew.size(); i++)
+      {
+
+        uint currBlkIdx = h_ActiveListNew[i];
+        if(!h_blockCon[currBlkIdx]) // false : activate block (not converged)
+        {
+          h_ActiveList[numActive++] = currBlkIdx;
+        }
+        else h_BlockLabel[currBlkIdx] = FARP;
+      }
+    }
+    if (nTotalIter > maxIters) break;
+  }
   cudaSafeCall(cudaThreadSynchronize());
   timerend = clock();
   double duration = (double)(timerend - timerstart) / CLOCKS_PER_SEC;
 
-  printf("Computing time : %.10lf s\n",duration);
-
+  if (verbose)
+    printf("Computing time : %.10lf s\n",duration);
   cudaSafeCall(cudaMemcpy(h_vertT, d_vertT, sizeof(float)* m_maxNumInVert * m_numBlock, cudaMemcpyDeviceToHost));
 
   cudaSafeCall(cudaThreadSynchronize());
@@ -517,29 +531,24 @@ void meshFIM3d::GenerateData(void)
 
   for(int i = 0; i < m_numBlock; i++)
   {
+    printf("IM DEBUGGGGGGGGGGG");
 
     tmp_h_verrT[i].resize(m_maxNumInVert);
     for(int j = 0; j < m_maxNumInVert; j++)
     {
-
       tmp_h_verrT[i][j] = h_vertT[i * m_maxNumInVert + j];
-
-
     }
   }
 
 #endif
 
-  //FILE* resultfile = fopen("resultXX.txt", "w+");
   for(int i = 0; i < m_numBlock; i++)
   {
     for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
     {
-      //fprintf(resultfile, "%.8f\n", h_vertT[i * m_maxNumInVert + j]);
       m_meshPtr->vertT[0][m_PartitionInVerts[i][j]] = h_vertT[i * m_maxNumInVert + j];
     }
   }
-  //fclose(resultfile);
 
   FILE * resultfile = fopen("result.txt", "w+");
   for(int i = 0; i < numVert; i++)
@@ -549,15 +558,13 @@ void meshFIM3d::GenerateData(void)
 
   fclose(resultfile);
 
-
-
-  printf("The iteration number: %d\n", nTotalIter);
-  printf("The total iteration number: %d\n", totalIterationNumber);
-
+  if (verbose) {
+    printf("The iteration number: %d\n", nTotalIter);
+    printf("The total iteration number: %d\n", totalIterationNumber);
+  }
   cudaSafeCall(cudaFree(d_con));
   cudaSafeCall(cudaFree(d_blockCon));
   cudaSafeCall(cudaFree(d_BlockSizes));
-  cudaSafeCall(cudaFree(d_speedInv));
 
   free(h_blockCon);
   free(h_BlockSizes);
