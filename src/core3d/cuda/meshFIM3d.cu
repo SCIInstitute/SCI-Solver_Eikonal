@@ -527,21 +527,6 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
   m_meshPtr->vertT.resize(1);
   m_meshPtr->vertT[0].resize(numVert);
 
-#ifdef _DEBUG
-
-  for(int i = 0; i < m_numBlock; i++)
-  {
-    printf("IM DEBUGGGGGGGGGGG");
-
-    tmp_h_verrT[i].resize(m_maxNumInVert);
-    for(int j = 0; j < m_maxNumInVert; j++)
-    {
-      tmp_h_verrT[i][j] = h_vertT[i * m_maxNumInVert + j];
-    }
-  }
-
-#endif
-
   for(int i = 0; i < m_numBlock; i++)
   {
     for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
