@@ -24,8 +24,8 @@ namespace Eikonal {
         squareWidth_(16),
         squareBlockLength_(1),
         squareBlockWidth_(1),
-		maxIterations_(1000)
-        {}
+        maxIterations_(1000)
+    {}
       //2D data
       bool verbose_;
       std::string filename_;
@@ -37,18 +37,18 @@ namespace Eikonal {
       int speedType_; // ONE (1), CURVATURE (2), NOISE (3)
       int squareLength_, squareWidth_;
       int squareBlockLength_, squareBlockWidth_;
-	  int maxIterations_;
+      int maxIterations_;
   };
 
-  //The static pointer to the mesh 
+  //The static pointer to the mesh
   static TriMesh * mesh_ = NULL;
-  
+
   /**
    * Creates the mesh, partitions the mesh, and runs the algorithm.
    *
    * @data The set of options for the Eikonal algorithm.
    *       The defaults are used if nothing is provided.
-   * @return An array of iterations where each iteration has an array 
+   * @return An array of iterations where each iteration has an array
    *         of values that correspond to vertex values at that iteration.
    */
   std::vector< std::vector< float> >
@@ -56,29 +56,29 @@ namespace Eikonal {
       clock_t starttime, endtime;
       starttime = clock ();
       mesh_ = TriMesh::read(data.filename_.c_str(), data.verbose_);
-	  if (!mesh_) exit(1);
+      if (!mesh_) exit(1);
       meshFIM2d FIMPtr;
       FIMPtr.SetSeedPoint(data.seedPointList_);
       FIMPtr.SetMesh(mesh_, data.speedType_);
       FIMPtr.SetStopDistance(data.stopDistance_);
       if (data.isStructured_) {
-		  int numBlockLength = (data.squareLength_ / data.squareBlockLength_);
-		  int numBlockWidth  = (data.squareWidth_ / data.squareBlockWidth_);
-		  data.maxBlocks_ = numBlockLength * numBlockWidth;
+        int numBlockLength = (data.squareLength_ / data.squareBlockLength_);
+        int numBlockWidth  = (data.squareWidth_ / data.squareBlockWidth_);
+        data.maxBlocks_ = numBlockLength * numBlockWidth;
         FIMPtr.GraphPartition_Square(data.squareLength_,data.squareWidth_,
             data.squareBlockLength_,
             data.squareBlockWidth_,
             data.verbose_);
 
-	  } else {
+      } else {
         FIMPtr.GraphPartition_METIS2( data.maxBlocks_,
             data.maxVertsPerBlock_, data.verbose_);
-	  }
+      }
       FIMPtr.PartitionFaces(data.maxBlocks_);
       FIMPtr.InitializeLabels(data.maxBlocks_);
 
       std::vector< std::vector< float > > results =
-		  FIMPtr.GenerateData(data.maxBlocks_, data.maxIterations_, data.verbose_);
+        FIMPtr.GenerateData(data.maxBlocks_, data.maxIterations_, data.verbose_);
       endtime = clock();
       double duration = (double)(endtime - starttime) * 1000/ CLOCKS_PER_SEC;
 

@@ -239,7 +239,7 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
   unlink("tmp.mesh");
 }
 
-void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight)
+void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
@@ -281,7 +281,8 @@ void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squ
   {
     m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
   }
-  printf("final number of blocks: %d\n", numBlock);
+  if (verbose)
+    printf("final number of blocks: %d\n", numBlock);
 }
 
 void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
