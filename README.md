@@ -22,7 +22,7 @@ are supported, and are read by the <a href="http://graphics.stanford.edu/softwar
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
-<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/>
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
 Solving the Eikonal Equation on Tetrahedral Domains</a>**<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal3d.png"  align="right" hspace="20" width=450>
@@ -37,7 +37,7 @@ are supported, and are read by the <a href="http://wias-berlin.de/software/tetge
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
-
+<br/><br/><br/><br/>
 Requirements
 ==============
 
