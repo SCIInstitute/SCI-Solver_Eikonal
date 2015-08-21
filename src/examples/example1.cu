@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
       data.filename_ = std::string(argv[i+1]);
       i++;
     }
-
+  Eikonal::findSeedNear(40.,40.,40.);
   Eikonal::solveEikonal3D(data);
   //we know that the solution should be the euclidean distance from the center.
   std::vector <float> solution;
