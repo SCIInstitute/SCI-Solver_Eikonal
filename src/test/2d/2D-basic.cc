@@ -5,10 +5,9 @@ TEST(Basic2D, NonMaxUnstructured) {
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
   data.maxBlocks_ = 11;
   data.stopDistance_ = 100.f;
-  std::vector< std::vector <float> > results;
-  EXPECT_NO_THROW((results = Eikonal::solveEikonal2D(data)));
-  for (size_t i = 0; i < results[0].size(); i ++) {
-    EXPECT_TRUE(results[results.size() - 1][i] < data.stopDistance_);
+  EXPECT_NO_THROW(Eikonal::solveEikonal2D(data));
+  for (size_t i = 0; i < Eikonal::getFinalResult().size(); i ++) {
+    EXPECT_TRUE(Eikonal::getFinalResult()[i] < data.stopDistance_);
   }
 }
 TEST(Basic2D, NonMaxStructured) {
@@ -19,9 +18,8 @@ TEST(Basic2D, NonMaxStructured) {
   data.squareBlockLength_ = 4;
   data.squareBlockWidth_ = 4;
   data.stopDistance_ = 100.f;
-  std::vector< std::vector <float> > results;
-  EXPECT_NO_THROW((results = Eikonal::solveEikonal2D(data)));
-  for (size_t i = 0; i < results[0].size(); i ++) {
-    EXPECT_TRUE(results[results.size() - 1][i] < data.stopDistance_);
+  EXPECT_NO_THROW(Eikonal::solveEikonal2D(data));
+  for (size_t i = 0; i < Eikonal::getFinalResult().size(); i ++) {
+    EXPECT_TRUE(Eikonal::getFinalResult()[i] < data.stopDistance_);
   }
 }

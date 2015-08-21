@@ -4,11 +4,11 @@ TEST(Converge2D, Unstructured) {
   Eikonal::Eikonal2D data;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
   data.maxBlocks_ = 1000;
-  std::vector< std::vector <float> > results;
-  EXPECT_NO_THROW((results = Eikonal::solveEikonal2D(data)));
-  for (size_t i = 1; i < results.size(); i ++) {
-    for (size_t j = 0; j < results[i].size(); j ++) {
-      EXPECT_TRUE(results[i][j] <= results[i-1][j]);
+  EXPECT_NO_THROW(Eikonal::solveEikonal2D(data));
+  for (size_t i = 1; i < Eikonal::numIterations(); i ++) {
+    for (size_t j = 0; j < Eikonal::getFinalResult().size(); j ++) {
+      EXPECT_TRUE(Eikonal::getResultAtIteration(i)[j] <= 
+          Eikonal::getResultAtIteration(i)[j]);
     }
   }
 }
@@ -19,11 +19,11 @@ TEST(Converge2D, Structured) {
   data.squareWidth_ = 16;
   data.squareBlockLength_ = 4;
   data.squareBlockWidth_ = 4;
-  std::vector< std::vector <float> > results;
-  EXPECT_NO_THROW((results = Eikonal::solveEikonal2D(data)));
-  for (size_t i = 1; i < results.size(); i ++) {
-    for (size_t j = 0; j < results[i].size(); j ++) {
-      EXPECT_TRUE(results[i][j] <= results[i-1][j]);
+  EXPECT_NO_THROW(Eikonal::solveEikonal2D(data));
+  for (size_t i = 1; i < Eikonal::numIterations(); i ++) {
+    for (size_t j = 0; j < Eikonal::getFinalResult().size(); j ++) {
+      EXPECT_TRUE(Eikonal::getResultAtIteration(i)[j] <= 
+          Eikonal::getResultAtIteration(i)[j]);
     }
   }
 }

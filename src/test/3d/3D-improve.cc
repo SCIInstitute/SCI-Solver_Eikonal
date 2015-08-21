@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "Eikonal3D.h"
 TEST(Improve3D, DecreaseRMSError) {
-  std::vector< std::vector< std::vector <float> > > results;
-  results.resize(5);
   Eikonal::Eikonal3D data;
   std::vector<float> rmsError;
   //low granularity
@@ -16,7 +14,7 @@ TEST(Improve3D, DecreaseRMSError) {
     float x = Eikonal::mesh_->vertices[i][0];
     float y = Eikonal::mesh_->vertices[i][1];
     float z = Eikonal::mesh_->vertices[i][2];
-    solution.push_back(std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z)));
+    solution[i] = std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z));
   }
   // now calculate the RMS error for this run
   float sum = 0.f;
@@ -36,7 +34,7 @@ TEST(Improve3D, DecreaseRMSError) {
     float x = Eikonal::mesh_->vertices[i][0];
     float y = Eikonal::mesh_->vertices[i][1];
     float z = Eikonal::mesh_->vertices[i][2];
-    solution.push_back(std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z)));
+    solution[i] = std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z));
   }
   // now calculate the RMS error for this run
   sum = 0.f;
@@ -56,7 +54,7 @@ TEST(Improve3D, DecreaseRMSError) {
     float x = Eikonal::mesh_->vertices[i][0];
     float y = Eikonal::mesh_->vertices[i][1];
     float z = Eikonal::mesh_->vertices[i][2];
-    solution.push_back(std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z)));
+    solution[i] = std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z));
   }
   // now calculate the RMS error for this run
   sum = 0.f;

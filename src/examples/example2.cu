@@ -27,17 +27,8 @@
 //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <Eikonal2D.h>
-#include <sstream>
 
-void printGraph(std::vector< std::vector < float > > & results);
-
-/**************************************************************/
-/* main                                                       */
-/**************************************************************/
 int main(int argc, char* argv[]) {
   Eikonal::Eikonal2D data;
   for (int i = 1; i < argc; i++)
@@ -51,109 +42,28 @@ int main(int argc, char* argv[]) {
       if (i+1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i+1]);
       i++;
-    } else if (strcmp(argv[i],"-t") == 0) {
-      if (i+1 >= argc) break;
-      data.maxVertsPerBlock_  = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-l") == 0) {
-      if (i+1 >= argc) break;
-      data.squareLength_  = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-w") == 0) {
-      if (i+1 >= argc) break;
-      data.squareWidth_  = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-bl") == 0) {
-      if (i+1 >= argc) break;
-      data.squareBlockLength_  = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-bw") == 0) {
-      if (i+1 >= argc) break;
-      data.squareBlockWidth_  = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-s") == 0) {
-      data.isStructured_ = true;
     } else if (strcmp(argv[i],"-h") == 0) {
       printf("Usage: ./Example2 [OPTIONS]\n");
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
-      //Number of blocks affects partitioning and convergence.
+      //# of blocks affects partitioning & convergence.
       //Adjust accordingly.
-      printf("  -b  MAX_BLOCKS Max # of blocks to use\n");
-      printf("  -t  MAX_VERTS  Max # verts per block\n");
-      printf("  -l  SQ_LENGTH  The square length\n");
-      printf("  -w  SQ_WIDTH   The square width\n");
-      printf("  -bl BL_LENGTH  The block length\n");
-      printf("  -bw BL_WIDTH   The block width\n");
-      printf("  -s            This is a structured mesh\n");
+      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       exit(0);
     }
-
-  std::vector< std::vector <float> >
-    results = Eikonal::solveEikonal2D(data);
-
-  printGraph(results);
-
-  return 0;
-}
-
-//this function depends on using the sphere examples in example_data
-void printGraph(std::vector< std::vector < float > > & results) {
-  // find the analytical solution to each vertex and compare.
+  Eikonal::solveEikonal2D(data);
+  //the solution for the sphere examples (center 54,54,54, & radius 19.58)
   std::vector< float > solution;
   solution.resize(Eikonal::mesh_->vertices.size());
-  float radius = 19.58f; //we know the radius of these spheres.
-  std::vector<float> center;
-  //we know the center of these spheres.
-  center.push_back(54.f);
-  center.push_back(54.f);
-  center.push_back(54.f);
   for (size_t i = 0; i < solution.size(); i++) {
-    float xDot = Eikonal::mesh_->vertices[i][0] - center[0];
-    float yDot = Eikonal::mesh_->vertices[i][1] - center[1];
-    float zDot = Eikonal::mesh_->vertices[i][2] - center[2];
-    solution[i] = radius * std::acos( zDot /
+    float xDot = Eikonal::mesh_->vertices[i][0] - 54.f;
+    float yDot = Eikonal::mesh_->vertices[i][1] - 54.f;
+    float zDot = Eikonal::mesh_->vertices[i][2] - 54.f;
+    solution[i] = 19.58f * std::acos( zDot /
         std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
   }
-  // now calculate the RMS error for each iteration
-  std::vector<float> rmsError;
-  rmsError.resize(results.size());
-  for (size_t i = 0; i < results.size(); i++) {
-    float sum = 0.f;
-    for (size_t j = 0; j < solution.size(); j++) {
-      float err = std::abs(solution[j] - results[i][j]);
-      sum +=  err * err;
-    }
-    rmsError[i] = std::sqrt(sum / static_cast<float>(solution.size()));
-  }
-  //determine the log range
-  float max_err = rmsError[0];
-  float min_err = rmsError[rmsError.size() - 1];
-  int max_log = -10, min_log = 10;
-  while (std::pow(static_cast<float>(10),max_log) < max_err) max_log++;
-  while (std::pow(static_cast<float>(10),min_log) > min_err) min_log--;
-  // print the error graph
-  printf("\n\nlog(Err)|\n");
-  bool printTick = true;
-  for(int i = max_log ; i >= min_log; i--) {
-    if (printTick) {
-      printf("   10^%2d|",i);
-    } else {
-      printf("        |");
-    }
-    for (size_t j = 0; j < results.size(); j++) {
-      if (rmsError[j] > std::pow(static_cast<float>(10),i) &&
-          rmsError[j] < std::pow(static_cast<float>(10),i+1))
-        printf("*");
-      else
-        printf(" ");
-    }
-    printf("\n");
-    printTick = !printTick;
-  }
-  printf("--------|------------------------------------------");
-  printf("  Converged to: %.4f\n",rmsError[rmsError.size() - 1]);
-  printf("        |1   5    10   15   20   25   30   35\n");
-  printf("                   Iteration\n");
+  if (data.verbose_)
+    Eikonal::printErrorGraph(solution);
+  return 0;
 }

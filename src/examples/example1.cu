@@ -39,10 +39,6 @@ int main(int argc, char *argv[])
   for (int i = 0; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       data.verbose_ = true;
-    } else if (strcmp(argv[i],"-m") == 0) {
-      if (i+1 >= argc) break;
-      data.maxIterations_ = atoi(argv[i+1]);
-      i++;
     } else if (strcmp(argv[i],"-b") == 0) {
       if (i+1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i+1]);
@@ -51,6 +47,13 @@ int main(int argc, char *argv[])
       if (i+1 >= argc) break;
       data.filename_ = std::string(argv[i+1]);
       i++;
+    } else if (strcmp(argv[i],"-h") == 0) {
+      printf("Usage: ./Example2 [OPTIONS]\n");
+      printf("  -h            Show this help.\n");
+      printf("  -v            Verbose output.\n");
+      printf("  -i INPUT      Use this triangle mesh \n");
+      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
+      exit(0);
     }
   Eikonal::solveEikonal3D(data);
   //we know that the solution should be the euclidean distance from the center.
