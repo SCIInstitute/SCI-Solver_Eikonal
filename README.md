@@ -25,11 +25,18 @@ Google Test</a> is used for testing.
 
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
 Solving the Eikonal Equation on Tetrahedral Domains</a>**
+<img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal3d.png"  align="right" hspace="20">
 
 **AUTHORS:**
 Zhisong Fu(a,b) <br/>
 Robert M. Kirby(a,b) <br/>
 Ross T. Whitaker(a,b) <br/>
+
+This library solves for the Eikional values on vertices located on a tetrahedral mesh. Several mesh formats
+are supported, and are read by the <a href="http://wias-berlin.de/software/tetgen/">TetGen Library</a>. 
+The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
+meshes. <a href="https://code.google.com/p/googletest/">
+Google Test</a> is used for testing.
 
 Requirements
 ==============
@@ -117,13 +124,48 @@ Then a program would setup the Eikonal parameters using the
 <code>Eikonal::solveEikonal2D() -OR- Eikonal::solveEikonal3D()</code> to generate
 the array of vertex values per iteration.
 
+Here is a minimal usage example for 3D, which is nearly identical to 2D.<br/>
+```c++
+#include <Eikonal3D.h>
+#include <iostream>
+int main(int argc, char *argv[])
+{
+  Eikonal::Eikonal3D data;
+  //the below means ~/my_tet_mesh.node & ~/my_tet_mesh.ele
+  data.filename_ = "~/my_tet_mesh"; 
+  //Run the solver
+  Eikonal::solveEikonal3D(data);
+  //now use the result
+  for(size_t i = 0; i < Eikonal::getFinalResult().size(); i++)
+    std::cout << "Vertex " << i << " value: " << 
+      Eikonal::getFinalResult()[i] << std::endl;
+  return 0;
+}
+```
+
+The following accessor functions are available after running the solver:
+```c++
+std::vector < float > getFinalResult();
+std::vector < float > getResultAtIteration(size_t i);
+size_t numIterations(); 
+```
+The function signatures are identical across 2D/3D. You can also access the results
+and the mesh directly after running the solver:
+```c++
+TetMesh * Eikonal::mesh_;
+// OR
+TriMesh * Eikonal::mesh_;
+// AND
+std::vector < std::vector < float > > iteration_values_;
+```
+
 <h3>Eikonal 2D Options</h3>
 
 ```C++
   class Eikonal2D {
       bool verbose_;                    //option to set for runtime verbosity [Default false]
       std::string filename_;            //the input triangle mesh filename    [Default ../src/test/test_data/sphere_266verts.ply
-]
+
       std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
       int maxBlocks_;                   //the max # of blocks (patches)
                                         //   on the convergence queue         [Default 10003]
@@ -134,6 +176,28 @@ the array of vertex values per iteration.
       int squareLength_, squareWidth_;  //if structured, the square size      [Default 16, 16]
       int squareBlockLength_;           //if structued, CUDA block length     [Default 1]
       int squareBlockWidth_;            //if structued, CUDA block width      [Default 1]
+      int maxIterations_;               //when to stop iterating if fail      [Default 1000]
+  };
+```
+
+<h3>Eikonal 3D Options</h3>
+
+```C++
+  class Eikonal3D {
+      bool verbose_;                    //option to set for runtime verbosity [Default false]
+      std::string filename_;            //the input tet mesh filename         [Default ../src/test/test_data/sphere339
+
+      std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
+      int maxBlocks_;                   //the max # of blocks (patches)
+                                        //   on the convergence queue         [Default 1000]
+      int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
+      bool isStructured_;               //Whether the mesh is structured      [Default false]
+      int squareLength_;                //if structured, the square size      [Default 16, 16, 16]
+      int squareWidth_;                 
+      int squareDepth_;                 
+      int squareBlockLength_;           //if structued, CUDA block length     [Default 4]
+      int squareBlockWidth_;            //if structued, CUDA block width      [Default 4]
+      int squareBlockDepth;             //if structued, CUDA block width      [Default 4]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
   };
 ```
