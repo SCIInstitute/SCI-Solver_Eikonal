@@ -4,8 +4,20 @@ SCI-Solver_Eikonal
 SCI-Solver_Eikonal is a C++/CUDA library written to solve the Eikonal equation on a 3D tet meshes and 2D triangular meshes. It uses the fast iterative method (FIM) to solve efficiently, and uses GPU hardware.
 
 The code was written by Zhisong Fu at the Scientific Computing and Imaging Institute, 
-University of Utah, Salt Lake City, USA. The theory behind this code is published in the papers: 
+University of Utah, Salt Lake City, USA. The theory behind this code is published in the papers linked below. 
+Table of Contents
+========
+- [Eikonal 2D Aknowledgements](#eikonal-2d-aknowledgements)
+- [Eikonal 3D Aknowledgements](#eikonal-3d-aknowledgements)
+- [Requirements](#requirements)
+- [Building](#building)<br/>
+		- [Linux / OSX](#linux-and-osx)<br/>
+		- [Windows](#windows)<br/>
+- [Running Examples](#running-examples)
+- [Using the Library](#using-the-library)
+- [Testing](#testing)<br/>
 
+<h4>Eikonal 2D Aknowledgements</h4>
 **<a href ="http://epubs.siam.org/doi/abs/10.1137/100788951">A Fast Iterative Method for Solving the 
 Eikonal Equation on Triangulated Surfaces</a>**<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20" width=450>
@@ -23,6 +35,8 @@ The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS librar
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
 <br/><br/><br/><br/><br/><br/><br/>
+
+<h4>Eikonal 3D Aknowledgements</h4>
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
 Solving the Eikonal Equation on Tetrahedral Domains</a>**<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal3d.png"  align="right" hspace="20" width=450>
@@ -52,7 +66,7 @@ Requirements
 Building
 ==============
 
-<h3>Unix / OSX</h3>
+<h3>Linux and OSX</h3>
 In a terminal:
 ```c++
 mkdir SCI-SOLVER_Eikonal/build
