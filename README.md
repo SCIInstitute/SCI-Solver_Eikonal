@@ -34,7 +34,7 @@ are supported, and are read by the <a href="http://graphics.stanford.edu/softwar
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
-<br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/>
 
 <h4>Eikonal 3D Aknowledgements</h4>
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
@@ -188,8 +188,8 @@ std::vector < std::vector < float > > iteration_values_;
       bool isStructured_;               //Whether the mesh is structured      [Default false]
       int speedType_;                   //ONE (1), CURVATURE (2), NOISE (3)   [Default ONE]
       int squareLength_, squareWidth_;  //if structured, the square size      [Default 16, 16]
-      int squareBlockLength_;           //if structued, CUDA block length     [Default 1]
-      int squareBlockWidth_;            //if structued, CUDA block width      [Default 1]
+      int squareBlockLength_;           //if structured, CUDA block length    [Default 1]
+      int squareBlockWidth_;            //if structured, CUDA block width     [Default 1]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
   };
 ```
@@ -209,9 +209,9 @@ std::vector < std::vector < float > > iteration_values_;
       int squareLength_;                //if structured, the square size      [Default 16, 16, 16]
       int squareWidth_;                 
       int squareDepth_;                 
-      int squareBlockLength_;           //if structued, CUDA block length     [Default 4]
-      int squareBlockWidth_;            //if structued, CUDA block width      [Default 4]
-      int squareBlockDepth;             //if structued, CUDA block width      [Default 4]
+      int squareBlockLength_;           //if structured, CUDA block length    [Default 4]
+      int squareBlockWidth_;            //if structured, CUDA block width     [Default 4]
+      int squareBlockDepth;             //if structured, CUDA block width     [Default 4]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
   };
 ```
