@@ -52,8 +52,6 @@ int main(int argc, char *argv[])
       data.filename_ = std::string(argv[i+1]);
       i++;
     }
-  data.seedPointList_.push_back(1);
-  data.seedPointList_.push_back(10);
   Eikonal::solveEikonal3D(data);
   //we know that the solution should be the euclidean distance from the center.
   std::vector <float> solution;
