@@ -29,17 +29,9 @@ namespace Eikonal {
         squareBlockLength_(4),
         squareBlockWidth_(4),
         squareBlockDepth_(4),
-        maxIterations_(1000),
-        guessSeed_(false),
-        seedX_(0.),
-        seedY_(0.),
-        seedZ_(0.)
+        maxIterations_(1000)
 
     {}
-      void findSeedNear(double x, double y, double z){
-        guessSeed_ = true;
-        seedX_ = x; seedY_ = y, seedZ_ = z;
-      }
       //3D data
       bool verbose_;
       std::string filename_;
@@ -50,8 +42,6 @@ namespace Eikonal {
       int squareLength_, squareWidth_, squareDepth_;
       int squareBlockLength_, squareBlockWidth_, squareBlockDepth_;
       int maxIterations_;
-      bool guessSeed_;
-      double seedX_, seedY_, seedZ_;
   };
 
   //The static pointer to the mesh
@@ -97,31 +87,7 @@ namespace Eikonal {
     mesh_->need_tet_virtual_tets(data.verbose_);
 
     meshFIM3d FIMPtr;
-    if (data.guessSeed_) {
-      double epsilon = 1e-6;
-      size_t iters = 0;
-      bool fail = false;
-      while(!FIMPtr.FindSeedPoint(data.seedX_,data.seedY_,data.seedZ_,epsilon)) {
-        epsilon *= 10.;
-        iters++;
-        if (iters > 10) {
-          fail = true;
-          break;
-        }
-      }
-      if (fail) {
-        std::cout << "Failed to find nearby seed point. Using the first vertex." << std::endl;
-        FIMPtr.SetSeedPoint(data.seedPointList_);
-      } else if (data.verbose_) {
-        std::cout << "Found nearby seed point at vertex: " << FIMPtr.m_SeedPointValues[0] <<
-          ", (" << mesh_->vertices[FIMPtr.m_SeedPointValues[0]][0] << ", " <<
-          mesh_->vertices[FIMPtr.m_SeedPointValues[0]][1] << ", " <<
-          mesh_->vertices[FIMPtr.m_SeedPointValues[0]][2] << std::endl;
-        data.seedPointList_ = std::vector<int>(1,FIMPtr.m_SeedPointValues[0]);
-      }
-    } else {
-      FIMPtr.SetSeedPoint(data.seedPointList_);
-    }
+    FIMPtr.SetSeedPoint(data.seedPointList_);
     FIMPtr.SetMesh(mesh_);
     FIMPtr.InitSpeedMat();
     if (data.isStructured_) {
