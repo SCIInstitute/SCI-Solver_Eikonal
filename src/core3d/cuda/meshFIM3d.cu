@@ -285,7 +285,7 @@ void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squ
     printf("final number of blocks: %d\n", numBlock);
 }
 
-void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
+std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
 
@@ -406,14 +406,29 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
   int totalIterationNumber = 0;
   timerstart = clock();
 
+  //the result vector
+  std::vector< std::vector < float > > result;
+  m_meshPtr->vertT.resize(1);
+  m_meshPtr->vertT[0].resize(numVert);
+
   int maxActive = 0;
   while(numActive > 0)
   {
     maxActive = MAX(maxActive, numActive);
-    if (verbose)
-      printf("nTotalIter = %d, numActive = %d\n", nTotalIter, numActive);
     ///////step 1: run solver /////////////////////////////////////
     nTotalIter++;
+    //don't do more than maxIters
+    if (nTotalIter > maxIters) break;
+    if (verbose ) {
+      size_t act = numActive / 3;
+      for(size_t ab = 0; ab < 60; ab++) {
+        if (ab < act)
+          printf("=");
+        else
+          printf(" ");
+      }
+      printf(" %d Active blocks.\n", numActive);
+    }
     totalIterationNumber += numActive;
     dim3 dimGrid(numActive, 1);
     dim3 dimBlock(m_maxNumTotalTets, 1);
@@ -477,8 +492,6 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
     // 4. run solver only once for neighbor blocks of converged block
     // current active list contains active blocks and neighbor blocks of
     // any converged blocks
-    if (verbose)
-      printf("numActiveNew = %d\n", h_ActiveListNew.size());
     if(h_ActiveListNew.size() > 0)
     {
 
@@ -515,7 +528,19 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
         else h_BlockLabel[currBlkIdx] = FARP;
       }
     }
-    if (nTotalIter > maxIters) break;
+    ////////////////////////copy values from each iteration
+    cudaSafeCall(cudaMemcpy(h_vertT, d_vertT,
+          sizeof(float)* m_maxNumInVert * m_numBlock, cudaMemcpyDeviceToHost));
+    for(int i = 0; i < m_numBlock; i++)
+    {
+      for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
+      {
+        m_meshPtr->vertT[0][m_PartitionInVerts[i][j]] =
+          h_vertT[i * m_maxNumInVert + j];
+      }
+    }
+    result.push_back(m_meshPtr->vertT[0]);
+    ////////////////////////////////END copy
   }
   cudaSafeCall(cudaThreadSynchronize());
   timerend = clock();
@@ -523,31 +548,11 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 
   if (verbose)
     printf("Computing time : %.10lf s\n",duration);
-  cudaSafeCall(cudaMemcpy(h_vertT, d_vertT, sizeof(float)* m_maxNumInVert * m_numBlock, cudaMemcpyDeviceToHost));
 
   cudaSafeCall(cudaThreadSynchronize());
 
   if (verbose)
     printf("num of max active %d\n", maxActive);
-
-  m_meshPtr->vertT.resize(1);
-  m_meshPtr->vertT[0].resize(numVert);
-
-  for(int i = 0; i < m_numBlock; i++)
-  {
-    for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
-    {
-      m_meshPtr->vertT[0][m_PartitionInVerts[i][j]] = h_vertT[i * m_maxNumInVert + j];
-    }
-  }
-
-  FILE * resultfile = fopen("result.txt", "w+");
-  for(int i = 0; i < numVert; i++)
-  {
-    fprintf(resultfile, "%.8f\n", m_meshPtr->vertT[0][i]);
-  }
-
-  fclose(resultfile);
 
   if (verbose) {
     printf("The iteration number: %d\n", nTotalIter);
@@ -559,6 +564,7 @@ void meshFIM3d::GenerateData(size_t maxIters, bool verbose)
 
   free(h_blockCon);
   free(h_BlockSizes);
+  return result;
 }
 
 void meshFIM3d::PartitionTets(int numBlock, bool verbose)

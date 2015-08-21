@@ -10,11 +10,7 @@
 #include <set>
 #include <time.h>
 #include <stdio.h>
-
-#ifndef _EPS
-#define _EPS 1e-06
-#endif
-
+#include <vector>
 
 using namespace std;
 
@@ -47,20 +43,26 @@ class meshFIM3d
 
     }
 
-    void FindSeedPoint()
+    bool FindSeedPoint(double x, double y, double z, double epsilon)
     {
       m_SeedPoints.clear();
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
-        double x = m_meshPtr->vertices[i][0];
-        if (fabs(x - 6 ) < _EPS)
+        double X = m_meshPtr->vertices[i][0];
+        double Y = m_meshPtr->vertices[i][1];
+        double Z = m_meshPtr->vertices[i][2];
+        double d = std::sqrt((x - X)*(x-X)+(y-Y)*(y-Y)+(z-Z)*(z-Z));
+        if (d < epsilon) {
           m_SeedPoints.push_back(i);
+          return true;
+        }
       }
-      std::cout << "SEED SIZE: " << m_SeedPoints.size() << std::endl;
+      return false;
     }
 
     void InitializePartition(int numBlock);
-    void GenerateData(size_t maxIter = 1000, bool verbose = false);
+    std::vector< std::vector < float > >
+      GenerateData(size_t maxIter = 1000, bool verbose = false);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose = false);
     void GraphColoring();
@@ -196,7 +198,6 @@ class meshFIM3d
     std::vector<index> m_SeedPoints;
     std::vector<LabelType> m_VertLabel; // label of all the vertices active or not
     vector<LabelType> m_BlockLabel; // label of blocks active or not
-    float m_StopDistance;
 };
 
 #endif
