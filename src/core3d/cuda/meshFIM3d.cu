@@ -452,7 +452,6 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
       if(!h_blockCon[currBlkIdx]) // if not converged
       {
         h_BlockLabel[currBlkIdx] = ACTIVE;
-        //h_ActiveList[numActive++] = currBlkIdx;
       }
     }
 
@@ -463,7 +462,6 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
 
       if(h_blockCon[currBlkIdx]) //converged
       {
-        //h_BlockLabel[currBlkIdx] == FARP;
         set<int> nb = m_BlockNeighbor[currBlkIdx];
 
         set<int>::iterator iter;

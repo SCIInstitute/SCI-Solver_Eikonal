@@ -806,7 +806,6 @@ std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock,
 
       if(h_blockCon[currBlkIdx]) // not active : converged
       {
-        //h_BlockLabel[currBlkIdx] == FARP;
         set<int> nb = m_BlockNeighbor[currBlkIdx];
 
         set<int>::iterator iter;
@@ -818,7 +817,6 @@ std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock,
           {
             h_BlockLabel[currIdx] = ACTIVE;
             h_ActiveList[numActive++] = currIdx;
-            //m_ActiveBlocks.insert(m_ActiveBlocks.end(), currIdx);
           }
         }
       }
