@@ -26,9 +26,9 @@ namespace Eikonal {
         squareLength_(16),
         squareWidth_(16),
         squareDepth_(16),
-        squareBlockLength_(4),
-        squareBlockWidth_(4),
-        squareBlockDepth_(4),
+        squareBlockLength_(1),
+        squareBlockWidth_(1),
+        squareBlockDepth_(1),
         maxIterations_(1000)
 
     {}
