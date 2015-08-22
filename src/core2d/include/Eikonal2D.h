@@ -45,11 +45,10 @@ namespace Eikonal {
   //the answer vector
   static std::vector < std::vector <float> > iteration_values_;
   //accessor functions to the results.
-  std::vector < float > getFinalResult() {
-    if (iteration_values_.empty()) return std::vector<float>();
+  std::vector < float >& getFinalResult() {
     return iteration_values_.at(iteration_values_.size() - 1);
   }
-  std::vector < float > getResultAtIteration(size_t i) {
+  std::vector < float >& getResultAtIteration(size_t i) {
     return iteration_values_.at(i);
   }
   size_t numIterations() { return iteration_values_.size(); }
