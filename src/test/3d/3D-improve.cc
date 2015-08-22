@@ -18,8 +18,9 @@ TEST(Improve3D, DecreaseRMSError) {
   }
   // now calculate the RMS error for this run
   float sum = 0.f;
+  std::vector <float> result = Eikonal::getFinalResult();
   for (size_t j = 0; j < solution.size(); j++) {
-    float err = solution[j] - Eikonal::getFinalResult()[j];
+    float err = solution[j] - result[j];
     sum +=  err * err;
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
@@ -38,8 +39,9 @@ TEST(Improve3D, DecreaseRMSError) {
   }
   // now calculate the RMS error for this run
   sum = 0.f;
+  result = Eikonal::getFinalResult();
   for (size_t j = 0; j < solution.size(); j++) {
-    float err = solution[j] - Eikonal::getFinalResult()[j];
+    float err = solution[j] - result[j];
     sum +=  err * err;
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
@@ -58,8 +60,9 @@ TEST(Improve3D, DecreaseRMSError) {
   }
   // now calculate the RMS error for this run
   sum = 0.f;
+  result = Eikonal::getFinalResult();
   for (size_t j = 0; j < solution.size(); j++) {
-    float err = solution[j] - Eikonal::getFinalResult()[j];
+    float err = solution[j] - result[j];
     sum +=  err * err;
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));

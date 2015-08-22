@@ -17,15 +17,15 @@ TEST(Converge3D, Unstructured) {
 TEST(Converge3D, Structured) {
   Eikonal::Eikonal3D data;
   data.filename_ = TEST_DATA_DIR + std::string("CubeMesh_size16");
-  data.squareLength_ = 16;
-  data.squareWidth_ = 16;
-  data.squareBlockLength_ = 4;
-  data.squareBlockWidth_ = 4;
+  data.isStructured_ = true;
   EXPECT_NO_THROW(Eikonal::solveEikonal3D(data));
+  size_t sz = Eikonal::getFinalResult().size();
   for (size_t i = 2; i < Eikonal::numIterations(); i ++) {
-    for (size_t j = 0; j < Eikonal::getResultAtIteration(i).size(); j ++) {
-      float one = Eikonal::getResultAtIteration(i-1)[j];
-      float zero = Eikonal::getResultAtIteration(i)[j];
+    std::vector <float> resultA = Eikonal::getResultAtIteration(i-1);
+    std::vector <float> resultB = Eikonal::getResultAtIteration(i);
+    for (size_t j = 0; j < sz; j ++) {
+      float one = resultA[j];
+      float zero = resultB[j];
       if (one == 0.) continue;
       EXPECT_TRUE(zero <= one);
     }
