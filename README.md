@@ -209,9 +209,9 @@ std::vector < std::vector < float > > iteration_values_;
       int squareLength_;                //if structured, the square size      [Default 16, 16, 16]
       int squareWidth_;                 
       int squareDepth_;                 
-      int squareBlockLength_;           //if structured, CUDA block length    [Default 4]
-      int squareBlockWidth_;            //if structured, CUDA block width     [Default 4]
-      int squareBlockDepth;             //if structured, CUDA block width     [Default 4]
+      int squareBlockLength_;           //if structured, CUDA block length    [Default 1]
+      int squareBlockWidth_;            //if structured, CUDA block width     [Default 1]
+      int squareBlockDepth;             //if structured, CUDA block width     [Default 1]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
   };
 ```
