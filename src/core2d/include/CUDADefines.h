@@ -18,7 +18,7 @@
 #define NITER 7   // best 7 for dragon.ts and 7 for dragon.ts_maxSF0.5 one,7 for dragon.ts_maxSF0.5 curvature,
 
 
-#define EPS (float)1e-06
+#define EPS 1e-5f
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
