@@ -159,9 +159,9 @@ int main(int argc, char *argv[])
 
 The following accessor functions are available after running the solver:
 ```c++
-std::vector < float > getFinalResult();
-std::vector < float > getResultAtIteration(size_t i);
-size_t numIterations(); 
+std::vector < float > Eikonal::getFinalResult();
+std::vector < float > Eikonal::getResultAtIteration(size_t i);
+size_t Eikonal::numIterations(); 
 ```
 The function signatures are identical across 2D/3D. You can also access the results
 and the mesh directly after running the solver:
@@ -170,7 +170,7 @@ TetMesh * Eikonal::mesh_;
 // OR
 TriMesh * Eikonal::mesh_;
 // AND
-std::vector < std::vector < float > > iteration_values_;
+std::vector < std::vector < float > > Eikonal::iteration_values_;
 ```
 
 <h3>Eikonal 2D Options</h3>
