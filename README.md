@@ -134,8 +134,8 @@ library during build and includes the headers needed, which are usually no more 
 ```
 
 Then a program would setup the Eikonal parameters using the 
-<code>Eikonal::Eikonal2D -OR- Eikonal::Eikonal3D</code> object and call 
-<code>Eikonal::solveEikonal2D() -OR- Eikonal::solveEikonal3D()</code> to generate
+<code>Eikonal3D::Eikonal2D -OR- Eikonal3D::Eikonal3D</code> object and call 
+<code>Eikonal3D::solveEikonal2D() -OR- Eikonal3D::solveEikonal3D()</code> to generate
 the array of vertex values per iteration.
 
 Here is a minimal usage example for 3D, which is nearly identical to 2D.<br/>
@@ -144,33 +144,34 @@ Here is a minimal usage example for 3D, which is nearly identical to 2D.<br/>
 #include <iostream>
 int main(int argc, char *argv[])
 {
-  Eikonal::Eikonal3D data;
+  Eikonal3D::Eikonal3D data;
   //the below means ~/my_tet_mesh.node & ~/my_tet_mesh.ele
   data.filename_ = "~/my_tet_mesh"; 
   //Run the solver
-  Eikonal::solveEikonal3D(data);
+  Eikonal3D::solveEikonal3D(data);
   //now use the result
-  for(size_t i = 0; i < Eikonal::getFinalResult().size(); i++)
+  for(size_t i = 0; i < Eikonal3D::getFinalResult().size(); i++)
     std::cout << "Vertex " << i << " value: " << 
-      Eikonal::getFinalResult()[i] << std::endl;
+      Eikonal3D::getFinalResult()[i] << std::endl;
   return 0;
 }
 ```
 
-The following accessor functions are available after running the solver:
+The following helper functions are available after running the solver:
 ```c++
-std::vector < float > Eikonal::getFinalResult();
-std::vector < float > Eikonal::getResultAtIteration(size_t i);
-size_t Eikonal::numIterations(); 
+std::vector < float > Eikonal3D::getFinalResult();
+std::vector < float > Eikonal3D::getResultAtIteration(size_t i);
+size_t Eikonal3D::numIterations(); 
+void Eikonal3D::writeVTK(); //write the vtk files that show progression of the solver
 ```
 The function signatures are identical across 2D/3D. You can also access the results
 and the mesh directly after running the solver:
 ```c++
-TetMesh * Eikonal::mesh_;
+TetMesh * Eikonal3D::mesh_;
 // OR
-TriMesh * Eikonal::mesh_;
+TriMesh * Eikonal3D::mesh_;
 // AND
-std::vector < std::vector < float > > Eikonal::iteration_values_;
+std::vector < std::vector < float > > Eikonal3D::iteration_values_;
 ```
 
 <h3>Eikonal 2D Options</h3>
