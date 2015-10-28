@@ -169,9 +169,11 @@ and the mesh directly after running the solver:
 ```c++
 TetMesh * Eikonal3D::mesh_;
 // OR
-TriMesh * Eikonal3D::mesh_;
+TriMesh * Eikonal2D::mesh_;
 // AND
 std::vector < std::vector < float > > Eikonal3D::iteration_values_;
+// OR
+std::vector < std::vector < float > > Eikonal2D::iteration_values_;
 ```
 
 <h3>Eikonal 2D Options</h3>
