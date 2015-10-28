@@ -1,5 +1,5 @@
-#ifndef __EIKONAL2D_H__
-#define __EIKONAL2D_H__
+#ifndef __EIKONAL3D_H__
+#define __EIKONAL3D_H__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@
 
 #include <time.h>
 
-namespace Eikonal {
+namespace Eikonal3D {
   /** The class that represents all of the available options for Eikonal3D */
   class Eikonal3D {
     public:
@@ -56,6 +56,11 @@ namespace Eikonal {
     return iteration_values_.at(i);
   }
   size_t numIterations() { return iteration_values_.size(); }
+  void writeVTK() {
+    meshFIM3d FIMPtr;
+    FIMPtr.SetMesh(mesh_);
+    FIMPtr.writeVTK(iteration_values_);
+  }
 
   /**
    * Creates the mesh, partitions the mesh, and runs the algorithm.

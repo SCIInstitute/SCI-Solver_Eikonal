@@ -61,6 +61,7 @@ class meshFIM3d
     }
 
     void InitializePartition(int numBlock);
+    void writeVTK(std::vector < std::vector <float> > values);
     std::vector< std::vector < float > >
       GenerateData(size_t maxIter = 1000, bool verbose = false);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);

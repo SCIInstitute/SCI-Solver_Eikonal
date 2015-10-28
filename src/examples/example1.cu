@@ -33,7 +33,7 @@
 int main(int argc, char *argv[])
 {
   //3D options
-  Eikonal::Eikonal3D data;
+  Eikonal3D::Eikonal3D data;
   //input filename (minus extension)
   std::string filename;
   for (int i = 0; i < argc; i++)
@@ -55,20 +55,22 @@ int main(int argc, char *argv[])
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       exit(0);
     }
-  Eikonal::solveEikonal3D(data);
+  Eikonal3D::solveEikonal3D(data);
+  //write out the VTK files
+  Eikonal3D::writeVTK();
   //we know that the solution should be the euclidean distance from the center.
   std::vector <float> solution;
-  for(size_t i = 0; i < Eikonal::mesh_->vertices.size(); i++) {
-    float x = Eikonal::mesh_->vertices[i][0];
-    float y = Eikonal::mesh_->vertices[i][1];
-    float z = Eikonal::mesh_->vertices[i][2];
+  for(size_t i = 0; i < Eikonal3D::mesh_->vertices.size(); i++) {
+    float x = Eikonal3D::mesh_->vertices[i][0];
+    float y = Eikonal3D::mesh_->vertices[i][1];
+    float z = Eikonal3D::mesh_->vertices[i][2];
     solution.push_back(std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z)));
   }
 
   if (data.verbose_)
-    Eikonal::printErrorGraph(solution);
+    Eikonal3D::printErrorGraph(solution);
 
-  delete Eikonal::mesh_;
+  delete Eikonal3D::mesh_;
 
   return 0;
 }

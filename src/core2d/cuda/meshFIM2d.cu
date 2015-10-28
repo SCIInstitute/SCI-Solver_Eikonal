@@ -71,6 +71,43 @@ bool InitCUDA(void)
 
 /////////////////////////////////////////////////////////////////////////////
 
+void meshFIM2d::writeVTK(std::vector< std::vector <float> > time_values)
+{
+  size_t nv = m_meshPtr->vertices.size();
+  size_t nt = m_meshPtr->faces.size();
+  for (size_t j = 0; j < time_values.size(); j++) {
+    FILE* vtkfile;
+    std::stringstream ss;
+    ss << "result" << j << ".vtk";
+    vtkfile = fopen(ss.str().c_str(), "w+");
+    fprintf(vtkfile, "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET UNSTRUCTURED_GRID\n");
+    fprintf(vtkfile, "POINTS %d float\n", nv);
+    for (size_t i = 0; i < nv; i++)
+    {
+      fprintf(vtkfile, "%.12f %.12f %.12f\n", m_meshPtr->vertices[i][0], 
+      m_meshPtr->vertices[i][1], m_meshPtr->vertices[i][2]);
+    }
+    fprintf(vtkfile, "CELLS %d %d\n", nt, nt * 4);
+    for (size_t i = 0; i < nt; i++)
+    {
+      fprintf(vtkfile, "3 %d %d %d\n", m_meshPtr->faces[i][0], 
+      m_meshPtr->faces[i][1], m_meshPtr->faces[i][2]);
+    }
+
+    fprintf(vtkfile, "CELL_TYPES %d\n", nt);
+    for (size_t i = 0; i < nt; i++)
+    {
+      fprintf(vtkfile, "5\n");
+    }
+    fprintf(vtkfile, "POINT_DATA %d\nSCALARS traveltime float 1\nLOOKUP_TABLE default\n", nv);
+    for (size_t i = 0; i < nv; i++)
+    {
+      fprintf(vtkfile, "%.12f\n", time_values[j][i]);
+    }
+    fclose(vtkfile);
+  }
+}
+
 void meshFIM2d::GraphPartition_METIS(char* partfilename, int numBlock)  //read a metis result .mesh.npart.N file and store into PartitionLabel
 {
   int numVert = m_meshPtr->vertices.size();
@@ -396,8 +433,8 @@ void meshFIM2d::PartitionFaces(int numBlock)
   }
 }
 
-std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock, 
-	int maxIterations, bool verbose)
+std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock,
+    int maxIterations, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   int numFaces=m_meshPtr->faces.size();
@@ -762,7 +799,7 @@ std::vector< std::vector<float> > meshFIM2d::GenerateData(int numBlock,
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
 
     nTotalIter++;
-	if (nTotalIter > maxIterations) break;
+    if (nTotalIter > maxIterations) break;
 
     totalIterationNumber += numActive;
     if (verbose ) {

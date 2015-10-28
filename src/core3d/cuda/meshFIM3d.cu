@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 #ifdef WIN32
 #include <io.h>
 #define unlink _unlink
@@ -99,6 +100,44 @@ bool InitCUDA(bool verbose = false)
 /////////////////////////////////////////////////////////////////////////////
 //create .mesh file from trimesh faces and call partnmesh function
 //to partition and create intermediate mesh.npart.N file and then read this file
+
+void meshFIM3d::writeVTK(std::vector < std::vector <float> > values)
+{
+  int nv = m_meshPtr->vertices.size();
+  int nt = m_meshPtr->tets.size();
+  for (size_t j = 0; j < values.size(); j++) {
+    FILE* vtkfile;
+    std::stringstream ss;
+    ss << "result" << j << ".vtk";
+    vtkfile = fopen(ss.str().c_str(), "w+");
+    fprintf(vtkfile, "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET UNSTRUCTURED_GRID\n");
+    fprintf(vtkfile, "POINTS %d float\n", nv);
+    for (int i = 0; i < nv; i++)
+    {
+      fprintf(vtkfile, "%.12f %.12f %.12f\n", m_meshPtr->vertices[i][0], 
+      m_meshPtr->vertices[i][1], m_meshPtr->vertices[i][2]);
+    }
+    fprintf(vtkfile, "CELLS %d %d\n", nt, nt * 5);
+    for (int i = 0; i < nt; i++)
+    {
+      fprintf(vtkfile, "4 %d %d %d %d\n", m_meshPtr->tets[i][0], 
+      m_meshPtr->tets[i][1], m_meshPtr->tets[i][2], m_meshPtr->tets[i][3]);
+    }
+
+    fprintf(vtkfile, "CELL_TYPES %d\n", nt);
+    for (int i = 0; i < nt; i++)
+    {
+      fprintf(vtkfile, "10\n");
+    }
+    fprintf(vtkfile, "POINT_DATA %d\nSCALARS traveltime float 1\nLOOKUP_TABLE default\n",
+        nv, values.size());
+    for (int i = 0; i < values[j].size(); i++) {
+      fprintf(vtkfile, "%.12f\n ", values[j][i]);
+    }
+    fclose(vtkfile);
+  }
+}
+
 void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
 {
 
@@ -115,7 +154,9 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
   fprintf(outf, "%d 2\n", sz);
 
   for(int i = 0; i < sz; i++)
-    fprintf(outf, "%d %d %d %d\n", m_meshPtr->tets[i].v[0] + 1, m_meshPtr->tets[i].v[1] + 1, m_meshPtr->tets[i].v[2] + 1, m_meshPtr->tets[i].v[3] + 1);
+    fprintf(outf, "%d %d %d %d\n", m_meshPtr->tets[i].v[0] + 1, 
+    m_meshPtr->tets[i].v[1] + 1, m_meshPtr->tets[i].v[2] + 1, 
+    m_meshPtr->tets[i].v[3] + 1);
 
   fclose(outf);
 

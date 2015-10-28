@@ -6,7 +6,7 @@
 #include <cstring>
 #include <time.h>
 
-namespace Eikonal {
+namespace Eikonal2D {
   /** The class that represents all of the available options for Eikonal2D */
   class Eikonal2D {
     public:
@@ -52,6 +52,12 @@ namespace Eikonal {
     return iteration_values_.at(i);
   }
   size_t numIterations() { return iteration_values_.size(); }
+  void writeVTK() {
+    meshFIM2d FIMPtr;
+    FIMPtr.SetMesh(mesh_);
+    FIMPtr.writeVTK(iteration_values_);
+  }
+
 
   /**
    * Creates the mesh, partitions the mesh, and runs the algorithm.

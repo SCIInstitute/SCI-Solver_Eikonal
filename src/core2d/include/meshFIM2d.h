@@ -127,6 +127,7 @@ class meshFIM2d {
       m_StopDistance = d;
 
     }
+    void writeVTK(std::vector< std::vector <float> > time_values);
     std::vector< std::vector< float > >  GenerateData(int numBlock, 
 		int maxIterations, bool verbose = false);
     void GraphPartition_METIS(char* partfilename,int numBlock);

@@ -30,7 +30,7 @@
 #include <Eikonal2D.h>
 
 int main(int argc, char* argv[]) {
-  Eikonal::Eikonal2D data;
+  Eikonal2D::Eikonal2D data;
   for (int i = 1; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       data.verbose_ = true;
@@ -52,18 +52,20 @@ int main(int argc, char* argv[]) {
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       exit(0);
     }
-  Eikonal::solveEikonal2D(data);
+  Eikonal2D::solveEikonal2D(data);
+  //write the output to file
+  Eikonal2D::writeVTK();
   //the solution for the sphere examples (center 54,54,54, & radius 19.58)
   std::vector< float > solution;
-  solution.resize(Eikonal::mesh_->vertices.size());
+  solution.resize(Eikonal2D::mesh_->vertices.size());
   for (size_t i = 0; i < solution.size(); i++) {
-    float xDot = Eikonal::mesh_->vertices[i][0] - 54.f;
-    float yDot = Eikonal::mesh_->vertices[i][1] - 54.f;
-    float zDot = Eikonal::mesh_->vertices[i][2] - 54.f;
+    float xDot = Eikonal2D::mesh_->vertices[i][0] - 54.f;
+    float yDot = Eikonal2D::mesh_->vertices[i][1] - 54.f;
+    float zDot = Eikonal2D::mesh_->vertices[i][2] - 54.f;
     solution[i] = 19.58f * std::acos( zDot /
         std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
   }
   if (data.verbose_)
-    Eikonal::printErrorGraph(solution);
+    Eikonal2D::printErrorGraph(solution);
   return 0;
 }
