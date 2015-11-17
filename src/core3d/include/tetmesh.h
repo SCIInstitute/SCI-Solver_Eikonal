@@ -165,7 +165,7 @@ class TetMesh {
     vector< vector<int> > oneringstrips;
     vector< vector<float> > oneringspeedI;
 
-    vector<double> radiusInscribe;
+    vector<float> radiusInscribe;
     vector<Tet> across_face;
 
 

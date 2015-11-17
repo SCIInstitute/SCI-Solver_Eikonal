@@ -4,7 +4,6 @@
 #include <time.h>
 #include <math.h>
 #include "tetmesh.h"
-//#include "Stdafx.h"
 
 using namespace std;
 
@@ -25,10 +24,6 @@ void TetMesh::init(double* pointlist, int numpoint, int*trilist, int numtri, int
     vertices[i][0] = pointlist[3*i+0];
     vertices[i][1] = pointlist[3*i+1];
     vertices[i][2] = pointlist[3*i+2];
-
-
-
-
   }
 
   //check the index start from 0 or 1
