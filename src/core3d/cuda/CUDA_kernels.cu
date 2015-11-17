@@ -70,13 +70,13 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
 {
 
 
-  if(TA >= LARGENUM_TET && TB >= LARGENUM_TET && TC >= LARGENUM_TET)
-    return LARGENUM_TET;
+  if(TA >= LARGENUM && TB >= LARGENUM && TC >= LARGENUM)
+    return LARGENUM;
   float p, q, r;
   float lambda1, lambda2, lambda3;
-  float FaceTAC = LARGENUM_TET, FaceTAB = LARGENUM_TET, FaceTBC = LARGENUM_TET;
+  float FaceTAC = LARGENUM, FaceTAB = LARGENUM, FaceTBC = LARGENUM;
   float delta, TE;
-  float TD = LARGENUM_TET;
+  float TD = LARGENUM;
   float TAC = TC - TA;
   float TBC = TC - TB;
   float TAB = TB - TA;
@@ -226,13 +226,13 @@ __device__ float localSolverTet1(float TA, float TB, float TC, float ACAC, float
 
 __device__ float localSolverTet2(float TA, float TB, float TC, float ACAC, float ACBC, float ACCD, float BCBC, float BCCD, float CDCD)
 {
-  if(TA >= LARGENUM_TET && TB >= LARGENUM_TET && TC >= LARGENUM_TET)
-    return LARGENUM_TET;
+  if(TA >= LARGENUM && TB >= LARGENUM && TC >= LARGENUM)
+    return LARGENUM;
   float p, q, r;
   float lambda1, lambda2, lambda3;
-  float FaceTAC = LARGENUM_TET, FaceTAB = LARGENUM_TET, FaceTBC = LARGENUM_TET;
+  float FaceTAC = LARGENUM, FaceTAB = LARGENUM, FaceTBC = LARGENUM;
   float delta, TE;
-  float TD = LARGENUM_TET;
+  float TD = LARGENUM;
   float TAC = TC - TA;
   float TBC = TC - TB;
   float TAB = TB - TA;
@@ -457,7 +457,7 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
 
     __syncthreads();
 
-    newT = LARGENUM_TET;
+    newT = LARGENUM;
 
     if(tx < block_size)    //block_size is the vertices in this block and it is about warp size so there is no severe divergence
     {
@@ -570,7 +570,7 @@ __global__ void run_check_neghbor(float3* d_tetMem0,float3* d_tetMem1, float4* d
 
     __syncthreads();
 
-    newT = LARGENUM_TET;
+    newT = LARGENUM;
 
     if(tx < block_size)    //block_size is the vertices in this block and it is about warp size so there is no severe divergence
     {

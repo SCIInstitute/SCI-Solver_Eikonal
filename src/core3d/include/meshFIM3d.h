@@ -90,7 +90,7 @@ class meshFIM3d
     void FindSeedPointLavalamp()
     {
       m_SeedPoints.clear();
-      double minx = LARGENUM_TET;
+      double minx = LARGENUM;
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
         double x = m_meshPtr->vertices[i][0];

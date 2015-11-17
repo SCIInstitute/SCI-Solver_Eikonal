@@ -8,7 +8,9 @@
    Class for triangle meshes.
  */
 
-#define  LARGENUM_TET  10000.0
+#ifndef  LARGENUM
+#define  LARGENUM  1000000000
+#endif
 #define  SMALLNUM  0.00000001
 #define  ONE       1
 #define  CURVATURE 2
@@ -200,7 +202,7 @@ class TetMesh {
 
       for (int v = 0; v < nv; v++)
       {
-        this->vertT[currentVert].push_back(LARGENUM_TET);  //modified from this->vertT[v] = 1000000.0)
+        this->vertT[currentVert].push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
       }
 
       //vector<int> nb;

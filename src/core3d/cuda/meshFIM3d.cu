@@ -750,10 +750,10 @@ void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
       h_tetMem1[blockIdx + j * 3 + 1] = tetmem[4];
       h_tetMem1[blockIdx + j * 3 + 2] = tetmem[5];
 
-      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
-      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
-      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
-      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
+      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM;
+      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM;
+      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM;
+      h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM;
 
       m_blockVertMapping[t[0]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
       m_blockVertMapping[t[3]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
@@ -802,10 +802,10 @@ void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         h_tetMem1[blockIdx + j * 3 + 1] = tetmem[4];
         h_tetMem1[blockIdx + j * 3 + 2] = tetmem[5];
 
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM;
 
         m_blockVertMapping[t[0]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
         m_blockVertMapping[t[3]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
@@ -835,10 +835,10 @@ void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
         h_tetMem1[blockIdx + j * 3 + 1] = tetmem[4];
         h_tetMem1[blockIdx + j * 3 + 2] = tetmem[5];
 
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM;
 
         m_blockVertMapping[t[0]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 0);
         m_blockVertMapping[t[3]%m_blockVertMapping.size()].push_back(i * m_maxNumTotalTets * 4 + j * 4 + 3);
@@ -856,10 +856,10 @@ void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
       }
       else
       {
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM_TET;
-        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM_TET;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 0] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 1] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 2] = LARGENUM;
+        h_tetT[i * m_maxNumTotalTets * 4 + j * 4 + 3] = LARGENUM;
       }
     }
   }
