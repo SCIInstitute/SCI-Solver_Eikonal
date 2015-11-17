@@ -449,8 +449,7 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
 
   //the result vector
   std::vector< std::vector < float > > result;
-  m_meshPtr->vertT.resize(1);
-  m_meshPtr->vertT[0].resize(numVert);
+  m_meshPtr->vertT.resize(numVert);
 
   int maxActive = 0;
   while(numActive > 0)
@@ -574,11 +573,11 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
     {
       for(int j = 0; j < m_PartitionInVerts[i].size(); j++)
       {
-        m_meshPtr->vertT[0][m_PartitionInVerts[i][j]] =
+        m_meshPtr->vertT[m_PartitionInVerts[i][j]] =
           h_vertT[i * m_maxNumInVert + j];
       }
     }
-    result.push_back(m_meshPtr->vertT[0]);
+    result.push_back(m_meshPtr->vertT);
     ////////////////////////////////END copy
   }
   cudaSafeCall(cudaThreadSynchronize());

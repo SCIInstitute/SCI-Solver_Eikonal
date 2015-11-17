@@ -153,7 +153,7 @@ class TetMesh {
     vector< Vec<4,float> > dcurv;
     vector<vec> cornerareas;
     vector<float> pointareas;
-    vector< vector<float> > vertT;
+    vector<float> vertT;
 
     // Bounding structures
     //BBox bbox;
@@ -202,7 +202,7 @@ class TetMesh {
 
       for (int v = 0; v < nv; v++)
       {
-        this->vertT[currentVert].push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
+        this->vertT.push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
       }
 
       //vector<int> nb;
@@ -213,7 +213,7 @@ class TetMesh {
         int ns = seeds.size();
         for (int s = 0; s < ns; s++)
         {
-          this->vertT[currentVert][seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;
+          this->vertT[seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;
           //nb = this->neighbors[seeds[s]];
 
         }
