@@ -2,7 +2,7 @@
 #define __EIKONAL2D_H__
 
 #include "TriMesh.h"
-#include "meshFIM2d.h"
+#include "meshFIM2d_eikonal.h"
 #include <cstring>
 #include <time.h>
 
@@ -53,7 +53,7 @@ namespace Eikonal2D {
   }
   size_t numIterations() { return iteration_values_.size(); }
   void writeVTK() {
-    meshFIM2d FIMPtr;
+    meshFIM2dEikonal FIMPtr;
     FIMPtr.SetMesh(mesh_);
     FIMPtr.writeVTK(iteration_values_);
   }
@@ -70,7 +70,7 @@ namespace Eikonal2D {
     starttime = clock ();
     mesh_ = TriMesh::read(data.filename_.c_str(), data.verbose_);
     if (!mesh_) exit(1);
-    meshFIM2d FIMPtr;
+    meshFIM2dEikonal FIMPtr;
     FIMPtr.SetSeedPoint(data.seedPointList_);
     FIMPtr.SetMesh(mesh_, data.speedType_);
     FIMPtr.SetStopDistance(data.stopDistance_);
