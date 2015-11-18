@@ -8,7 +8,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "meshFIM3d.h"
+#include "meshFIM3dEikonal.h"
 #include "Vec.h"
 #include <math.h>
 #include <stdio.h>
@@ -101,7 +101,7 @@ bool InitCUDA(bool verbose = false)
 //create .mesh file from trimesh faces and call partnmesh function
 //to partition and create intermediate mesh.npart.N file and then read this file
 
-void meshFIM3d::writeVTK(std::vector < std::vector <float> > values)
+void meshFIM3dEikonal::writeVTK(std::vector < std::vector <float> > values)
 {
   int nv = m_meshPtr->vertices.size();
   int nt = m_meshPtr->tets.size();
@@ -138,7 +138,7 @@ void meshFIM3d::writeVTK(std::vector < std::vector <float> > values)
   }
 }
 
-void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
+void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
 {
 
   FILE * outf;
@@ -280,7 +280,7 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
   unlink("tmp.mesh");
 }
 
-void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose)
+void meshFIM3dEikonal::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
@@ -326,7 +326,7 @@ void meshFIM3d::GraphPartition_Square(int squareLength, int squareWidth, int squ
     printf("final number of blocks: %d\n", numBlock);
 }
 
-std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, bool verbose)
+std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t maxIters, bool verbose)
 {
   int numVert = m_meshPtr->vertices.size();
 
@@ -606,7 +606,7 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
   return result;
 }
 
-void meshFIM3d::PartitionTets(int numBlock, bool verbose)
+void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
 {
   ///////////////////////////////////step 3: partition faces//////////////////////////////////////
   if (verbose)
@@ -686,7 +686,7 @@ void meshFIM3d::PartitionTets(int numBlock, bool verbose)
     printf("done!\n");
 }
 
-bool meshFIM3d::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
+bool meshFIM3dEikonal::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
 {
   bool needswap = false;
   tetmem.resize(6);
@@ -716,7 +716,7 @@ bool meshFIM3d::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
 
 }
 
-void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
+void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
 {
   h_tetMem0 = (float*)malloc(3 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
   h_tetMem1 = (float*)malloc(3 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
@@ -865,7 +865,7 @@ void meshFIM3d::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT)
   }
 }
 
-void meshFIM3d::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
+void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 {
 
   int numVert = m_meshPtr->vertices.size();

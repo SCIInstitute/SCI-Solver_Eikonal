@@ -1,5 +1,5 @@
-#ifndef __MESHFIM3D_H__
-#define __MESHFIM3D_H__
+#ifndef __MESHFIM3DEIKONAL_H__
+#define __MESHFIM3DEIKONAL_H__
 
 
 #include <tetmesh.h>
@@ -19,7 +19,7 @@ enum LabelType
   FarPoint = 0, ActivePoint, MaskPoint, SeedPoint, StopPoint, AlivePoint, ToBeAlivePoint
 };
 
-class meshFIM3d
+class meshFIM3dEikonal
 {
   public:
     typedef int index;
@@ -153,12 +153,12 @@ class meshFIM3d
       }
       printf("Done!\n");
     }
-    meshFIM3d()
+    meshFIM3dEikonal()
     {
       m_meshPtr = NULL;
     };
 
-    ~meshFIM3d()
+    ~meshFIM3dEikonal()
     {
     };
     TetMesh* m_meshPtr;

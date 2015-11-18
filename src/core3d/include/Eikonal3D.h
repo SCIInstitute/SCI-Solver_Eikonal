@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include "meshFIM3d.h"
+#include "meshFIM3dEikonal.h"
 #include <math.h>
 #include "tetgen.h"
 #include "tetmesh.h"
@@ -57,7 +57,7 @@ namespace Eikonal3D {
   }
   size_t numIterations() { return iteration_values_.size(); }
   void writeVTK() {
-    meshFIM3d FIMPtr;
+    meshFIM3dEikonal FIMPtr;
     FIMPtr.SetMesh(mesh_);
     FIMPtr.writeVTK(iteration_values_);
   }
@@ -90,7 +90,7 @@ namespace Eikonal3D {
     mesh_->need_adjacenttets(data.verbose_);
     mesh_->need_tet_virtual_tets(data.verbose_);
 
-    meshFIM3d FIMPtr;
+    meshFIM3dEikonal FIMPtr;
     FIMPtr.SetSeedPoint(data.seedPointList_);
     FIMPtr.SetMesh(mesh_);
     FIMPtr.InitSpeedMat();
