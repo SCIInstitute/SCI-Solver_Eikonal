@@ -86,7 +86,7 @@
 #include <string.h>         // String lib: strcpy(), strcat(), strcmp(), ...
 #include <math.h>                     // Math lib: sin(), sqrt(), pow(), ...
 #include <time.h>           // Defined type clock_t, constant CLOCKS_PER_SEC.
-#include <assert.h> 
+#include <assert.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -123,7 +123,7 @@
 // #define NDEBUG
 
 // To insert lots of self-checks for internal errors, define the SELF_CHECK
-//   symbol.  This will slow down the program significantly. 
+//   symbol.  This will slow down the program significantly.
 
 // #define SELF_CHECK
 
@@ -136,11 +136,7 @@
 
 // #define SINGLE
 
-#ifdef SINGLE
-  #define REAL float
-#else
-  #define REAL double
-#endif 	// not defined SINGLE
+#define REAL float
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
@@ -228,7 +224,7 @@ class tetgenio {
     //   "infinite vertex".  'v1' and 'v2' are two indices pointing to the
     //   list of Voronoi vertices. 'v1' must be non-negative, while 'v2' may
     //   be -1 if it is a ray, in this case, the unit normal of this ray is
-    //   given in 'vnormal'. 
+    //   given in 'vnormal'.
     typedef struct {
       int v1, v2;
       REAL vnormal[3];
@@ -263,7 +259,7 @@ class tetgenio {
   public:
 
     // Items are numbered starting from 'firstnumber' (0 or 1), default is 0.
-    int firstnumber; 
+    int firstnumber;
     // Dimension of the mesh (2 or 3), default is 3.
     int mesh_dim;
     // Does the lines in .node file contain index or not, default is TRUE.
@@ -272,7 +268,7 @@ class tetgenio {
     // 'pointlist':  An array of point coordinates.  The first point's x
     //   coordinate is at index [0] and its y coordinate at index [1], its
     //   z coordinate is at index [2], followed by the coordinates of the
-    //   remaining points.  Each point occupies three REALs. 
+    //   remaining points.  Each point occupies three REALs.
     // 'pointattributelist':  An array of point attributes.  Each point's
     //   attributes occupy 'numberofpointattributes' REALs.
     // 'pointmtrlist': An array of metric tensors at points. Each point's
@@ -285,8 +281,8 @@ class tetgenio {
     int numberofpoints;
     int numberofpointattributes;
     int numberofpointmtrs;
- 
-    // `elementlist':  An array of element (triangle or tetrahedron) corners. 
+
+    // `elementlist':  An array of element (triangle or tetrahedron) corners.
     //   The first element's first corner is at index [0], followed by its
     //   other corners in counterclockwise order, followed by any other
     //   nodes if the element represents a nonlinear element.  Each element
@@ -313,14 +309,14 @@ class tetgenio {
 
     // `holelist':  An array of holes.  The first hole's x, y and z
     //   coordinates  are at indices [0], [1] and [2], followed by the
-    //   remaining holes. Three REALs per hole. 
+    //   remaining holes. Three REALs per hole.
     REAL *holelist;
     int numberofholes;
 
     // `regionlist': An array of regional attributes and volume constraints.
     //   The first constraint's x, y and z coordinates are at indices [0],
     //   [1] and [2], followed by the regional attribute at index [3], foll-
-    //   owed by the maximum volume at index [4]. Five REALs per constraint. 
+    //   owed by the maximum volume at index [4]. Five REALs per constraint.
     // Note that each regional attribute is used only if you select the `A'
     //   switch, and each volume constraint is used only if you select the
     //   `a' switch (with no number following).
@@ -330,7 +326,7 @@ class tetgenio {
     // `facetconstraintlist': An array of facet maximal area constraints.
     //   Two REALs per constraint. The first one is the facet marker (cast
     //   it to int), the second is its maximum area bound.
-    // Note the 'facetconstraintlist' is used only for the 'q' switch. 
+    // Note the 'facetconstraintlist' is used only for the 'q' switch.
     REAL *facetconstraintlist;
     int numberoffacetconstraints;
 
@@ -338,7 +334,7 @@ class tetgenio {
     //   Three REALs per constraint. The first two are the indices (pointing
     //   into 'pointlist') of the endpoints of the segment, the third is its
     //   maximum length bound.
-    // Note the 'segmentconstraintlist' is used only for the 'q' switch. 
+    // Note the 'segmentconstraintlist' is used only for the 'q' switch.
     REAL *segmentconstraintlist;
     int numberofsegmentconstraints;
 
@@ -445,17 +441,17 @@ class tetgenbehavior {
 
   public:
 
-    // Labels define the objects which are acceptable by TetGen. They are 
+    // Labels define the objects which are acceptable by TetGen. They are
     //   recognized by the file extensions.
-    //   - NODES, a list of nodes (.node); 
-    //   - POLY, a piecewise linear complex (.poly or .smesh); 
-    //   - OFF, a polyhedron (.off, Geomview's file format); 
+    //   - NODES, a list of nodes (.node);
+    //   - POLY, a piecewise linear complex (.poly or .smesh);
+    //   - OFF, a polyhedron (.off, Geomview's file format);
     //   - PLY, a polyhedron (.ply, file format from gatech);
     //   - STL, a surface mesh (.stl, stereolithography format);
-    //   - MEDIT, a surface mesh (.mesh, Medit's file format); 
+    //   - MEDIT, a surface mesh (.mesh, Medit's file format);
     //   - MESH, a tetrahedral mesh (.ele).
     //   If no extension is available, the imposed commandline switch
-    //   (-p or -r) implies the object. 
+    //   (-p or -r) implies the object.
 
     enum objecttype {NONE, NODES, POLY, OFF, PLY, STL, MEDIT, MESH};
 
@@ -502,7 +498,7 @@ class tetgenbehavior {
     int verbose;           // count of how often '-V' switch is selected, 0.
     int useshelles;            // '-p', '-r', '-q', '-d', or '-R' switch, 0.
     REAL minratio;                         // number after '-q' switch, 2.0.
-    REAL goodratio;               // number calculated from 'minratio', 0.0. 
+    REAL goodratio;               // number calculated from 'minratio', 0.0.
     REAL minangle;                             // minimum angle bound, 20.0.
     REAL goodangle;                      // cosine squared of minangle, 0.0.
     REAL maxvolume;                       // number after '-a' switch, -1.0.
@@ -626,8 +622,8 @@ class tetgenmesh {
     //   read from input (.node file or tetgenio structure) or an isolated
     //   vertex (outside the mesh).  It is the default type for a newpoint.
     enum verttype {UNUSEDVERTEX, DUPLICATEDVERTEX, NACUTEVERTEX, ACUTEVERTEX,
-           FREESEGVERTEX, FREESUBVERTEX, FREEVOLVERTEX, DEADVERTEX = -32768};
- 
+      FREESEGVERTEX, FREESUBVERTEX, FREEVOLVERTEX, DEADVERTEX = -32768};
+
     // Labels that signify the type of a subface/subsegment.
     enum shestype {NSHARP, SHARP};
 
@@ -643,7 +639,7 @@ class tetgenmesh {
 
     // Labels that signify the result of point location.  The result of a
     //   search indicates that the point falls inside a tetrahedron, inside
-    //   a triangle, on an edge, on a vertex, or outside the mesh. 
+    //   a triangle, on an edge, on a vertex, or outside the mesh.
     enum locateresult {INTETRAHEDRON, ONFACE, ONEDGE, ONVERTEX, OUTSIDE};
 
     // Labels that signify the result of vertex insertion.  The result
@@ -652,7 +648,7 @@ class tetgenmesh {
     //   it lies on a segment, or was not inserted because another vertex
     //   occupies the same location.
     enum insertsiteresult {SUCCESSINTET, SUCCESSONFACE, SUCCESSONEDGE,
-                           DUPLICATEPOINT, OUTSIDEPOINT};
+      DUPLICATEPOINT, OUTSIDEPOINT};
 
     // Labels that signify the result of direction finding.  The result
     //   indicates that a segment connecting the two query points accross
@@ -661,115 +657,115 @@ class tetgenmesh {
     //   triangle/tetrahedron, along the right edge of the direction
     //   triangle/tetrahedron, or along the top edge of the tetrahedron.
     enum finddirectionresult {ACROSSEDGE, ACROSSFACE, LEFTCOLLINEAR,
-                              RIGHTCOLLINEAR, TOPCOLLINEAR, BELOWHULL};
+      RIGHTCOLLINEAR, TOPCOLLINEAR, BELOWHULL};
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The basic mesh element data structures                                    //
-//                                                                           //
-// There are four types of mesh elements: tetrahedra, subfaces, subsegments, //
-// and points,  where subfaces and subsegments are triangles and edges which //
-// appear on boundaries.  A tetrahedralization of a 3D point set comprises   //
-// tetrahedra and points;  a surface mesh of a 3D domain comprises subfaces  //
-// subsegments and points.  The elements of all the four types consist of a  //
-// tetrahedral mesh of a 3D domain.  However, TetGen uses three data types:  //
-// 'tetrahedron', 'shellface', and 'point'. A 'tetrahedron' is a tetrahedron;//
-// while a 'shellface' can be either a subface or a subsegment; and a 'point'//
-// is a point.  These three data types, linked by pointers comprise a mesh.  //
-//                                                                           //
-// A tetrahedron primarily consists of a list of 4 pointers to its corners,  //
-// a list of 4 pointers to its adjoining tetrahedra, a list of 4 pointers to //
-// its adjoining subfaces (when subfaces are needed). Optinoally, (depending //
-// on the selected switches), it may contain an arbitrary number of user-    //
-// defined floating-point attributes,  an optional maximum volume constraint //
-// (for -a switch), and a pointer to a list of high-order nodes (-o2 switch).//
-// Since the size of a tetrahedron is not determined until running time, it  //
-// is not simply declared as a structure.                                    //
-//                                                                           //
-// The data structure of tetrahedron also stores the geometrical information.//
-// Let t be a tetrahedron, v0, v1, v2, and v3 be the 4 nodes corresponding   //
-// to the order of their storage in t.  v3 always has a negative orientation //
-// with respect to v0, v1, v2 (ie,, v3 lies above the oriented plane passes  //
-// through v0, v1, v2). Let the 4 faces of t be f0, f1, f2, and f3. Vertices //
-// of each face are stipulated as follows: f0 (v0, v1, v2), f1 (v0, v3, v1), //
-// f2 (v1, v3, v2), f3 (v2, v3, v0).                                         //
-//                                                                           //
-// A subface has 3 pointers to vertices, 3 pointers to adjoining subfaces, 3 //
-// pointers to adjoining subsegments, 2 pointers to adjoining tetrahedra, a  //
-// boundary marker(an integer). Like a tetrahedron, the pointers to vertices,//
-// subfaces, and subsegments are ordered in a way that indicates their geom- //
-// etric relation.  Let s be a subface, v0, v1 and v2 be the 3 nodes corres- //
-// ponding to the order of their storage in s,  e0, e1 and e2 be the 3 edges,//
-// then we have: e0 (v0, v1), e1 (v1, v2), e2 (v2, v0).                      //
-//                                                                           //
-// A subsegment has exactly the same data fields as a subface has, but only  //
-// uses some of them. It has 2 pointers to its endpoints, 2 pointers to its  //
-// adjoining (and collinear) subsegments, a pointer to a subface containing  //
-// it (there may exist any number of subfaces having it, choose one of them  //
-// arbitrarily). The geometric relation between its endpoints and adjoining  //
-// subsegments is kept with respect to the storing order of its endpoints.   //
-//                                                                           //
-// The data structure of point is relatively simple.  A point is a list of   //
-// floating-point numbers, starting with the x, y, and z coords, followed by //
-// an arbitrary number of optional user-defined floating-point attributes,   //
-// an integer boundary marker, an integer for the point type, and a pointer  //
-// to a tetrahedron (used for speeding up point location).                   //
-//                                                                           //
-// For a tetrahedron on a boundary (or a hull) of the mesh, some or all of   //
-// the adjoining tetrahedra may not be present. For an interior tetrahedron, //
-// often no neighboring subfaces are present,  Such absent tetrahedra and    //
-// subfaces are never represented by the NULL pointers; they are represented //
-// by two special records: `dummytet', the tetrahedron fills "outer space",  //
-// and `dummysh',  the vacuous subfaces which are omnipresent.               //
-//                                                                           //
-// Tetrahedra and adjoining subfaces are glued together through the pointers //
-// saved in each data fields of them. Subfaces and adjoining subsegments are //
-// connected in the same fashion.  However, there are no pointers directly   //
-// gluing tetrahedra and adjoining subsegments.  For the purpose of saving   //
-// space, the connections between tetrahedra and subsegments are entirely    //
-// mediated through subfaces.  The following part explains how subfaces are  //
-// connected in TetGen.                                                      //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The basic mesh element data structures                                    //
+    //                                                                           //
+    // There are four types of mesh elements: tetrahedra, subfaces, subsegments, //
+    // and points,  where subfaces and subsegments are triangles and edges which //
+    // appear on boundaries.  A tetrahedralization of a 3D point set comprises   //
+    // tetrahedra and points;  a surface mesh of a 3D domain comprises subfaces  //
+    // subsegments and points.  The elements of all the four types consist of a  //
+    // tetrahedral mesh of a 3D domain.  However, TetGen uses three data types:  //
+    // 'tetrahedron', 'shellface', and 'point'. A 'tetrahedron' is a tetrahedron;//
+    // while a 'shellface' can be either a subface or a subsegment; and a 'point'//
+    // is a point.  These three data types, linked by pointers comprise a mesh.  //
+    //                                                                           //
+    // A tetrahedron primarily consists of a list of 4 pointers to its corners,  //
+    // a list of 4 pointers to its adjoining tetrahedra, a list of 4 pointers to //
+    // its adjoining subfaces (when subfaces are needed). Optinoally, (depending //
+    // on the selected switches), it may contain an arbitrary number of user-    //
+    // defined floating-point attributes,  an optional maximum volume constraint //
+    // (for -a switch), and a pointer to a list of high-order nodes (-o2 switch).//
+    // Since the size of a tetrahedron is not determined until running time, it  //
+    // is not simply declared as a structure.                                    //
+    //                                                                           //
+    // The data structure of tetrahedron also stores the geometrical information.//
+    // Let t be a tetrahedron, v0, v1, v2, and v3 be the 4 nodes corresponding   //
+    // to the order of their storage in t.  v3 always has a negative orientation //
+    // with respect to v0, v1, v2 (ie,, v3 lies above the oriented plane passes  //
+    // through v0, v1, v2). Let the 4 faces of t be f0, f1, f2, and f3. Vertices //
+    // of each face are stipulated as follows: f0 (v0, v1, v2), f1 (v0, v3, v1), //
+    // f2 (v1, v3, v2), f3 (v2, v3, v0).                                         //
+    //                                                                           //
+    // A subface has 3 pointers to vertices, 3 pointers to adjoining subfaces, 3 //
+    // pointers to adjoining subsegments, 2 pointers to adjoining tetrahedra, a  //
+    // boundary marker(an integer). Like a tetrahedron, the pointers to vertices,//
+    // subfaces, and subsegments are ordered in a way that indicates their geom- //
+    // etric relation.  Let s be a subface, v0, v1 and v2 be the 3 nodes corres- //
+    // ponding to the order of their storage in s,  e0, e1 and e2 be the 3 edges,//
+    // then we have: e0 (v0, v1), e1 (v1, v2), e2 (v2, v0).                      //
+    //                                                                           //
+    // A subsegment has exactly the same data fields as a subface has, but only  //
+    // uses some of them. It has 2 pointers to its endpoints, 2 pointers to its  //
+    // adjoining (and collinear) subsegments, a pointer to a subface containing  //
+    // it (there may exist any number of subfaces having it, choose one of them  //
+    // arbitrarily). The geometric relation between its endpoints and adjoining  //
+    // subsegments is kept with respect to the storing order of its endpoints.   //
+    //                                                                           //
+    // The data structure of point is relatively simple.  A point is a list of   //
+    // floating-point numbers, starting with the x, y, and z coords, followed by //
+    // an arbitrary number of optional user-defined floating-point attributes,   //
+    // an integer boundary marker, an integer for the point type, and a pointer  //
+    // to a tetrahedron (used for speeding up point location).                   //
+    //                                                                           //
+    // For a tetrahedron on a boundary (or a hull) of the mesh, some or all of   //
+    // the adjoining tetrahedra may not be present. For an interior tetrahedron, //
+    // often no neighboring subfaces are present,  Such absent tetrahedra and    //
+    // subfaces are never represented by the NULL pointers; they are represented //
+    // by two special records: `dummytet', the tetrahedron fills "outer space",  //
+    // and `dummysh',  the vacuous subfaces which are omnipresent.               //
+    //                                                                           //
+    // Tetrahedra and adjoining subfaces are glued together through the pointers //
+    // saved in each data fields of them. Subfaces and adjoining subsegments are //
+    // connected in the same fashion.  However, there are no pointers directly   //
+    // gluing tetrahedra and adjoining subsegments.  For the purpose of saving   //
+    // space, the connections between tetrahedra and subsegments are entirely    //
+    // mediated through subfaces.  The following part explains how subfaces are  //
+    // connected in TetGen.                                                      //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The subface-subface and subface-subsegment connections                    //
-//                                                                           //
-// Adjoining subfaces sharing a common edge are connected in such a way that //
-// they form a face ring around the edge. It is indeed a single linked list  //
-// which is cyclic, e.g., one can start from any subface in it and traverse  //
-// back. When the edge is not a subsegment, the ring only has two coplanar   //
-// subfaces which are pointing to each other. Otherwise, the face ring may   //
-// have any number of subfaces (and are not all coplanar).                   //
-//                                                                           //
-// How is the face ring formed?  Let s be a subsegment, f is one of subfaces //
-// containing s as an edge.  The direction of s is stipulated from its first //
-// endpoint to its second (according to their storage in s). Once the dir of //
-// s is determined, the other two edges of f are oriented to follow this dir.//
-// The "directional normal" N_f is a vector formed from any point in f and a //
-// points orthogonally above f.                                              //
-//                                                                           //
-// The face ring of s is a cyclic ordered set of subfaces containing s, i.e.,//
-// F(s) = {f1, f2, ..., fn}, n >= 1.  Where the order is defined as follows: //
-// let fi, fj be two faces in F(s), the "normal-angle", NAngle(i,j) (range   //
-// from 0 to 360 degree) is the angle between the N_fi and N_fj;  then fi is //
-// in front of fj (or symbolically, fi < fj) if there exists another fk in   //
-// F(s), and NAangle(k, i) < NAngle(k, j).  The face ring of s is: f1 < f2 < //
-// ... < fn < f1.                                                            //
-//                                                                           //
-// The easiest way to imagine how a face ring is formed is to use the right- //
-// hand rule.  Make a fist using your right hand with the thumb pointing to  //
-// the direction of the subsegment. The face ring is connected following the //
-// direction of your fingers.                                                //
-//                                                                           //
-// The subface and subsegment are also connected through pointers stored in  //
-// their own data fields.  Every subface has a pointer to its adjoining sub- //
-// segment. However, a subsegment only has one pointer to a subface which is //
-// containing it. Such subface can be chosen arbitrarily, other subfaces are //
-// found through the face ring.                                              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The subface-subface and subface-subsegment connections                    //
+    //                                                                           //
+    // Adjoining subfaces sharing a common edge are connected in such a way that //
+    // they form a face ring around the edge. It is indeed a single linked list  //
+    // which is cyclic, e.g., one can start from any subface in it and traverse  //
+    // back. When the edge is not a subsegment, the ring only has two coplanar   //
+    // subfaces which are pointing to each other. Otherwise, the face ring may   //
+    // have any number of subfaces (and are not all coplanar).                   //
+    //                                                                           //
+    // How is the face ring formed?  Let s be a subsegment, f is one of subfaces //
+    // containing s as an edge.  The direction of s is stipulated from its first //
+    // endpoint to its second (according to their storage in s). Once the dir of //
+    // s is determined, the other two edges of f are oriented to follow this dir.//
+    // The "directional normal" N_f is a vector formed from any point in f and a //
+    // points orthogonally above f.                                              //
+    //                                                                           //
+    // The face ring of s is a cyclic ordered set of subfaces containing s, i.e.,//
+    // F(s) = {f1, f2, ..., fn}, n >= 1.  Where the order is defined as follows: //
+    // let fi, fj be two faces in F(s), the "normal-angle", NAngle(i,j) (range   //
+    // from 0 to 360 degree) is the angle between the N_fi and N_fj;  then fi is //
+    // in front of fj (or symbolically, fi < fj) if there exists another fk in   //
+    // F(s), and NAangle(k, i) < NAngle(k, j).  The face ring of s is: f1 < f2 < //
+    // ... < fn < f1.                                                            //
+    //                                                                           //
+    // The easiest way to imagine how a face ring is formed is to use the right- //
+    // hand rule.  Make a fist using your right hand with the thumb pointing to  //
+    // the direction of the subsegment. The face ring is connected following the //
+    // direction of your fingers.                                                //
+    //                                                                           //
+    // The subface and subsegment are also connected through pointers stored in  //
+    // their own data fields.  Every subface has a pointer to its adjoining sub- //
+    // segment. However, a subsegment only has one pointer to a subface which is //
+    // containing it. Such subface can be chosen arbitrarily, other subfaces are //
+    // found through the face ring.                                              //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     // The tetrahedron data structure.  Fields of a tetrahedron contains:
     //   - a list of four adjoining tetrahedra;
@@ -808,45 +804,45 @@ class tetgenmesh {
 
     typedef REAL *point;
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The mesh handle (triface, face) data types                                //
-//                                                                           //
-// Two special data types, 'triface' and 'face' are defined for maintaining  //
-// and updating meshes. They are like pointers (or handles), which allow you //
-// to hold one particular part of the mesh, i.e., a tetrahedron, a triangle, //
-// an edge and a vertex.  However, these data types do not themselves store  //
-// any part of the mesh. The mesh is made of the data types defined above.   //
-//                                                                           //
-// Muecke's "triangle-edge" data structure is the prototype for these data   //
-// types.  It allows a universal representation for every tetrahedron,       //
-// triangle, edge and vertex.  For understanding the following descriptions  //
-// of these handle data structures,  readers are required to read both the   //
-// introduction and implementation detail of "triangle-edge" data structure  //
-// in Muecke's thesis.                                                       //
-//                                                                           //
-// A 'triface' represents a face of a tetrahedron and an oriented edge of    //
-// the face simultaneously.  It has a pointer 'tet' to a tetrahedron, an     //
-// integer 'loc' (range from 0 to 3) as the face index, and an integer 'ver' //
-// (range from 0 to 5) as the edge version. A face of the tetrahedron can be //
-// uniquly determined by the pair (tet, loc), and an oriented edge of this   //
-// face can be uniquly determined by the triple (tet, loc, ver).  Therefore, //
-// different usages of one triface are possible.  If we only use the pair    //
-// (tet, loc), it refers to a face, and if we add the 'ver' additionally to  //
-// the pair, it is an oriented edge of this face.                            //
-//                                                                           //
-// A 'face' represents a subface and an oriented edge of it simultaneously.  //
-// It has a pointer 'sh' to a subface, an integer 'shver'(range from 0 to 5) //
-// as the edge version.  The pair (sh, shver) determines a unique oriented   //
-// edge of this subface.  A 'face' is also used to represent a subsegment,   //
-// in this case, 'sh' points to the subsegment, and 'shver' indicates the    //
-// one of two orientations of this subsegment, hence, it only can be 0 or 1. //
-//                                                                           //
-// Mesh navigation and updating are accomplished through a set of mesh       //
-// manipulation primitives which operate on trifaces and faces.  They are    //
-// introduced below.                                                         //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The mesh handle (triface, face) data types                                //
+    //                                                                           //
+    // Two special data types, 'triface' and 'face' are defined for maintaining  //
+    // and updating meshes. They are like pointers (or handles), which allow you //
+    // to hold one particular part of the mesh, i.e., a tetrahedron, a triangle, //
+    // an edge and a vertex.  However, these data types do not themselves store  //
+    // any part of the mesh. The mesh is made of the data types defined above.   //
+    //                                                                           //
+    // Muecke's "triangle-edge" data structure is the prototype for these data   //
+    // types.  It allows a universal representation for every tetrahedron,       //
+    // triangle, edge and vertex.  For understanding the following descriptions  //
+    // of these handle data structures,  readers are required to read both the   //
+    // introduction and implementation detail of "triangle-edge" data structure  //
+    // in Muecke's thesis.                                                       //
+    //                                                                           //
+    // A 'triface' represents a face of a tetrahedron and an oriented edge of    //
+    // the face simultaneously.  It has a pointer 'tet' to a tetrahedron, an     //
+    // integer 'loc' (range from 0 to 3) as the face index, and an integer 'ver' //
+    // (range from 0 to 5) as the edge version. A face of the tetrahedron can be //
+    // uniquly determined by the pair (tet, loc), and an oriented edge of this   //
+    // face can be uniquly determined by the triple (tet, loc, ver).  Therefore, //
+    // different usages of one triface are possible.  If we only use the pair    //
+    // (tet, loc), it refers to a face, and if we add the 'ver' additionally to  //
+    // the pair, it is an oriented edge of this face.                            //
+    //                                                                           //
+    // A 'face' represents a subface and an oriented edge of it simultaneously.  //
+    // It has a pointer 'sh' to a subface, an integer 'shver'(range from 0 to 5) //
+    // as the edge version.  The pair (sh, shver) determines a unique oriented   //
+    // edge of this subface.  A 'face' is also used to represent a subsegment,   //
+    // in this case, 'sh' points to the subsegment, and 'shver' indicates the    //
+    // one of two orientations of this subsegment, hence, it only can be 0 or 1. //
+    //                                                                           //
+    // Mesh navigation and updating are accomplished through a set of mesh       //
+    // manipulation primitives which operate on trifaces and faces.  They are    //
+    // introduced below.                                                         //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     class triface {
 
@@ -888,54 +884,54 @@ class tetgenmesh {
         bool operator!=(face& s) {return (sh != s.sh) || (shver != s.shver);}
     };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The badface structure                                                     //
-//                                                                           //
-// A multiple usages structure. Despite of its name, a 'badface' can be used //
-// to represent the following objects:                                       //
-//   - a face of a tetrahedron which is (possibly) non-Delaunay;             //
-//   - an encroached subsegment or subface;                                  //
-//   - a bad-quality tetrahedron, i.e, has too large radius-edge ratio;      //
-//   - a sliver, i.e., has good radius-edge ratio but nearly zero volume;    //
-//   - a degenerate tetrahedron (see routine checkdegetet()).                //
-//   - a recently flipped face (saved for undoing the flip later).           //
-//                                                                           //
-// It has the following fields:  'tt' holds a tetrahedron; 'ss' holds a sub- //
-// segment or subface; 'cent' is the circumcent of 'tt' or 'ss', 'key' is a  //
-// special value depending on the use, it can be either the square of the    //
-// radius-edge ratio of 'tt' or the flipped type of 'tt';  'forg', 'fdest',  //
-// 'fapex', and 'foppo' are vertices saved for checking the object in 'tt'   //
-// or 'ss' is still the same when it was stored; 'noppo' is the fifth vertex //
-// of a degenerate point set.  'previtem' and 'nextitem' implement a double  //
-// link for managing many basfaces.                                          //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The badface structure                                                     //
+    //                                                                           //
+    // A multiple usages structure. Despite of its name, a 'badface' can be used //
+    // to represent the following objects:                                       //
+    //   - a face of a tetrahedron which is (possibly) non-Delaunay;             //
+    //   - an encroached subsegment or subface;                                  //
+    //   - a bad-quality tetrahedron, i.e, has too large radius-edge ratio;      //
+    //   - a sliver, i.e., has good radius-edge ratio but nearly zero volume;    //
+    //   - a degenerate tetrahedron (see routine checkdegetet()).                //
+    //   - a recently flipped face (saved for undoing the flip later).           //
+    //                                                                           //
+    // It has the following fields:  'tt' holds a tetrahedron; 'ss' holds a sub- //
+    // segment or subface; 'cent' is the circumcent of 'tt' or 'ss', 'key' is a  //
+    // special value depending on the use, it can be either the square of the    //
+    // radius-edge ratio of 'tt' or the flipped type of 'tt';  'forg', 'fdest',  //
+    // 'fapex', and 'foppo' are vertices saved for checking the object in 'tt'   //
+    // or 'ss' is still the same when it was stored; 'noppo' is the fifth vertex //
+    // of a degenerate point set.  'previtem' and 'nextitem' implement a double  //
+    // link for managing many basfaces.                                          //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     struct badface {
-      triface tt; 
-      face ss; 
+      triface tt;
+      face ss;
       REAL key;
       REAL cent[3];
       point forg, fdest, fapex, foppo;
       point noppo;
-      struct badface *previtem, *nextitem; 
+      struct badface *previtem, *nextitem;
     };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The pbcdata structure                                                     //
-//                                                                           //
-// A pbcdata stores data of a periodic boundary condition defined on a pair  //
-// of facets or segments. Let f1 and f2 define a pbcgroup. 'fmark' saves the //
-// facet markers of f1 and f2;  'ss' contains two subfaces belong to f1 and  //
-// f2, respectively.  Let s1 and s2 define a segment pbcgroup. 'segid' are   //
-// the segment ids of s1 and s2; 'ss' contains two segments belong to s1 and //
-// s2, respectively. 'transmat' are two transformation matrices. transmat[0] //
-// transforms a point of f1 (or s1) into a point of f2 (or s2),  transmat[1] //
-// does the inverse.                                                         //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The pbcdata structure                                                     //
+    //                                                                           //
+    // A pbcdata stores data of a periodic boundary condition defined on a pair  //
+    // of facets or segments. Let f1 and f2 define a pbcgroup. 'fmark' saves the //
+    // facet markers of f1 and f2;  'ss' contains two subfaces belong to f1 and  //
+    // f2, respectively.  Let s1 and s2 define a segment pbcgroup. 'segid' are   //
+    // the segment ids of s1 and s2; 'ss' contains two segments belong to s1 and //
+    // s2, respectively. 'transmat' are two transformation matrices. transmat[0] //
+    // transforms a point of f1 (or s1) into a point of f2 (or s2),  transmat[1] //
+    // does the inverse.                                                         //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     struct pbcdata {
       int fmark[2];
@@ -944,24 +940,24 @@ class tetgenmesh {
       REAL transmat[2][4][4];
     };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// The list, link and queue data structures                                  //
-//                                                                           //
-// These data types are used to manipulate a set of (same-typed) data items. //
-// For a given set S = {a, b, c, ...}, a list stores the elements of S in a  //
-// piece of continuous memory. It allows quickly accessing each element of S,//
-// thus is suitable for storing a fix-sized set.  While a link stores its    //
-// elements incontinuously. It allows quickly inserting or deleting an item, //
-// thus is suitable for storing a size-variable set.  A queue is basically a //
-// special case of a link where one data element joins the link at the end   //
-// and leaves in an ordered fashion at the other end.                        //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // The list, link and queue data structures                                  //
+    //                                                                           //
+    // These data types are used to manipulate a set of (same-typed) data items. //
+    // For a given set S = {a, b, c, ...}, a list stores the elements of S in a  //
+    // piece of continuous memory. It allows quickly accessing each element of S,//
+    // thus is suitable for storing a fix-sized set.  While a link stores its    //
+    // elements incontinuously. It allows quickly inserting or deleting an item, //
+    // thus is suitable for storing a size-variable set.  A queue is basically a //
+    // special case of a link where one data element joins the link at the end   //
+    // and leaves in an ordered fashion at the other end.                        //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     // The compfunc data type.  "compfunc" is a pointer to a linear-order
-    //   function, which takes two 'void*' arguments and returning an 'int'. 
-    //   
+    //   function, which takes two 'void*' arguments and returning an 'int'.
+    //
     // A function: int cmp(const T &, const T &),  is said to realize a
     //   linear order on the type T if there is a linear order <= on T such
     //   that for all x and y in T satisfy the following relation:
@@ -982,30 +978,30 @@ class tetgenmesh {
     //   set the corresponding predefined linear order functions for them.
     static void set_compfunc(char* str, int* itembytes, compfunc* pcomp);
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// List data structure.                                                      //
-//                                                                           //
-// A 'list' is an array of items with automatically reallocation of memory.  //
-// It behaves like an array.                                                 //
-//                                                                           //
-// 'base' is the starting address of the array;  The memory unit in list is  //
-//   byte, i.e., sizeof(char). 'itembytes' is the size of each item in byte, //
-//   so that the next item in list will be found at the next 'itembytes'     //
-//   counted from the current position.                                      //
-//                                                                           //
-// 'items' is the number of items stored in list.  'maxitems' indicates how  //
-//   many items can be stored in this list. 'expandsize' is the increasing   //
-//   size (items) when the list is full.                                     //
-//                                                                           //
-// 'comp' is a pointer pointing to a linear order function for the list.     //
-//   default it is set to 'NULL'.                                            //
-//                                                                           //
-// The index of list always starts from zero, i.e., for a list L contains    //
-//   n elements, the first element is L[0], and the last element is L[n-1].  //
-//   This feature lets lists like C/C++ arrays.                              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // List data structure.                                                      //
+    //                                                                           //
+    // A 'list' is an array of items with automatically reallocation of memory.  //
+    // It behaves like an array.                                                 //
+    //                                                                           //
+    // 'base' is the starting address of the array;  The memory unit in list is  //
+    //   byte, i.e., sizeof(char). 'itembytes' is the size of each item in byte, //
+    //   so that the next item in list will be found at the next 'itembytes'     //
+    //   counted from the current position.                                      //
+    //                                                                           //
+    // 'items' is the number of items stored in list.  'maxitems' indicates how  //
+    //   many items can be stored in this list. 'expandsize' is the increasing   //
+    //   size (items) when the list is full.                                     //
+    //                                                                           //
+    // 'comp' is a pointer pointing to a linear order function for the list.     //
+    //   default it is set to 'NULL'.                                            //
+    //                                                                           //
+    // The index of list always starts from zero, i.e., for a list L contains    //
+    //   n elements, the first element is L[0], and the last element is L[n-1].  //
+    //   This feature lets lists like C/C++ arrays.                              //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     class list {
 
@@ -1030,7 +1026,7 @@ class tetgenmesh {
         void *operator[](int i) { return (void *) (base + i * itembytes); }
 
         void listinit(int itbytes, compfunc pcomp, int mitems, int exsize);
-        void setcomp(compfunc compf) { comp = compf; }    
+        void setcomp(compfunc compf) { comp = compf; }
         void clear() { items = 0; }
         int  len() { return items; }
         void *append(void* appitem);
@@ -1038,39 +1034,39 @@ class tetgenmesh {
         void del(int pos, int order);
         int  hasitem(void* checkitem);
         void sort();
-    }; 
+    };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Memorypool data structure.                                                //
-//                                                                           //
-// A type used to allocate memory.  (It is incorporated from Shewchuk's      //
-// Triangle program)                                                         //
-//                                                                           //
-// firstblock is the first block of items. nowblock is the block from which  //
-//   items are currently being allocated. nextitem points to the next slab   //
-//   of free memory for an item. deaditemstack is the head of a linked list  //
-//   (stack) of deallocated items that can be recycled.  unallocateditems is //
-//   the number of items that remain to be allocated from nowblock.          //
-//                                                                           //
-// Traversal is the process of walking through the entire list of items, and //
-//   is separate from allocation.  Note that a traversal will visit items on //
-//   the "deaditemstack" stack as well as live items.  pathblock points to   //
-//   the block currently being traversed.  pathitem points to the next item  //
-//   to be traversed.  pathitemsleft is the number of items that remain to   //
-//   be traversed in pathblock.                                              //
-//                                                                           //
-// itemwordtype is set to POINTER or FLOATINGPOINT, and is used to suggest   //
-//   what sort of word the record is primarily made up of.  alignbytes       //
-//   determines how new records should be aligned in memory.  itembytes and  //
-//   itemwords are the length of a record in bytes (after rounding up) and   //
-//   words.  itemsperblock is the number of items allocated at once in a     //
-//   single block.  items is the number of currently allocated items.        //
-//   maxitems is the maximum number of items that have been allocated at     //
-//   once; it is the current number of items plus the number of records kept //
-//   on deaditemstack.                                                       //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Memorypool data structure.                                                //
+    //                                                                           //
+    // A type used to allocate memory.  (It is incorporated from Shewchuk's      //
+    // Triangle program)                                                         //
+    //                                                                           //
+    // firstblock is the first block of items. nowblock is the block from which  //
+    //   items are currently being allocated. nextitem points to the next slab   //
+    //   of free memory for an item. deaditemstack is the head of a linked list  //
+    //   (stack) of deallocated items that can be recycled.  unallocateditems is //
+    //   the number of items that remain to be allocated from nowblock.          //
+    //                                                                           //
+    // Traversal is the process of walking through the entire list of items, and //
+    //   is separate from allocation.  Note that a traversal will visit items on //
+    //   the "deaditemstack" stack as well as live items.  pathblock points to   //
+    //   the block currently being traversed.  pathitem points to the next item  //
+    //   to be traversed.  pathitemsleft is the number of items that remain to   //
+    //   be traversed in pathblock.                                              //
+    //                                                                           //
+    // itemwordtype is set to POINTER or FLOATINGPOINT, and is used to suggest   //
+    //   what sort of word the record is primarily made up of.  alignbytes       //
+    //   determines how new records should be aligned in memory.  itembytes and  //
+    //   itemwords are the length of a record in bytes (after rounding up) and   //
+    //   words.  itemsperblock is the number of items allocated at once in a     //
+    //   single block.  items is the number of currently allocated items.        //
+    //   maxitems is the maximum number of items that have been allocated at     //
+    //   once; it is the current number of items plus the number of records kept //
+    //   on deaditemstack.                                                       //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     class memorypool {
 
@@ -1094,48 +1090,48 @@ class tetgenmesh {
         memorypool();
         memorypool(int, int, enum wordtype, int);
         ~memorypool();
-    
+
         void poolinit(int, int, enum wordtype, int);
         void restart();
         void *alloc();
         void dealloc(void*);
         void traversalinit();
         void *traverse();
-    };  
+    };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Link data structure.                                                      //
-//                                                                           //
-// A 'link' is a double linked nodes. It uses the memorypool data structure  //
-// for memory management.  Following is an image of a link.                  //
-//                                                                           //
-//   head-> ____0____      ____1____      ____2____      _________<-tail     //
-//         |__next___|--> |__next___|--> |__next___|--> |__NULL___|          //
-//         |__NULL___|<-- |__prev___|<-- |__prev___|<-- |__prev___|          //
-//         |         |    |_       _|    |_       _|    |         |          //
-//         |         |    |_ Data1 _|    |_ Data2 _|    |         |          //
-//         |_________|    |_________|    |_________|    |_________|          //
-//                                                                           //
-// The unit size for storage is size of pointer, which may be 4-byte (in 32- //
-//   bit machine) or 8-byte (in 64-bit machine). The real size of an item is //
-//   stored in 'linkitembytes'.                                              //
-//                                                                           //
-// 'head' and 'tail' are pointers pointing to the first and last nodes. They //
-//   do not conatin data (See above).                                        //
-//                                                                           //
-// 'nextlinkitem' is a pointer pointing to a node which is the next one will //
-//   be traversed. 'curpos' remembers the position (1-based) of the current  //
-//   traversing node.                                                        //
-//                                                                           //
-// 'linkitems' indicates how many items in link. Note it is different with   //
-//   'items' of memorypool.                                                  //
-//                                                                           //
-// The index of link starts from 1, i.e., for a link K contains n elements,  //
-//   the first element of the link is K[1], and the last element is K[n].    //
-//   See the above figure.                                                   //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Link data structure.                                                      //
+    //                                                                           //
+    // A 'link' is a double linked nodes. It uses the memorypool data structure  //
+    // for memory management.  Following is an image of a link.                  //
+    //                                                                           //
+    //   head-> ____0____      ____1____      ____2____      _________<-tail     //
+    //         |__next___|--> |__next___|--> |__next___|--> |__NULL___|          //
+    //         |__NULL___|<-- |__prev___|<-- |__prev___|<-- |__prev___|          //
+    //         |         |    |_       _|    |_       _|    |         |          //
+    //         |         |    |_ Data1 _|    |_ Data2 _|    |         |          //
+    //         |_________|    |_________|    |_________|    |_________|          //
+    //                                                                           //
+    // The unit size for storage is size of pointer, which may be 4-byte (in 32- //
+    //   bit machine) or 8-byte (in 64-bit machine). The real size of an item is //
+    //   stored in 'linkitembytes'.                                              //
+    //                                                                           //
+    // 'head' and 'tail' are pointers pointing to the first and last nodes. They //
+    //   do not conatin data (See above).                                        //
+    //                                                                           //
+    // 'nextlinkitem' is a pointer pointing to a node which is the next one will //
+    //   be traversed. 'curpos' remembers the position (1-based) of the current  //
+    //   traversing node.                                                        //
+    //                                                                           //
+    // 'linkitems' indicates how many items in link. Note it is different with   //
+    //   'items' of memorypool.                                                  //
+    //                                                                           //
+    // The index of link starts from 1, i.e., for a link K contains n elements,  //
+    //   the first element of the link is K[1], and the last element is K[n].    //
+    //   See the above figure.                                                   //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     class link : public memorypool {
 
@@ -1161,7 +1157,7 @@ class tetgenmesh {
         void linkinit(int _itembytes, compfunc _comp, int itemcount);
         void setcomp(compfunc compf) { comp = compf; }
         void rewind() { nextlinkitem = *head; curpos = 1; }
-        void goend() { nextlinkitem = *(tail + 1); curpos = linkitems; }    
+        void goend() { nextlinkitem = *(tail + 1); curpos = linkitems; }
         long len() { return linkitems; }
         void clear();
         bool move(int numberofnodes);
@@ -1175,18 +1171,18 @@ class tetgenmesh {
         int  hasitem(void* checkitem);
     };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Queue data structure.                                                     //
-//                                                                           //
-// A 'queue' is basically a link.  Following is an image of a queue.         //
-//              ___________     ___________     ___________                  //
-//   Pop() <-- |_         _|<--|_         _|<--|_         _| <-- Push()      //
-//             |_  Data0  _|   |_  Data1  _|   |_  Data2  _|                 //
-//             |___________|   |___________|   |___________|                 //
-//              queue head                       queue tail                  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Queue data structure.                                                     //
+    //                                                                           //
+    // A 'queue' is basically a link.  Following is an image of a queue.         //
+    //              ___________     ___________     ___________                  //
+    //   Pop() <-- |_         _|<--|_         _|<--|_         _| <-- Push()      //
+    //             |_  Data0  _|   |_  Data1  _|   |_  Data2  _|                 //
+    //             |___________|   |___________|   |___________|                 //
+    //              queue head                       queue tail                  //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     class queue : public link {
 
@@ -1194,7 +1190,7 @@ class tetgenmesh {
 
         queue(int bytes, int count = 256) : link(bytes, NULL, count) {}
         bool empty() { return linkitems == 0; }
-        void *push(void* newitem) {return link::add(newitem);} 
+        void *push(void* newitem) {return link::add(newitem);}
         void *pop() {return link::deletenode((void **) *head);}
         // Stack is implemented as a single link list.
         void *stackpush() {
@@ -1206,7 +1202,7 @@ class tetgenmesh {
           *head = (void *) newnode;
           *newnode = (void *) nextnode;
           linkitems++;
-          return (void *)(newnode + 2); 
+          return (void *)(newnode + 2);
         }
         void *stackpop() {
           void **deadnode = (void **) *head;
@@ -1216,11 +1212,11 @@ class tetgenmesh {
         }
     };
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Global variables used for miscellaneous purposes.                         //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Global variables used for miscellaneous purposes.                         //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     // Pointer to the input data (a set of nodes, a PLC, or a mesh).
     tetgenio *in;
@@ -1266,7 +1262,7 @@ class tetgenmesh {
     pbcdata *subpbcgrouptable;
     list *segpbcgrouptable;
     // A map for searching the pbcgroups of a given segment. 'idx2segpglist'
-    //   (size = number of input segments + 1), and 'segpglist'.  
+    //   (size = number of input segments + 1), and 'segpglist'.
     int *idx2segpglist, *segpglist;
 
     // Queues that maintain the bad (badly-shaped or too large) tetrahedra.
@@ -1334,29 +1330,29 @@ class tetgenmesh {
     long flip23s, flip32s, flip22s, flip44s;   // Number of flips performed.
     REAL tloctime, tfliptime;      // Time (microseconds) of point location.
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Fast lookup tables for mesh manipulation primitives.                      //
-//                                                                           //
-// Mesh manipulation primitives (given below) are basic operations on mesh   //
-// data structures. They answer basic queries on mesh handles, such as "what //
-// is the origin (or destination, or apex) of the face?", "what is the next  //
-// (or previous) edge in the edge ring?", and "what is the next face in the  //
-// face ring?", and so on.                                                   //
-//                                                                           //
-// The implementation of teste basic queries can take advangtage of the fact //
-// that the mesh data structures additionally store geometric informations.  //
-// For example, we have ordered the 4 vertices (from 0 to 3) and the 4 faces //
-// (from 0 to 3) of a tetrahedron,  and for each face of the tetrahedron, a  //
-// sequence of vertices has stipulated,  therefore the origin of any face of //
-// the tetrahedron can be quickly determined by a table 'locver2org', which  //
-// takes the index of the face and the edge version as inputs.  A list of    //
-// fast lookup tables are defined below. They're just like global variables. //
-// These tables are initialized at the runtime.                              //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Fast lookup tables for mesh manipulation primitives.                      //
+    //                                                                           //
+    // Mesh manipulation primitives (given below) are basic operations on mesh   //
+    // data structures. They answer basic queries on mesh handles, such as "what //
+    // is the origin (or destination, or apex) of the face?", "what is the next  //
+    // (or previous) edge in the edge ring?", and "what is the next face in the  //
+    // face ring?", and so on.                                                   //
+    //                                                                           //
+    // The implementation of teste basic queries can take advangtage of the fact //
+    // that the mesh data structures additionally store geometric informations.  //
+    // For example, we have ordered the 4 vertices (from 0 to 3) and the 4 faces //
+    // (from 0 to 3) of a tetrahedron,  and for each face of the tetrahedron, a  //
+    // sequence of vertices has stipulated,  therefore the origin of any face of //
+    // the tetrahedron can be quickly determined by a table 'locver2org', which  //
+    // takes the index of the face and the edge version as inputs.  A list of    //
+    // fast lookup tables are defined below. They're just like global variables. //
+    // These tables are initialized at the runtime.                              //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
-    // For enext() primitive, uses 'ver' as the index. 
+    // For enext() primitive, uses 'ver' as the index.
     static int ve[6];
 
     // For org(), dest() and apex() primitives, uses 'ver' as the index.
@@ -1384,21 +1380,21 @@ class tetgenmesh {
     static int plus1mod3[3];
     static int minus1mod3[3];
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Mesh manipulation primitives                                              //
-//                                                                           //
-// A serial of mesh operations such as topological maintenance,  navigation, //
-// local modification, etc.,  is accomplished through a set of mesh manipul- //
-// ation primitives. These primitives are indeed very simple functions which //
-// take one or two handles ('triface's and 'face's) as parameters,  perform  //
-// basic operations such as "glue two tetrahedra at a face",  "return the    //
-// origin of a tetrahedron", "return the subface adjoining at the face of a  //
-// tetrahedron", and so on.                                                  //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Mesh manipulation primitives                                              //
+    //                                                                           //
+    // A serial of mesh operations such as topological maintenance,  navigation, //
+    // local modification, etc.,  is accomplished through a set of mesh manipul- //
+    // ation primitives. These primitives are indeed very simple functions which //
+    // take one or two handles ('triface's and 'face's) as parameters,  perform  //
+    // basic operations such as "glue two tetrahedra at a face",  "return the    //
+    // origin of a tetrahedron", "return the subface adjoining at the face of a  //
+    // tetrahedron", and so on.                                                  //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
-        // Primitives for tetrahedra.
+    // Primitives for tetrahedra.
     inline void decode(tetrahedron ptr, triface& t);
     inline tetrahedron encode(triface& t);
     inline void sym(triface& t1, triface& t2);
@@ -1432,7 +1428,7 @@ class tetgenmesh {
     inline void setelemattribute(tetrahedron* ptr, int attnum, REAL value);
     inline REAL volumebound(tetrahedron* ptr);
     inline void setvolumebound(tetrahedron* ptr, REAL value);
- 
+
     // Primitives for subfaces and subsegments.
     inline void sdecode(shellface sptr, face& s);
     inline shellface sencode(face& s);
@@ -1462,7 +1458,7 @@ class tetgenmesh {
     inline int shellmark(face& s);
     inline void setshellmark(face& s, int value);
     inline enum shestype shelltype(face& s);
-    inline void setshelltype(face& s, enum shestype value); 
+    inline void setshelltype(face& s, enum shestype value);
     inline int shellpbcgroup(face& s);
     inline void setshellpbcgroup(face& s, int value);
     inline void sinfect(face& s);
@@ -1512,7 +1508,7 @@ class tetgenmesh {
     inline bool issymexist(triface* t);
     void getnextsface(face*, face*);
     void tsspivot(triface*, face*);
-    void sstpivot(face*, triface*);   
+    void sstpivot(face*, triface*);
     bool findorg(triface* t, point dorg);
     bool findorg(face* s, point dorg);
     void findedge(triface* t, point eorg, point edest);
@@ -1525,28 +1521,28 @@ class tetgenmesh {
     void printtet(triface*);
     void printsh(face*);
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Triangle-triangle intersection test                                       //
-//                                                                           //
-// The triangle-triangle intersection test is implemented with exact arithm- //
-// etic. It exactly tells whether or not two triangles in three dimensions   //
-// intersect.  Before implementing this test myself,  I tried two C codes    //
-// (implemented by Thomas Moeller and Philippe Guigue, respectively), which  //
-// are all public available. However both of them failed frequently. Another //
-// unconvenience is both codes only tell whether or not the two triangles    //
-// intersect without distinguishing the cases whether they exactly intersect //
-// in interior or they just share a vertex or share an edge. The two latter  //
-// cases are acceptable and should return not intersection in TetGen.        //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Triangle-triangle intersection test                                       //
+    //                                                                           //
+    // The triangle-triangle intersection test is implemented with exact arithm- //
+    // etic. It exactly tells whether or not two triangles in three dimensions   //
+    // intersect.  Before implementing this test myself,  I tried two C codes    //
+    // (implemented by Thomas Moeller and Philippe Guigue, respectively), which  //
+    // are all public available. However both of them failed frequently. Another //
+    // unconvenience is both codes only tell whether or not the two triangles    //
+    // intersect without distinguishing the cases whether they exactly intersect //
+    // in interior or they just share a vertex or share an edge. The two latter  //
+    // cases are acceptable and should return not intersection in TetGen.        //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     enum interresult edge_vert_col_inter(REAL*, REAL*, REAL*);
     enum interresult edge_edge_cop_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
     enum interresult tri_vert_cop_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
     enum interresult tri_edge_cop_inter(REAL*, REAL*, REAL*,REAL*,REAL*,REAL*);
     enum interresult tri_edge_inter_tail(REAL*, REAL*, REAL*, REAL*, REAL*,
-                                        REAL, REAL);
+        REAL, REAL);
     enum interresult tri_edge_inter(REAL*, REAL*, REAL*, REAL*, REAL*);
     enum interresult tri_tri_inter(REAL*, REAL*, REAL*, REAL*, REAL*, REAL*);
 
@@ -1616,15 +1612,15 @@ class tetgenmesh {
     enum locateresult locateseg(point searchpt, face* searchseg);
     enum locateresult adjustlocateseg(point, face*, enum locateresult, REAL);
 
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-// Mesh Local Transformation Operators                                       //
-//                                                                           //
-// These operators (including flips, insert & remove vertices and so on) are //
-// used to transform (or replace) a set of mesh elements into another set of //
-// mesh elements.                                                            //
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //                                                                           //
+    // Mesh Local Transformation Operators                                       //
+    //                                                                           //
+    // These operators (including flips, insert & remove vertices and so on) are //
+    // used to transform (or replace) a set of mesh elements into another set of //
+    // mesh elements.                                                            //
+    //                                                                           //
+    ///////////////////////////////////////////////////////////////////////////////
 
     // Mesh transformation routines.
     enum fliptype categorizeface(triface& horiz);
@@ -1656,9 +1652,9 @@ class tetgenmesh {
     void splitsubedge(point newpoint, face* splitsh, queue* flipqueue);
     void unsplitsubedge(face* splitsh);
     enum insertsiteresult insertsite(point newpoint, triface* searchtet,
-                                     bool approx, queue* flipqueue);
-    void undosite(enum insertsiteresult insresult, triface* splittet, 
-                  point torg, point tdest, point tapex, point toppo);
+        bool approx, queue* flipqueue);
+    void undosite(enum insertsiteresult insresult, triface* splittet,
+        point torg, point tdest, point tapex, point toppo);
     void closeopenface(triface* openface, queue* flipque);
     void inserthullsite(point inspoint, triface* horiz, queue* flipque);
 
@@ -1666,19 +1662,19 @@ class tetgenmesh {
     void formbowatcavityquad(point, list*, list*);
     void formbowatcavitysegquad(point, list*, list*);
     void formbowatcavity(point bp, face* bpseg, face* bpsh, int* n, int* nmax,
-                         list** sublists, list** subceillists, list** tetlists,
-                         list** ceillists);
+        list** sublists, list** subceillists, list** tetlists,
+        list** ceillists);
     void releasebowatcavity(face*, int, list**, list**, list**, list**);
     bool validatebowatcavityquad(point bp, list* ceillist, REAL maxcosd);
     void updatebowatcavityquad(list* tetlist, list* ceillist);
     void updatebowatcavitysub(list* sublist, list* subceillist, int* cutcount);
     bool trimbowatcavity(point bp, face* bpseg, int n, list** sublists,
-                         list** subceillists, list** tetlists,list** ceillists,
-                         REAL maxcosd);
+        list** subceillists, list** tetlists,list** ceillists,
+        REAL maxcosd);
     void bowatinsertsite(point bp, face* splitseg, int n, list** sublists,
-                         list** subceillists, list** tetlists,
-                         list** ceillists, list* verlist, queue* flipque,
-                         bool chkencseg, bool chkencsub, bool chkbadtet);
+        list** subceillists, list** tetlists,
+        list** ceillists, list* verlist, queue* flipque,
+        bool chkencseg, bool chkencsub, bool chkbadtet);
 
     // Delaunay tetrahedralization routines.
     void formstarpolyhedron(point pt, list* tetlist, list* verlist, bool);
@@ -1702,7 +1698,7 @@ class tetgenmesh {
     void plaguesub(memorypool* viri);
     void carveholessub(int holes, REAL* holelist, memorypool* viri);
     void triangulate(int shmark, REAL eps, list* ptlist, list* conlist,
-                     int holes, REAL* holelist, memorypool* viri, queue*);
+        int holes, REAL* holelist, memorypool* viri, queue*);
     void retrievenewsubs(list* newshlist, bool removeseg);
     void unifysegments();
     void mergefacets(queue* flipqueue);
@@ -1710,9 +1706,9 @@ class tetgenmesh {
 
     // Detect intersecting facets of PLC.
     void interecursive(shellface** subfacearray, int arraysize, int axis,
-                       REAL bxmin, REAL bxmax, REAL bymin, REAL bymax,
-                       REAL bzmin, REAL bzmax, int* internum);
-    void detectinterfaces(); 
+        REAL bxmin, REAL bxmax, REAL bymin, REAL bymax,
+        REAL bzmin, REAL bzmax, int* internum);
+    void detectinterfaces();
 
     // Periodic boundary condition supporting routines.
     void createsubpbcgrouptable();
@@ -1755,22 +1751,22 @@ class tetgenmesh {
     bool identifyfronts(list* frontlist, list* misfrontlist, list* newtetlist);
     void detachauxsubfaces(list* newtetlist);
     void expandcavity(list* frontlist, list* misfrontlist, list* newtetlist,
-                      list* crosstetlist, queue* missingshqueue, queue*);
+        list* crosstetlist, queue* missingshqueue, queue*);
     void carvecavity(list* newtetlist, list* outtetlist, queue* flipque);
     void delaunizecavity(list* floorlist, list* ceillist, list* ceilptlist,
-                         list* floorptlist, list* frontlist,list* misfrontlist,
-                         list* newtetlist, list* crosstetlist, queue*, queue*);
+        list* floorptlist, list* frontlist,list* misfrontlist,
+        list* newtetlist, list* crosstetlist, queue*, queue*);
     void formmissingregion(face* missingsh, list* missingshlist,
-                           list* equatptlist, int* worklist);
-    void formcavity(list* missingshlist, list* crossedgelist, 
-                    list* equatptlist, list* crossshlist, list* crosstetlist,
-                    list* belowfacelist, list* abovefacelist,
-                    list* horizptlist, list* belowptlist, list* aboveptlist,
-                    queue* missingshqueue, int* worklist);
+        list* equatptlist, int* worklist);
+    void formcavity(list* missingshlist, list* crossedgelist,
+        list* equatptlist, list* crossshlist, list* crosstetlist,
+        list* belowfacelist, list* abovefacelist,
+        list* horizptlist, list* belowptlist, list* aboveptlist,
+        queue* missingshqueue, int* worklist);
     bool scoutcrossingedge(list* missingshlist, list* boundedgelist,
-                           list* crossedgelist, int* worklist);
+        list* crossedgelist, int* worklist);
     void rearrangesubfaces(list* missingshlist, list* boundedgelist,
-                           list* equatptlist, int* worklist);
+        list* equatptlist, int* worklist);
     void insertallsubfaces(queue* missingshqueue);
     void constrainedfacets();
 
@@ -1789,8 +1785,8 @@ class tetgenmesh {
     bool recoverfront(triface* front, list* newtetlist, queue* flipque);
     void repairflips(queue* flipque);
     bool constrainedcavity(triface* oldtet, list* floorlist, list* ceillist,
-                           list* ptlist, list* frontlist, list* misfrontlist,
-                           list* newtetlist, queue* flipque);
+        list* ptlist, list* frontlist, list* misfrontlist,
+        list* newtetlist, queue* flipque);
     void expandsteinercavity(point steinpt, REAL eps, list* frontlist, list*);
     bool findrelocatepoint(point sp, point np, REAL* n, list*, list*);
     void relocatepoint(point steinpt, triface* oldtet, list*, list*, queue*);
@@ -1799,14 +1795,14 @@ class tetgenmesh {
     void deallocfaketets(list* frontlist);
     void restorepolyhedron(list* oldtetlist);
     bool suppressfacetpoint(face* supsh, list* frontlist, list* misfrontlist,
-                            list* ptlist, list* conlist, memorypool* viri,
-                            queue* flipque, bool noreloc, bool optflag);
+        list* ptlist, list* conlist, memorypool* viri,
+        queue* flipque, bool noreloc, bool optflag);
     bool suppresssegpoint(face* supseg, list* spinshlist, list* newsegshlist,
-                          list* frontlist, list* misfrontlist, list* ptlist,
-                          list* conlist, memorypool* viri, queue* flipque,
-                          bool noreloc, bool optflag);
+        list* frontlist, list* misfrontlist, list* ptlist,
+        list* conlist, memorypool* viri, queue* flipque,
+        bool noreloc, bool optflag);
     bool suppressvolpoint(triface* suptet, list* frontlist, list* misfrontlist,
-                          list* ptlist, queue* flipque, bool optflag);
+        list* ptlist, queue* flipque, bool optflag);
     bool smoothpoint(point smthpt, point, point, list *starlist, bool, REAL*);
     void removesteiners(bool coarseflag);
 
@@ -1908,9 +1904,9 @@ class tetgenmesh {
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void tetrahedralize(tetgenbehavior *b, tetgenio *in, tetgenio *out, 
-                    tetgenio *addin = NULL, tetgenio *bgmin = NULL);
+void tetrahedralize(tetgenbehavior *b, tetgenio *in, tetgenio *out,
+    tetgenio *addin = NULL, tetgenio *bgmin = NULL);
 void tetrahedralize(char *switches, tetgenio *in, tetgenio *out,
-                    tetgenio *addin = NULL, tetgenio *bgmin = NULL);
+    tetgenio *addin = NULL, tetgenio *bgmin = NULL);
 
 #endif // #ifndef tetgenH
