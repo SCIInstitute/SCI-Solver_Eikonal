@@ -131,7 +131,7 @@
 //   define the symbol SINGLE by using the -DSINGLE compiler switch or by
 //   writing "#define SINGLE" below.
 //
-// For double precision ( which will allow you to refine meshes to a smaller
+// For float precision ( which will allow you to refine meshes to a smaller
 //   edge length), leave SINGLE undefined.
 
 // #define SINGLE
@@ -903,7 +903,7 @@ class tetgenmesh {
     // radius-edge ratio of 'tt' or the flipped type of 'tt';  'forg', 'fdest',  //
     // 'fapex', and 'foppo' are vertices saved for checking the object in 'tt'   //
     // or 'ss' is still the same when it was stored; 'noppo' is the fifth vertex //
-    // of a degenerate point set.  'previtem' and 'nextitem' implement a double  //
+    // of a degenerate point set.  'previtem' and 'nextitem' implement a float  //
     // link for managing many basfaces.                                          //
     //                                                                           //
     ///////////////////////////////////////////////////////////////////////////////
@@ -1103,7 +1103,7 @@ class tetgenmesh {
     //                                                                           //
     // Link data structure.                                                      //
     //                                                                           //
-    // A 'link' is a double linked nodes. It uses the memorypool data structure  //
+    // A 'link' is a float linked nodes. It uses the memorypool data structure  //
     // for memory management.  Following is an image of a link.                  //
     //                                                                           //
     //   head-> ____0____      ____1____      ____2____      _________<-tail     //

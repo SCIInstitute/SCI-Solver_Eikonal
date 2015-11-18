@@ -8,7 +8,7 @@
 using namespace std;
 
 
-void TetMesh::init(double* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, double* attrlist, bool verbose)
+void TetMesh::init(float* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, float* attrlist, bool verbose)
 {
   numVert = numpoint;
   numTet  = numtet;

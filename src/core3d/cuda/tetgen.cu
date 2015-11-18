@@ -1250,7 +1250,7 @@ bool tetgenio::load_off(char* filename)
   char infilename[FILENAMESIZE];
   char buffer[INPUTLINESIZE];
   char *bufferp;
-  double *coord;
+  float *coord;
   int nverts = 0, iverts = 0;
   int nfaces = 0, ifaces = 0;
   int nedges = 0;
@@ -1403,7 +1403,7 @@ bool tetgenio::load_ply(char* filename)
   char infilename[FILENAMESIZE];
   char buffer[INPUTLINESIZE];
   char *bufferp, *str;
-  double *coord;
+  float *coord;
   int endheader = 0, format = 0;
   int nverts = 0, iverts = 0;
   int nfaces = 0, ifaces = 0;
@@ -1614,7 +1614,7 @@ bool tetgenio::load_stl(char* filename)
   char infilename[FILENAMESIZE];
   char buffer[INPUTLINESIZE];
   char *bufferp, *str;
-  double *coord;
+  float *coord;
   int solid = 0;
   int nverts = 0, iverts = 0;
   int nfaces = 0;
@@ -1637,7 +1637,7 @@ bool tetgenio::load_stl(char* filename)
   printf("Opening %s.\n", infilename);
 
   // STL file has no number of points available. Use a list to read points.
-  plist = new tetgenmesh::list(sizeof(double) * 3, NULL, 1024);
+  plist = new tetgenmesh::list(sizeof(float) * 3, NULL, 1024);
 
   while ((bufferp = readline(buffer, fp, &line_count)) != NULL) {
     // The ASCII .stl file must start with the lower case keyword solid and
@@ -1660,7 +1660,7 @@ bool tetgenio::load_stl(char* filename)
         bufferp = str;
         bufferp = strstr(bufferp, "vertex");
         if (bufferp != NULL) {
-          coord = (double *) plist->append(NULL);
+          coord = (float *) plist->append(NULL);
           for (i = 0; i < 3; i++) {
             bufferp = findnextnumber(bufferp);
             if (*bufferp == '\0') {
@@ -1688,7 +1688,7 @@ bool tetgenio::load_stl(char* filename)
   numberofpoints = nverts;
   pointlist = new REAL[nverts * 3];
   for (i = 0; i < nverts; i++) {
-    coord = (double *) (* plist)[i];
+    coord = (float *) (* plist)[i];
     iverts = i * 3;
     pointlist[iverts] = (REAL) coord[0];
     pointlist[iverts + 1] = (REAL) coord[1];
@@ -1744,7 +1744,7 @@ bool tetgenio::load_medit(char* filename)
   char infilename[FILENAMESIZE];
   char buffer[INPUTLINESIZE];
   char *bufferp, *str;
-  double *coord;
+  float *coord;
   int *tmpfmlist;
   int dimension = 0;
   int nverts = 0;
@@ -5093,7 +5093,7 @@ inline bool tetgenmesh::issymexist(triface* t) {
 //                                                                           //
 // For saving space in the data structure of subface, there only exists one  //
 // face ring around a segment (see programming manual).  This routine imple- //
-// ments the double face ring as desired in Muecke's data structure.         //
+// ments the float face ring as desired in Muecke's data structure.         //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -6811,7 +6811,7 @@ enum tetgenmesh::interresult tetgenmesh::tri_edge_inter_tail(REAL* A, REAL* B,
   R[1] = N[1] + A[1];
   R[2] = N[2] + A[2];
   // Becareful the case: if the non-zero component(s) in N is smaller than
-  //   the machine epsilon (i.e., 2^(-16) for double), R will exactly equal
+  //   the machine epsilon (i.e., 2^(-16) for float), R will exactly equal
   //   to A due to the round-off error.  Do check if it is.
   if (R[0] == A[0] && R[1] == A[1] && R[2] == A[2]) {
     int i, j;
@@ -19344,7 +19344,7 @@ REAL tetgenmesh::randgenerator(REAL range)
   worknumber *= 1e+3;
   expo -= 3;
   // Generate a randome number between (0, worknumber).
-  result = (double) randomnation((int) worknumber);
+  result = (float) randomnation((int) worknumber);
 
   // Scale result back into the original size.
   if (expo > 0) {
@@ -31454,7 +31454,7 @@ void tetgenmesh::perturbrepairencsegs(queue* flipqueue)
           // Avoid compile warnings.
           outfile = (FILE *) NULL;
           tlist = (int *) NULL;
-          talist = (double *) NULL;
+          talist = (float *) NULL;
           pointindex = attribindex = 0;
 
           eextras = in->numberoftetrahedronattributes;
@@ -34378,7 +34378,7 @@ void tetgenmesh::perturbrepairencsegs(queue* flipqueue)
                 totalmeshbytes += subsegs->maxitems * subsegs->itembytes;
               }
               printf("  Approximate heap memory used by the mesh (K bytes): %g\n\n",
-                  (double) totalmeshbytes / 1024.0);
+                  (float) totalmeshbytes / 1024.0);
 #ifdef SELF_CHECK
               algorithmicstatistics();
 #endif
