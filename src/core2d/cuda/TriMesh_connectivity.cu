@@ -13,6 +13,29 @@
 #include <algorithm>
 using std::find;
 
+void TriMesh::need_Rinscribe()
+{
+  need_faceedges();
+  int nf = faces.size();
+  if (!radiusInscribe.empty())
+  {
+    return;
+  }
+
+  radiusInscribe.resize(nf);
+
+  for (int i=0; i<nf; i++)
+  {
+    Face f = faces[i];
+    double e1 = f.edgeLens[0];
+    double e2 = f.edgeLens[1];
+    double e3 = f.edgeLens[2];
+    double s = (e1+e2+e3)/2.0;
+    radiusInscribe[i] = sqrt(s *(s-e1) * (s-e2) * (s - e3)) / s;
+  }
+
+}
+
 
 void TriMesh::need_faces()
 {
@@ -144,13 +167,14 @@ void TriMesh::need_speed()
 
 
 // Find the direct neighbors of each vertex
-void TriMesh::need_neighbors()
+void TriMesh::need_neighbors(bool verbose)
 {
   if (!neighbors.empty())
     return;
   need_faces();
 
-  dprintf("Finding vertex neighbors... ");
+  if (verbose)
+    printf("Finding vertex neighbors... ");
   int nv = vertices.size(), nf = faces.size();
 
   vector<int> numneighbors(nv);
@@ -176,18 +200,20 @@ void TriMesh::need_neighbors()
     }
   }
 
-  dprintf("Done.\n");
+  if(verbose)
+    printf("Done.\n");
 }
 
 
 // Find the faces touching each vertex
-void TriMesh::need_adjacentfaces()
+void TriMesh::need_adjacentfaces(bool verbose)
 {
   if (!adjacentfaces.empty())
     return;
   need_faces();
 
-  dprintf("Finding vertex to triangle maps... ");
+  if (verbose)
+    printf("Finding vertex to triangle maps... ");
   int nv = vertices.size(), nf = faces.size();
 
   vector<int> numadjacentfaces(nv);
@@ -206,7 +232,8 @@ void TriMesh::need_adjacentfaces()
       adjacentfaces[faces[i][j]].push_back(i);
   }
 
-  dprintf("Done.\n");
+  if(verbose)
+    printf("Done.\n");
 }
 
 void TriMesh::need_face_virtual_faces()

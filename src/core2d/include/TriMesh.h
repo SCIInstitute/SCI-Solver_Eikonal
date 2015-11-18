@@ -146,8 +146,9 @@ class TriMesh {
     void need_dcurv();
     void need_bbox();
     void need_bsphere();
-    void need_neighbors();
-    void need_adjacentfaces();
+    void need_neighbors(bool verbose = false);
+    void need_adjacentfaces(bool verbose = false);
+    void need_Rinscribe();
     void need_across_edge();
     void need_face_virtual_faces();
 
