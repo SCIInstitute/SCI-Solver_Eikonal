@@ -125,6 +125,7 @@ class TriMesh {
 
     //  For each vertex, all neighboring faces
     vector< vector<int> > adjacentfaces;
+    vector<float> radiusInscribe;
     //  For each face, the three faces attached to its edges
     //  (for example, across_edge[3][2] is the number of the face
     //   that's touching the edge opposite vertex 2 of face 3)
