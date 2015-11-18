@@ -11,7 +11,9 @@
 #ifndef  LARGENUM
 #define  LARGENUM  1000000000
 #endif
+#ifndef  SMALLNUM
 #define  SMALLNUM  0.00000001
+#endif
 #define  ONE       1
 #define  CURVATURE 2
 #define  NOISE     3
