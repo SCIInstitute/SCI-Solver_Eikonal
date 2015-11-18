@@ -1,9 +1,7 @@
 #ifndef __CUTIL_H__
 #define __CUTIL_H__
-
-#include <TriMesh.h>
-
-
+#include <cstdlib>
+#include <cstdio>
 
 /**********************************************************
  * Checks for a cuda error and if one exists prints it,
@@ -11,11 +9,11 @@
  *********************************************************/
 #define CUDA_ERROR_CHECK
 
-#define cudaSafeCall( err )  __cudaSafeCall( err, __FILE__, __LINE__ )
+#define cudaSafeCall(e)      __cudaSafeCall(__FILE__, __LINE__, e )
 #define cudaCheckErrors()    __cudaCheckError( __FILE__, __LINE__ )
 #define cudaCheckError()     __cudaCheckError( __FILE__, __LINE__ )
 
-inline void __cudaSafeCall( cudaError err, const char *file, const int line )
+inline void __cudaSafeCall(const char *file, const int line, cudaError err = cudaGetLastError() )
 {
 #ifdef CUDA_ERROR_CHECK
   if ( cudaSuccess != err )

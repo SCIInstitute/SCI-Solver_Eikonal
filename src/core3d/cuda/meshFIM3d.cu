@@ -22,7 +22,7 @@
 #endif
 #include "CUDADefines.h"
 #include <time.h>
-#include <mycutil.h>
+#include <cutil.h>
 extern "C" {
 #include <metis.h>
 }
@@ -114,14 +114,14 @@ void meshFIM3d::writeVTK(std::vector < std::vector <float> > values)
     fprintf(vtkfile, "POINTS %d float\n", nv);
     for (int i = 0; i < nv; i++)
     {
-      fprintf(vtkfile, "%.12f %.12f %.12f\n", m_meshPtr->vertices[i][0], 
-      m_meshPtr->vertices[i][1], m_meshPtr->vertices[i][2]);
+      fprintf(vtkfile, "%.12f %.12f %.12f\n", m_meshPtr->vertices[i][0],
+          m_meshPtr->vertices[i][1], m_meshPtr->vertices[i][2]);
     }
     fprintf(vtkfile, "CELLS %d %d\n", nt, nt * 5);
     for (int i = 0; i < nt; i++)
     {
-      fprintf(vtkfile, "4 %d %d %d %d\n", m_meshPtr->tets[i][0], 
-      m_meshPtr->tets[i][1], m_meshPtr->tets[i][2], m_meshPtr->tets[i][3]);
+      fprintf(vtkfile, "4 %d %d %d %d\n", m_meshPtr->tets[i][0],
+          m_meshPtr->tets[i][1], m_meshPtr->tets[i][2], m_meshPtr->tets[i][3]);
     }
 
     fprintf(vtkfile, "CELL_TYPES %d\n", nt);
@@ -154,9 +154,9 @@ void meshFIM3d::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool 
   fprintf(outf, "%d 2\n", sz);
 
   for(int i = 0; i < sz; i++)
-    fprintf(outf, "%d %d %d %d\n", m_meshPtr->tets[i].v[0] + 1, 
-    m_meshPtr->tets[i].v[1] + 1, m_meshPtr->tets[i].v[2] + 1, 
-    m_meshPtr->tets[i].v[3] + 1);
+    fprintf(outf, "%d %d %d %d\n", m_meshPtr->tets[i].v[0] + 1,
+        m_meshPtr->tets[i].v[1] + 1, m_meshPtr->tets[i].v[2] + 1,
+        m_meshPtr->tets[i].v[3] + 1);
 
   fclose(outf);
 
@@ -474,8 +474,9 @@ std::vector < std::vector < float > >  meshFIM3d::GenerateData(size_t maxIters, 
     dim3 dimBlock(m_maxNumTotalTets, 1);
     cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveList[0], sizeof(int)* m_numBlock, cudaMemcpyHostToDevice));
     int sharedSize = sizeof(float)* 4 * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
-    cudaSafeCall((FIMCuda << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_vertT, d_speedInv, d_vertMem, d_vertMemOutside,
-            d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside, nIter)));
+    (FIMCuda << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_vertT, d_speedInv, d_vertMem, d_vertMemOutside,
+                                                    d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside, nIter));
+    cudaCheckError();
 
     dimBlock = dim3(m_maxNumInVert, 1);
     CopyOutBack << <dimGrid, dimBlock >> >(d_tetT, d_vertT, d_vertMem, d_vertMemOutside, d_BlockSizes, d_ActiveList, m_maxNumInVert, m_maxNumTotalTets, m_maxVertMappingInside, m_maxVertMappingOutside);

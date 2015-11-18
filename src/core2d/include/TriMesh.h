@@ -8,7 +8,9 @@
    Class for triangle meshes.
  */
 
+#ifndef LARGENUM
 #define LARGENUM 10000000.0
+#endif
 #define  ONE       1
 #define  CURVATURE 2
 #define  NOISE     3
