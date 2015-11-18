@@ -419,7 +419,7 @@ void TetMesh::reorient()
     point AC = C - A;
     point AD = D - A;
 
-    LevelsetValueType tmp = ((AB)CROSS(AC)) DOT(AD);
+    float tmp = ((AB)CROSS(AC)) DOT(AD);
     if(tmp < 0)
     {
       int tmpidx = t[1];
