@@ -17,7 +17,23 @@ inline void __printFilenameAndLine(const char *file, const int line) {
     fprintf( stderr, "%s:%i", file, line);
 }
 
-inline void cudaSafeCall(cudaError err = cudaGetLastError() )
+inline void cudaSafeCall()
+{
+#ifdef CUDA_ERROR_CHECK
+  cudaError err = cudaGetLastError();
+  if ( cudaSuccess != err )
+  {
+    fprintf( stderr, "cudaSafeCall() failed at ");
+    printFilenameAndLine();
+    fprintf( stderr, " : %s\n", cudaGetErrorString( err ) );
+    exit( -1 );
+  }
+#endif
+
+  return;
+}
+
+inline void cudaSafeCall(cudaError err)
 {
 #ifdef CUDA_ERROR_CHECK
   if ( cudaSuccess != err )
