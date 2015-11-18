@@ -9,17 +9,22 @@
  *********************************************************/
 #define CUDA_ERROR_CHECK
 
-#define cudaSafeCall(e)      __cudaSafeCall(__FILE__, __LINE__, e )
+#define printFilenameAndLine()      __printFilenameAndLine(__FILE__, __LINE__)
 #define cudaCheckErrors()    __cudaCheckError( __FILE__, __LINE__ )
 #define cudaCheckError()     __cudaCheckError( __FILE__, __LINE__ )
 
-inline void __cudaSafeCall(const char *file, const int line, cudaError err = cudaGetLastError() )
+inline void __printFilenameAndLine(const char *file, const int line) {
+    fprintf( stderr, "%s:%i", file, line);
+}
+
+inline void cudaSafeCall(cudaError err = cudaGetLastError() )
 {
 #ifdef CUDA_ERROR_CHECK
   if ( cudaSuccess != err )
   {
-    fprintf( stderr, "cudaSafeCall() failed at %s:%i : %s\n",
-        file, line, cudaGetErrorString( err ) );
+    fprintf( stderr, "cudaSafeCall() failed at ");
+    printFilenameAndLine();
+    fprintf( stderr, " : %s\n", cudaGetErrorString( err ) );
     exit( -1 );
   }
 #endif
