@@ -12,13 +12,26 @@
 #define printFilenameAndLine()      __printFilenameAndLine(__FILE__, __LINE__)
 #define cudaCheckErrors()    __cudaCheckError( __FILE__, __LINE__ )
 #define cudaCheckError()     __cudaCheckError( __FILE__, __LINE__ )
+#define cudaSafeCall(x) {(x); cudaCheckError(); }
 
 inline void __printFilenameAndLine(const char *file, const int line) {
-    fprintf( stderr, "%s:%i", file, line);
+  fprintf( stderr, "%s:%i", file, line);
 }
 
-void cudaSafeCall();
-void cudaSafeCall(cudaError err);
+inline void __cudaSafeCall(){
+  cudaError_t err = cudaGetLastError();
+#ifdef CUDA_ERROR_CHECK
+  if ( cudaSuccess != err )
+  {
+    fprintf( stderr, "cudaSafeCall() failed at ");
+    printFilenameAndLine();
+    fprintf( stderr, " : %s\n", cudaGetErrorString( err ) );
+    exit( -1 );
+  }
+#endif
+
+  return;
+}
 
 inline void __cudaCheckError( const char *file, const int line )
 {
