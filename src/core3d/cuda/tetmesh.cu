@@ -405,6 +405,30 @@ vector<TetMesh::Tet> TetMesh::GetOneRing(int v)
   return oneRingTets;
 }
 
+void TetMesh::reorient()
+{
+  int ne = tets.size();
+  for(int i = 0; i < ne; i++)
+  {
+    Tet& t = tets[i];
+    point A = vertices[t[0]];
+    point B = vertices[t[1]];
+    point C = vertices[t[2]];
+    point D = vertices[t[3]];
+    point AB = B - A;
+    point AC = C - A;
+    point AD = D - A;
+
+    LevelsetValueType tmp = ((AB)CROSS(AC)) DOT(AD);
+    if(tmp < 0)
+    {
+      int tmpidx = t[1];
+      t[1] = t[2];
+      t[2] = tmpidx;
+    }
+  }
+}
+
 void TetMesh::need_oneringtets()
 {
 

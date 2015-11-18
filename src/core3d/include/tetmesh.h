@@ -177,6 +177,7 @@ class TetMesh {
 
     vector<float> noiseOnVert;
 
+    void reorient();
     void need_faceedges();
     void need_speed();
     void need_noise();
