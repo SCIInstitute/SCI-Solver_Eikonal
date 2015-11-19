@@ -65,7 +65,7 @@ void Eikonal::initializeVertices(std::vector<float> values) {
       exit(0);
     }
     this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
-    for (size_t i = 0; i < values.size(); i++) {
+    for (size_t i = 1; i < values.size(); i++) {
       this->triMesh_->vertT[i] = values[i];
     }
   } else {
@@ -75,7 +75,7 @@ void Eikonal::initializeVertices(std::vector<float> values) {
       exit(0);
     }
     this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());
-    for (size_t i = 0; i < values.size(); i++) {
+    for (size_t i = 1; i < values.size(); i++) {
       this->tetMesh_->vertT[i] = values[i];
     }
 
