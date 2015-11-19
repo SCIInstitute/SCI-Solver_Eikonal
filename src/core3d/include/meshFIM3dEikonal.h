@@ -27,13 +27,6 @@ class meshFIM3dEikonal
     void SetSeedPoint(std::vector<index> SeedPoints)
     {
       m_SeedPoints = SeedPoints;
-
-      vector<index> nb;
-
-      if (m_meshPtr)
-      {
-        m_meshPtr->InitializeAttributes(0, m_SeedPoints);
-      }
     }
 
     void SetMesh(TetMesh* mesh)

@@ -358,32 +358,8 @@ class TriMesh {
 
     // FIM: initialize attributes
     //typedef std::<int> ListType;
-    void InitializeAttributes(std::vector<int> seeds = vector<int>())
+    void InitializeAttributes()
     {
-      // initialize the travel times over all vertices...
-      size_t nv = this->vertices.size();
-
-      for (int v = 0; v < nv; v++)
-      {
-        this->vertT.push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
-      }
-
-      //vector<int> nb;
-
-      // initialize seed points if present...
-      if (!seeds.empty())
-      {
-        size_t ns = seeds.size();
-        for (int s = 0; s < ns; s++)
-        {
-          this->vertT[seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;
-          //nb = this->neighbors[seeds[s]];
-
-        }
-
-
-      }
-
       // pre-compute faces, normals, and other per-vertex properties that may be needed
       this->need_neighbors();
       this->need_normals();

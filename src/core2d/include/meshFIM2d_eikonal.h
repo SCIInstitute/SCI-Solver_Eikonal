@@ -33,14 +33,6 @@ class meshFIM2dEikonal {
     void SetSeedPoint(std::vector<index> SeedPoints)
     {
       m_SeedPoints = SeedPoints;
-
-      vector<index> nb;
-
-      if (m_meshPtr)
-      {
-        m_meshPtr->InitializeAttributes(m_SeedPoints);
-
-      }
     }
 
     void SetMesh(TriMesh* mesh, int speed_type = ONE)
@@ -74,14 +66,7 @@ class meshFIM2dEikonal {
       m_meshPtr->need_speed();
 
       m_meshPtr->need_faceedges();
-      if (m_SeedPoints.empty())
-      {
-        m_meshPtr->InitializeAttributes();
-      }
-      else
-      {
-        m_meshPtr->InitializeAttributes(m_SeedPoints);  // if seed points are given, treat them differently
-      }
+      m_meshPtr->InitializeAttributes();
     }
 
     void InitializeLabels(int numBlock)

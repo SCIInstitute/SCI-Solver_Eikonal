@@ -126,8 +126,6 @@ void Eikonal::solveEikonal() {
       this->initializeMesh();
     }
     FIMPtr2d_ = new meshFIM2dEikonal;
-    FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
-    FIMPtr2d_->SetStopDistance(this->stopDistance_);
     //initialize the first point as the "Seed"
     if (!this->userSetInitial_) {
       this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
@@ -145,7 +143,8 @@ void Eikonal::solveEikonal() {
       }
       FIMPtr2d_->SetSeedPoint(found_seeds);
     }
-
+    FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
+    FIMPtr2d_->SetStopDistance(this->stopDistance_);
     if (this->isStructured_) {
       int numBlockLength = (this->squareLength_ / this->squareBlockLength_);
       int numBlockWidth = (this->squareWidth_ / this->squareBlockWidth_);

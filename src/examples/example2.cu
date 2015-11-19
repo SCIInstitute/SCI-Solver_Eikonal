@@ -58,11 +58,11 @@ int main(int argc, char* argv[]) {
   data.writeVTK();
   //the solution for the sphere examples (center 54,54,54, & radius 19.58)
   std::vector< float > solution;
-  solution.resize(data.tetMesh_->vertices.size());
+  solution.resize(data.triMesh_->vertices.size());
   for (size_t i = 0; i < solution.size(); i++) {
-    float xDot = data.tetMesh_->vertices[i][0] - 54.f;
-    float yDot = data.tetMesh_->vertices[i][1] - 54.f;
-    float zDot = data.tetMesh_->vertices[i][2] - 54.f;
+    float xDot = data.triMesh_->vertices[i][0] - 54.f;
+    float yDot = data.triMesh_->vertices[i][1] - 54.f;
+    float zDot = data.triMesh_->vertices[i][2] - 54.f;
     solution[i] = 19.58f * std::acos(zDot /
       std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
   }

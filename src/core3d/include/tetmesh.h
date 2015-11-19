@@ -106,28 +106,6 @@ class TetMesh {
       }
     };
 
-    //struct BBox {
-    //  point min, max;
-    //  point center() const { return 0.5f * (min+max); }
-    //  vec size() const { return max - min; }
-    //  bool valid;
-    //  BBox() : valid(false)
-    //    {}
-    //};
-
-    //struct BSphere {
-    //  point center;
-    //  float r;
-    //  bool valid;
-    //  BSphere() : valid(false)
-    //    {}
-    //};
-
-    // Enums
-    //enum tstrip_rep { TSTRIP_LENGTH, TSTRIP_TERM };
-    //enum { GRID_INVALID = -1 };
-    //enum speed_type { ONE = 0, CURVATURE, NOISE };
-
     // The basics: vertices and faces
     vector<point> vertices;
     vector<Face> faces;
@@ -135,18 +113,6 @@ class TetMesh {
     int numVert;
     int numTet;
 
-
-    // Triangle strips
-    //vector<int> tstrips;
-
-    // Grid, if present
-    //vector<int> grid;
-    //int grid_width, grid_height;
-
-    // Other per-vertex properties
-    //vector<float> confidences;
-    //vector<unsigned> flags;
-    //unsigned flag_curr;
 
     // Computed per-vertex properties
     vector<vec> normals;
@@ -156,10 +122,6 @@ class TetMesh {
     vector<vec> cornerareas;
     vector<float> pointareas;
     vector<float> vertT;
-
-    // Bounding structures
-    //BBox bbox;
-    //BSphere bsphere;
 
     // Connectivity structures:
     //  For each vertex, all neighboring vertices
@@ -198,40 +160,14 @@ class TetMesh {
     vector<Tet> GetOneRing(int v);
     void need_tet_virtual_tets(bool verbose = false);
 
-    void InitializeAttributes(int currentVert , vector<int> seeds )
-    {
-      // initialize the travel times over all vertices...
-      size_t nv = this->vertices.size();
-
-      for (int v = 0; v < nv; v++)
-      {
-        this->vertT.push_back(LARGENUM);  //modified from this->vertT[v] = 1000000.0)
-      }
-
-      //vector<int> nb;
-
-      // initialize seed points if present...
-      if (!seeds.empty())
-      {
-        size_t ns = seeds.size();
-        for (int s = 0; s < ns; s++)
-        {
-          this->vertT[seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;
-          //nb = this->neighbors[seeds[s]];
-
-        }
-
-
-      }
-    }
-
     // Debugging printout, controllable by a "verbose"ness parameter
     static int verbose;
     static void set_verbose(int);
     static int dprintf(const char *format, ...);
 
 
-    void init(float* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, float* attrlist, bool verbose = false);
+    void init(float* pointlist, int numpoint, int*trilist, int numtri,
+      int* tetlist, int numtet, int numattr, float* attrlist, bool verbose = false);
 
     //Constructor
     TetMesh(){}
