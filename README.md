@@ -124,83 +124,57 @@ Follow the example source code in <code>src/examples</code> to learn how to use 
 Using the Library
 ==============
 
-A basic usage of the library links to the <code>Eikonal-2D_CORE</code> or  <code>Eikonal-3D_CORE</code> 
+A basic usage of the library links to the <code>EIKONAL_CORE</code> 
 library during build and includes the headers needed, which are usually no more than:
 
 ```c++
-#include <Eikonal2D.h>
-// OR
-#include <Eikonal3D.h>
+#include <Eikonal.h>
 ```
 
 Then a program would setup the Eikonal parameters using the 
-<code>Eikonal3D::Eikonal2D -OR- Eikonal3D::Eikonal3D</code> object and call 
-<code>Eikonal3D::solveEikonal2D() -OR- Eikonal3D::solveEikonal3D()</code> to generate
+<code>Eikonal object</code> object and call 
+<code>object.solveEikonal() to generate
 the array of vertex values per iteration.
 
-Here is a minimal usage example for 3D, which is nearly identical to 2D.<br/>
+Here is a minimal usage example (in 3D).<br/>
 ```c++
-#include <Eikonal3D.h>
+#include <Eikonal.h>
 #include <iostream>
 int main(int argc, char *argv[])
 {
-  Eikonal3D::Eikonal3D data;
+  Eikonal data(false);
   //the below means ~/my_tet_mesh.node & ~/my_tet_mesh.ele
   data.filename_ = "~/my_tet_mesh"; 
   //Run the solver
-  Eikonal3D::solveEikonal3D(data);
+  data.solveEikonal();
   //now use the result
-  for(size_t i = 0; i < Eikonal3D::getFinalResult().size(); i++)
+  for(size_t i = 0; i < data.getFinalResult().size(); i++)
     std::cout << "Vertex " << i << " value: " << 
-      Eikonal3D::getFinalResult()[i] << std::endl;
+      data.getFinalResult()[i] << std::endl;
   return 0;
 }
 ```
 
 The following helper functions are available after running the solver:
 ```c++
-std::vector < float > Eikonal3D::getFinalResult();
-std::vector < float > Eikonal3D::getResultAtIteration(size_t i);
-size_t Eikonal3D::numIterations(); 
-void Eikonal3D::writeVTK(); //write the vtk files that show progression of the solver
+std::vector < float > Eikonal::getFinalResult();
+std::vector < float > Eikonal::getResultAtIteration(size_t i);
+size_t Eikonal::numIterations(); 
+void Eikonal::writeVTK(); //write the vtk files that show progression of the solver
 ```
-The function signatures are identical across 2D/3D. You can also access the results
-and the mesh directly after running the solver:
+You can also access the results and the mesh directly after running the solver:
 ```c++
-TetMesh * Eikonal3D::mesh_;
+TetMesh * Eikonal::tetMesh_;
 // OR
-TriMesh * Eikonal2D::mesh_;
+TriMesh * Eikonal::triMesh_;
 // AND
-std::vector < std::vector < float > > Eikonal3D::iteration_values_;
-// OR
-std::vector < std::vector < float > > Eikonal2D::iteration_values_;
+std::vector < std::vector < float > > Eikonal::iteration_values_;
 ```
 
-<h3>Eikonal 2D Options</h3>
+<h3>Eikonal Options</h3>
 
 ```C++
-  class Eikonal2D {
-      bool verbose_;                    //option to set for runtime verbosity [Default false]
-      std::string filename_;            //the input triangle mesh filename    [Default ../src/test/test_data/sphere_266verts.ply
-
-      std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
-      int maxBlocks_;                   //the max # of blocks (patches)
-                                        //   on the convergence queue         [Default 10003]
-      int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
-      float stopDistance_;              //Distance to stop calculating        [Default 50000.0]
-      bool isStructured_;               //Whether the mesh is structured      [Default false]
-      int speedType_;                   //ONE (1), CURVATURE (2), NOISE (3)   [Default ONE]
-      int squareLength_, squareWidth_;  //if structured, the square size      [Default 16, 16]
-      int squareBlockLength_;           //if structured, CUDA block length    [Default 1]
-      int squareBlockWidth_;            //if structured, CUDA block width     [Default 1]
-      int maxIterations_;               //when to stop iterating if fail      [Default 1000]
-  };
-```
-
-<h3>Eikonal 3D Options</h3>
-
-```C++
-  class Eikonal3D {
+  class Eikonal {
       bool verbose_;                    //option to set for runtime verbosity [Default false]
       std::string filename_;            //the input tet mesh filename         [Default ../src/test/test_data/sphere339
 
@@ -216,6 +190,7 @@ std::vector < std::vector < float > > Eikonal2D::iteration_values_;
       int squareBlockWidth_;            //if structured, CUDA block width     [Default 1]
       int squareBlockDepth;             //if structured, CUDA block width     [Default 1]
       int maxIterations_;               //when to stop iterating if fail      [Default 1000]
+      bool isTriMesh_;                  //This is a triangle mesh             [Default true]
   };
 ```
 <br/>
