@@ -75,7 +75,7 @@ class meshFIM3dEikonal
 
     void InitSpeedMat()
     {
-      int nt = m_meshPtr->tets.size();
+      size_t nt = m_meshPtr->tets.size();
       for (int i = 0; i < nt; i++)
       {
         m_meshPtr->tets[i].M[0] = 1;

@@ -103,8 +103,8 @@ bool InitCUDA(bool verbose = false)
 
 void meshFIM3dEikonal::writeVTK(std::vector < std::vector <float> > values)
 {
-  int nv = m_meshPtr->vertices.size();
-  int nt = m_meshPtr->tets.size();
+  size_t nv = m_meshPtr->vertices.size();
+  size_t nt = m_meshPtr->tets.size();
   for (size_t j = 0; j < values.size(); j++) {
     FILE* vtkfile;
     std::stringstream ss;
@@ -149,7 +149,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
     printf("Cannot open mesh file to write!!!!\n");
     exit(1);
   }
-  int sz = m_meshPtr->tets.size();
+  size_t sz = m_meshPtr->tets.size();
 
   fprintf(outf, "%d 2\n", sz);
 
@@ -161,7 +161,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   fclose(outf);
 
 
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
 
   m_PartitionLabel.resize(numVert);
 
@@ -171,7 +171,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
   if(numBlock == 0)
   {
-    numBlock = MAX(numVert / maxNumBlockVerts - 10, 1);
+    numBlock = static_cast<int>(MAX(numVert / maxNumBlockVerts - 10, 1));
 
 
     do
@@ -282,7 +282,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
 void meshFIM3dEikonal::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose)
 {
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
 
   int numBlockLength = (squareLength / blockLength);
@@ -328,7 +328,7 @@ void meshFIM3dEikonal::GraphPartition_Square(int squareLength, int squareWidth, 
 
 std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t maxIters, bool verbose)
 {
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
 
   if(!InitCUDA(verbose))
   {
@@ -392,7 +392,7 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
     }
   }
 
-  int numActive = m_ActiveBlocks.size();
+  size_t numActive = m_ActiveBlocks.size();
 
   if (verbose)
     printf("Active block number is %d.\n", numActive);
@@ -432,8 +432,8 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
   cudaSafeCall((cudaMemcpy(d_blockCon, h_blockCon, sizeof(bool) * m_numBlock, cudaMemcpyHostToDevice)));
   cudaSafeCall((cudaMemset(d_vertT, 0, sizeof(float)* m_maxNumInVert * m_numBlock)));
 
-  int nTotalIter = 0;
-  int nIter = 2;
+  size_t nTotalIter = 0;
+  size_t nIter = 2;
 
 
   cudaFuncSetCacheConfig(FIMCuda, cudaFuncCachePreferShared);
@@ -444,17 +444,17 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
   tmp_h_verrT.resize(m_numBlock);
   tmp_h_verrT2.resize(m_numBlock);
 
-  int totalIterationNumber = 0;
+  size_t totalIterationNumber = 0;
   timerstart = clock();
 
   //the result vector
   std::vector< std::vector < float > > result;
   m_meshPtr->vertT.resize(numVert);
 
-  int maxActive = 0;
+  size_t maxActive = 0;
   while(numActive > 0)
   {
-    maxActive = MAX(maxActive, numActive);
+    maxActive = static_cast<int>(MAX(maxActive, numActive));
     ///////step 1: run solver /////////////////////////////////////
     nTotalIter++;
     //don't do more than maxIters
@@ -470,20 +470,23 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
       printf(" %d Active blocks.\n", numActive);
     }
     totalIterationNumber += numActive;
-    dim3 dimGrid(numActive, 1);
+    dim3 dimGrid(static_cast<int>(numActive), 1);
     dim3 dimBlock(m_maxNumTotalTets, 1);
     cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveList[0], sizeof(int)* m_numBlock, cudaMemcpyHostToDevice));
     int sharedSize = sizeof(float)* 4 * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
     (FIMCuda << <dimGrid, dimBlock, sharedSize >> >(d_tetMem0, d_tetMem1, d_tetT, d_vertT, d_speedInv, d_vertMem, d_vertMemOutside,
-                                                    d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, m_maxVertMappingOutside, nIter));
+                                                    d_BlockSizes, d_con, d_ActiveList, m_maxNumInVert, m_maxVertMappingInside, 
+                                                    m_maxVertMappingOutside, static_cast<int>(nIter)));
     cudaCheckError();
 
     dimBlock = dim3(m_maxNumInVert, 1);
-    CopyOutBack << <dimGrid, dimBlock >> >(d_tetT, d_vertT, d_vertMem, d_vertMemOutside, d_BlockSizes, d_ActiveList, m_maxNumInVert, m_maxNumTotalTets, m_maxVertMappingInside, m_maxVertMappingOutside);
+    CopyOutBack << <dimGrid, dimBlock >> >(d_tetT, d_vertT, d_vertMem, d_vertMemOutside, 
+      d_BlockSizes, d_ActiveList, m_maxNumInVert, m_maxNumTotalTets, m_maxVertMappingInside, 
+      m_maxVertMappingOutside);
     dimBlock = dim3(m_maxNumInVert, 1);
-    run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActive, d_BlockSizes);
+    run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, static_cast<int>(numActive), d_BlockSizes);
     cudaSafeCall(cudaMemcpy(h_blockCon, d_blockCon, m_numBlock * sizeof(bool), cudaMemcpyDeviceToHost));
-    int nOldActiveBlock = numActive;
+    size_t nOldActiveBlock = numActive;
     numActive = 0;
     h_ActiveListNew.clear();
     for(uint i = 0; i < nOldActiveBlock; i++)
@@ -534,10 +537,10 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
     if(h_ActiveListNew.size() > 0)
     {
 
-      int numActiveNew = h_ActiveListNew.size();
+      size_t numActiveNew = h_ActiveListNew.size();
 
       cudaSafeCall(cudaMemcpy(d_ActiveList, &h_ActiveListNew[0], numActiveNew * sizeof(int), cudaMemcpyHostToDevice));
-      dim3 dimGrid(numActiveNew, 1);
+      dim3 dimGrid(static_cast<int>(numActiveNew), 1);
       dim3 dimBlock(m_maxNumTotalTets, 1);
 
       int sharedSize = sizeof(float4) * m_maxNumTotalTets + sizeof(int)* m_maxNumInVert * m_maxVertMappingInside;
@@ -547,9 +550,9 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
       ////////////////////////////////////////////////////////////////
       // 5. reduction
       ///////////////////////////////////////////////////////////////
-      dimGrid = dim3(numActiveNew, 1);
+      dimGrid = dim3(static_cast<int>(numActiveNew), 1);
       dimBlock = dim3(m_maxNumInVert, 1);
-      run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, numActiveNew, d_BlockSizes);
+      run_reduction << <dimGrid, dimBlock >> >(d_con, d_blockCon, d_ActiveList, static_cast<int>(numActiveNew), d_BlockSizes);
 
       //////////////////////////////////////////////////////////////////
       // 6. update active list
@@ -614,8 +617,8 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   m_PartitionTets.resize(numBlock);
   m_PartitionNbTets.resize(numBlock);
 
-  int numTets = m_meshPtr->tets.size();
-  int numVerts = m_meshPtr->vertices.size();
+  size_t numTets = m_meshPtr->tets.size();
+  size_t numVerts = m_meshPtr->vertices.size();
   TetMesh::Tet t;
 
   vector<TetMesh::Tet> virtualTets;
@@ -628,14 +631,16 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   for(int i = 0; i < numTets; i++)
   {
     t = m_meshPtr->tets[i];
-    int vfCnt = m_meshPtr->tetVirtualTets[i].size();
+    size_t vfCnt = m_meshPtr->tetVirtualTets[i].size();
 
 
     int obtusevert = t.obtuseV;
     if(obtusevert >= 0)
     {
-      virtualTetCnt[m_PartitionLabel[t[obtusevert]]] += vfCnt;
-      m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].insert(m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].end(), m_meshPtr->tetVirtualTets[i].begin(), m_meshPtr->tetVirtualTets[i].end());
+      virtualTetCnt[m_PartitionLabel[t[obtusevert]]] += static_cast<int>(vfCnt);
+      m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].insert(
+        m_PartitionVirtualTets[m_PartitionLabel[t[obtusevert]]].end(), 
+        m_meshPtr->tetVirtualTets[i].begin(), m_meshPtr->tetVirtualTets[i].end());
     }
     labels.clear();
     for(int m = 0; m < 4; m++)
@@ -661,7 +666,7 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   m_maxNumTotalTets = 0;
   for(int j = 0; j < numBlock; j++)
   {
-    PartitionToltalTets[j] = m_PartitionTets[j].size() + m_PartitionNbTets[j].size() + virtualTetCnt[j];
+    PartitionToltalTets[j] = static_cast<int>(m_PartitionTets[j].size() + m_PartitionNbTets[j].size() + virtualTetCnt[j]);
     m_maxNumTotalTets = MAX(PartitionToltalTets[j], m_maxNumTotalTets);
   }
 
@@ -722,9 +727,9 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
   h_tetMem1 = (float*)malloc(3 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
   h_tetT = (float*)malloc(4 * sizeof(float)* m_maxNumTotalTets * m_numBlock);
 
-  int numTets = m_meshPtr->tets.size();
+  size_t numTets = m_meshPtr->tets.size();
 
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
 
   m_blockVertMapping.resize(numVert); //for each vertex, store the addresses where it appears in the global triMem array.
 
@@ -734,7 +739,7 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
   for(int i = 0; i < m_numBlock; i++)
   {
     int blockIdx = i * m_maxNumTotalTets * 3;
-    int numPF = m_PartitionTets[i].size();
+    size_t numPF = m_PartitionTets[i].size();
     for(int j = 0; j < numPF; j++)
     {
 
@@ -777,14 +782,14 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
   {
     int blockIdx = i * m_maxNumTotalTets * 3;
 
-    int numPF = m_PartitionTets[i].size();
-    int numPNF = m_PartitionNbTets[i].size();
-    int numPVF = m_PartitionVirtualTets[i].size();
+    size_t numPF = m_PartitionTets[i].size();
+    size_t numPNF = m_PartitionNbTets[i].size();
+    size_t numPVF = m_PartitionVirtualTets[i].size();
 
     int k = 0;
     int l = 0;
 
-    for(int j = numPF; j < m_maxNumTotalTets; j++)
+    for (int j = static_cast<int>(numPF); j < m_maxNumTotalTets; j++)
     {
 
       if(j < numPF + numPNF)
@@ -868,7 +873,7 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
 void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 {
 
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
 
   m_blockVertMappingInside.resize(numVert);
   m_blockVertMappingOutside.resize(numVert);
@@ -882,7 +887,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
     for(int m = 0; m < m_PartitionInVerts[i].size(); m++)
     {
 
-      m_maxNumVertMapping = MAX(m_maxNumVertMapping, m_blockVertMapping[i%m_blockVertMapping.size()].size());
+      m_maxNumVertMapping = static_cast<int>(MAX(m_maxNumVertMapping, m_blockVertMapping[i%m_blockVertMapping.size()].size()));
 
       vector<int> tmp = m_blockVertMapping[m_PartitionInVerts[i][m]%m_blockVertMapping.size()];
 
@@ -903,8 +908,8 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
   m_maxVertMappingOutside = 0;
   for(int i = 0; i < numVert; i++)
   {
-    m_maxVertMappingInside = MAX(m_maxVertMappingInside, (m_blockVertMappingInside[i].size()));
-    m_maxVertMappingOutside = MAX(m_maxVertMappingOutside, (m_blockVertMappingOutside[i].size()));
+    m_maxVertMappingInside = static_cast<int>(MAX(m_maxVertMappingInside, (m_blockVertMappingInside[i].size())));
+    m_maxVertMappingOutside = static_cast<int>(MAX(m_maxVertMappingOutside, (m_blockVertMappingOutside[i].size())));
   }
 
   h_vertMem = (int*)malloc(sizeof(int)* m_maxVertMappingInside * m_maxNumInVert * m_numBlock);
@@ -915,7 +920,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
     for(int m = 0; m < m_PartitionInVerts[i].size(); m++)
     {
 
-      int tmpsize = m_blockVertMappingInside[m_PartitionInVerts[i][m]].size();
+      size_t tmpsize = m_blockVertMappingInside[m_PartitionInVerts[i][m]].size();
 
       int n = 0;
       for(; n < tmpsize; n++)
@@ -925,7 +930,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 
     }
 
-    for(int m = m_PartitionInVerts[i].size() * m_maxVertMappingInside; m < m_maxNumInVert * m_maxVertMappingInside; m++)
+    for (size_t m = m_PartitionInVerts[i].size() * m_maxVertMappingInside; m < m_maxNumInVert * m_maxVertMappingInside; m++)
     {
       h_vertMem[vertIdx + m] = -1 + i * m_maxNumTotalTets*TETMEMLENGTH;
     }
@@ -941,7 +946,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
     for(int m = 0; m < m_PartitionInVerts[i].size(); m++)
     {
 
-      int tmpsize = m_blockVertMappingOutside[m_PartitionInVerts[i][m]].size();
+      size_t tmpsize = m_blockVertMappingOutside[m_PartitionInVerts[i][m]].size();
 
       int n = 0;
       for(; n < tmpsize; n++)
@@ -951,7 +956,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
 
     }
 
-    for(int m = m_PartitionInVerts[i].size() * m_maxVertMappingOutside; m < m_maxNumInVert * m_maxVertMappingOutside; m++)
+    for (size_t m = m_PartitionInVerts[i].size() * m_maxVertMappingOutside; m < m_maxNumInVert * m_maxVertMappingOutside; m++)
     {
       h_vertMemOutside[vertIdx + m] = -1;
     }

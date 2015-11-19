@@ -3,11 +3,11 @@
 Eikonal::Eikonal(bool isTriMesh, std::string fname, bool verbose) :
   verbose_(verbose),
   filename_(fname),
-  seedPointList_(std::vector<int>(1, 0)),
   maxBlocks_(10003),
   maxVertsPerBlock_(64),
   stopDistance_(50000.f),
   isStructured_(false),
+  userSetInitial_(false),
   speedType_(ONE),
   squareLength_(16),
   squareWidth_(16),
@@ -53,15 +53,90 @@ void Eikonal::writeVTK() {
     FIMPtr3d_->writeVTK(this->iteration_values_);
 }
 
+void Eikonal::initializeVertices(std::vector<float> values) {
+  if (this->triMesh_ == NULL && this->tetMesh_ == NULL) {
+    std::cerr << "You must initialize the mesh first!" << std::endl;
+    exit(0);
+  }
+  if (this->triMesh_ != NULL) {
+    if (values.size() != this->triMesh_->vertices.size()) {
+      std::cerr << "Initialize values size does not match number of vertices!"
+        << std::endl;
+      exit(0);
+    }
+    this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
+    for (size_t i = 0; i < values.size(); i++) {
+      this->triMesh_->vertT[i] = values[i];
+    }
+  } else {
+    if (values.size() != this->tetMesh_->vertices.size()) {
+      std::cerr << "Initialize values size does not match number of vertices!"
+        << std::endl;
+      exit(0);
+    }
+    this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());
+    for (size_t i = 0; i < values.size(); i++) {
+      this->tetMesh_->vertT[i] = values[i];
+    }
+
+  }
+  this->userSetInitial_ = true;
+}
+
+void Eikonal::initializeMesh() {
+  if (this->isTriMesh_) {
+    if (this->triMesh_ == NULL) {
+      this->triMesh_ = TriMesh::read(this->filename_.c_str(), this->verbose_);
+      if (this->triMesh_ == NULL)
+      {
+        printf("File open failed!!\n");
+        exit(0);
+      }
+      this->triMesh_->need_neighbors(this->verbose_);
+      this->triMesh_->need_adjacentfaces(this->verbose_);
+      this->triMesh_->need_Rinscribe();
+    }
+  } else {
+    if (this->tetMesh_ == NULL) {
+      tetgenio in;
+      if (!(in.load_tetmesh((char*)this->filename_.c_str(),
+        this->verbose_))) {
+        exit(1);
+      }
+
+      this->tetMesh_ = new TetMesh();
+      this->tetMesh_->init(
+        in.pointlist,
+        in.numberofpoints,
+        in.trifacelist,
+        in.numberoffacets,
+        in.tetrahedronlist,
+        in.numberoftetrahedra,
+        in.numberoftetrahedronattributes,
+        in.tetrahedronattributelist, this->verbose_);
+      this->tetMesh_->need_neighbors(this->verbose_);
+      this->tetMesh_->need_adjacenttets(this->verbose_);
+      this->tetMesh_->need_tet_virtual_tets(this->verbose_);
+    }
+  }
+}
 
 void Eikonal::solveEikonal() {
   clock_t starttime, endtime;
   starttime = clock();
   if (this->isTriMesh_) {
-    this->triMesh_ = TriMesh::read(this->filename_.c_str(), this->verbose_);
-    if (!this->triMesh_) exit(1);
+    if (this->triMesh_ == NULL) {
+      this->initializeMesh();
+    }
+    //initialize the first point as the "Seed"
+    if (!this->userSetInitial_) {
+      this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
+      this->triMesh_->vertT[0] = 0.;
+      for (size_t i = 0; i < this->triMesh_->vertices.size(); i++) {
+        this->triMesh_->vertT[i] = LARGENUM;
+      }
+    }
     FIMPtr2d_ = new meshFIM2dEikonal;
-    FIMPtr2d_->SetSeedPoint(this->seedPointList_);
     FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
     FIMPtr2d_->SetStopDistance(this->stopDistance_);
     if (this->isStructured_) {
@@ -83,28 +158,18 @@ void Eikonal::solveEikonal() {
     iteration_values_ =
       FIMPtr2d_->GenerateData(this->maxBlocks_, this->maxIterations_, this->verbose_);
   } else {
-    tetgenio in;
-    if (!(in.load_tetmesh((char*)this->filename_.c_str(),
-            this->verbose_))) {
-      exit(1);
+    if (this->tetMesh_ == NULL) {
+      this->initializeMesh();
     }
-
-    this->tetMesh_ = new TetMesh();
-    this->tetMesh_->init(
-        in.pointlist,
-        in.numberofpoints,
-        in.trifacelist,
-        in.numberoffacets,
-        in.tetrahedronlist,
-        in.numberoftetrahedra,
-        in.numberoftetrahedronattributes,
-        in.tetrahedronattributelist, this->verbose_);
-    this->tetMesh_->need_neighbors(this->verbose_);
-    this->tetMesh_->need_adjacenttets(this->verbose_);
-    this->tetMesh_->need_tet_virtual_tets(this->verbose_);
-
+    //initialize the first point as the "Seed"
+    if (!this->userSetInitial_) {
+      this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());
+      this->tetMesh_->vertT[0] = 0.;
+      for (size_t i = 0; i < this->tetMesh_->vertices.size(); i++) {
+        this->tetMesh_->vertT[i] = LARGENUM;
+      }
+    }
     FIMPtr3d_ = new meshFIM3dEikonal;
-    FIMPtr3d_->SetSeedPoint(this->seedPointList_);
     FIMPtr3d_->SetMesh(this->tetMesh_);
     FIMPtr3d_->InitSpeedMat();
 

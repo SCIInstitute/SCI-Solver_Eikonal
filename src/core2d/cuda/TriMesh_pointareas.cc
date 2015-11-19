@@ -21,7 +21,7 @@ void TriMesh::need_pointareas()
 
 	dprintf("Computing point areas... ");
 
-	int nf = faces.size(), nv = vertices.size();
+  size_t nf = faces.size(), nv = vertices.size();
 	pointareas.clear();
 	pointareas.resize(nv);
 	cornerareas.clear();

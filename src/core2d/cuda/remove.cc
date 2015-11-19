@@ -14,7 +14,7 @@ Removing sets of vertices or faces from TriMeshes.
 // Remove the indicated vertices from the TriMesh.
 void remove_vertices(TriMesh *mesh, const vector<bool> &toremove)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 
 	// Build a table that tells how the vertices will be remapped
 	if (!nv)
@@ -45,7 +45,7 @@ void remove_vertices(TriMesh *mesh, const vector<bool> &toremove)
 // Remove vertices that aren't referenced by any face
 void remove_unused_vertices(TriMesh *mesh)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	if (!nv)
 		return;
 
@@ -70,7 +70,7 @@ void remove_faces(TriMesh *mesh, const vector<bool> &toremove)
 	bool had_tstrips = !mesh->tstrips.empty();
 	bool had_faces = !mesh->faces.empty();
 	mesh->need_faces();
-	int numfaces = mesh->faces.size();
+  size_t numfaces = mesh->faces.size();
 	if (!numfaces)
 		return;
 
@@ -111,7 +111,7 @@ void remove_faces(TriMesh *mesh, const vector<bool> &toremove)
 void remove_sliver_faces(TriMesh *mesh)
 {
 	mesh->need_faces();
-	int numfaces = mesh->faces.size();
+  size_t numfaces = mesh->faces.size();
 
 	const float l2thresh = sqr(4.0f * mesh->feature_size());
 	const float cos2thresh = 0.85f;

@@ -93,7 +93,7 @@ class meshFIM2dEikonal {
       else
       {
         // initialize all labels to 'Far'
-        int nv = m_meshPtr->vertices.size();
+        size_t nv = m_meshPtr->vertices.size();
         if (m_VertLabel.size() != nv) m_VertLabel.resize(nv);
         if (m_BlockLabel.size() != numBlock) m_BlockLabel.resize(numBlock);
 

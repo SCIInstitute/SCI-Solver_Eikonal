@@ -35,7 +35,7 @@ void inflate(TriMesh *mesh, float amount)
 	mesh->need_normals();
 
 	TriMesh::dprintf("Creating offset surface... ");
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 #pragma omp parallel for
 	for (int i = 0; i < nv; i++)
 		mesh->vertices[i] += amount * mesh->normals[i];
@@ -48,7 +48,7 @@ void inflate(TriMesh *mesh, float amount)
 // Transform the mesh by the given matrix
 void apply_xform(TriMesh *mesh, const xform &xf)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	for (int i = 0; i < nv; i++)
 		mesh->vertices[i] = xf * mesh->vertices[i];
 	if (!mesh->normals.empty()) {
@@ -99,7 +99,7 @@ void scale(TriMesh *mesh, float s, const vec &d)
 // Clip mesh to the given bounding box 
 void clip(TriMesh *mesh, const TriMesh::BBox &b)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	vector<bool> toremove(nv, false);
 	for (int i = 0; i < nv; i++)
 		if (mesh->vertices[i][0] < b.min[0] ||
@@ -132,7 +132,7 @@ point mesh_center_of_mass(TriMesh *mesh)
 	float totwt = 0;
 
 	mesh->need_faces();
-	int nf = mesh->faces.size();
+  size_t nf = mesh->faces.size();
 	for (int i = 0; i < nf; i++) {
 		const point &v0 = mesh->vertices[mesh->faces[i][0]];
 		const point &v1 = mesh->vertices[mesh->faces[i][1]];
@@ -154,7 +154,7 @@ void point_covariance(const vector<point> &pts, float C[3][3])
 		for (int k = 0; k < 3; k++)
 			C[j][k] = 0.0f;
 
-	int n = pts.size();
+  size_t n = pts.size();
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < 3; j++)
 			for (int k = j; k < 3; k++)
@@ -187,7 +187,7 @@ void mesh_covariance(TriMesh *mesh, float C[3][3])
 
 	float totarea = 0.0f;
 	const vector<point> &p = mesh->vertices;
-	int n = mesh->faces.size();
+  size_t n = mesh->faces.size();
 	for (int i = 0; i < n; i++) {
 		const TriMesh::Face &f = mesh->faces[i];
 		point c = (p[f[0]] + p[f[1]] + p[f[2]]) / 3.0f;
@@ -250,7 +250,7 @@ void pca_rotate(TriMesh *mesh)
 	// Sorted in order from smallest to largest, so grab third column
 	vec first(C[0][2], C[1][2], C[2][2]);
 	int npos = 0;
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	for (int i = 0; i < nv; i++)
 		if ((mesh->vertices[i] DOT first) > 0.0f)
 			npos++;
@@ -293,7 +293,7 @@ void pca_snap(TriMesh *mesh)
 	// Sorted in order from smallest to largest, so grab third column
 	vec first(C[0][2], C[1][2], C[2][2]);
 	int npos = 0;
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	for (int i = 0; i < nv; i++)
 		if ((mesh->vertices[i] DOT first) > 0.0f)
 			npos++;
@@ -420,7 +420,7 @@ void orient(TriMesh *mesh)
 	}
 
 	vector<bool> cc_flip(cc, false);
-	for (int i = 0; i < cc; i++) {
+  for (size_t i = 0; i < cc; i++) {
 		int f = cc_farthest[i];
 		const point &v0 = mesh->vertices[mesh->faces[f][0]];
 		const point &v1 = mesh->vertices[mesh->faces[f][1]];
@@ -455,7 +455,7 @@ void orient(TriMesh *mesh)
 // Remove boundary vertices (and faces that touch them)
 void erode(TriMesh *mesh)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	vector<bool> bdy(nv);
 	for (int i = 0; i < nv; i++)
 		bdy[i] = mesh->is_bdy(i);
@@ -468,7 +468,7 @@ void noisify(TriMesh *mesh, float amount)
 {
 	mesh->need_normals();
 	mesh->need_neighbors();
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	vector<vec> disp(nv);
 
 	for (int i = 0; i < nv; i++) {

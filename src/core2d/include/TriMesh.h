@@ -323,7 +323,7 @@ class TriMesh {
       vector<Face> t_faces;
 
       // get adjacent faces
-      int naf = this->adjacentfaces[v].size();
+      size_t naf = this->adjacentfaces[v].size();
 
       if (!naf)
       {
@@ -361,7 +361,7 @@ class TriMesh {
     void InitializeAttributes(std::vector<int> seeds = vector<int>())
     {
       // initialize the travel times over all vertices...
-      int nv = this->vertices.size();
+      size_t nv = this->vertices.size();
 
       for (int v = 0; v < nv; v++)
       {
@@ -373,7 +373,7 @@ class TriMesh {
       // initialize seed points if present...
       if (!seeds.empty())
       {
-        int ns = seeds.size();
+        size_t ns = seeds.size();
         for (int s = 0; s < ns; s++)
         {
           this->vertT[seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;
@@ -393,7 +393,7 @@ class TriMesh {
       this->need_face_virtual_faces();
 
       // for all faces: initialize per-vertex travel time and face-speed
-      int nf = this->faces.size();
+      size_t nf = this->faces.size();
       for (int f = 0; f < nf; f++)
       {
         Face cf = this->faces[f];

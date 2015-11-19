@@ -20,7 +20,7 @@ Reorder and remap vertices.
 // Any per-vertex properties are renumbered along with the vertices.
 void remap_verts(TriMesh *mesh, const std::vector<int> &remap_table)
 {
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	if (remap_table.size() != nv) {
 		fprintf(stderr, "remap_verts called with wrong table size!\n");
 		return;
@@ -165,7 +165,7 @@ void reorder_verts(TriMesh *mesh)
 {
 	TriMesh::dprintf("Reordering vertices... ");
 
-	int nv = mesh->vertices.size();
+  size_t nv = mesh->vertices.size();
 	vector<int> remap(nv, -1);
 	int next = 0;
 	if (!mesh->grid.empty()) {

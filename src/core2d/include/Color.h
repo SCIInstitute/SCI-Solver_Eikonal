@@ -64,8 +64,8 @@ class Color : public Vec<3,double> {
     { return *this = Color(c); }
     Color operator *(float f) {
       Color c = *this;
-      for(size_t i = 0; i < 3; i++)
-        c[i] *=f;
+      for(int i = 0; i < 3; i++)
+        c[i] *= f;
       return c;
     }
 

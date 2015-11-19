@@ -201,7 +201,7 @@ class TetMesh {
     void InitializeAttributes(int currentVert , vector<int> seeds )
     {
       // initialize the travel times over all vertices...
-      int nv = this->vertices.size();
+      size_t nv = this->vertices.size();
 
       for (int v = 0; v < nv; v++)
       {
@@ -213,7 +213,7 @@ class TetMesh {
       // initialize seed points if present...
       if (!seeds.empty())
       {
-        int ns = seeds.size();
+        size_t ns = seeds.size();
         for (int s = 0; s < ns; s++)
         {
           this->vertT[seeds[s]] = 0.0;  //modified from this->vertT[s] = 0.0;

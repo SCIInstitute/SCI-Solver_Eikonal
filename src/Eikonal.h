@@ -16,6 +16,8 @@ public:
     std::string fname = "../src/test/test_data/sphere_266verts.ply",
     bool verbose = false);
   virtual ~Eikonal();
+  void initializeMesh();
+  void initializeVertices(std::vector<float> values);
   //accessor functions to the results.
   std::vector < float >& getFinalResult();
   std::vector < float >& getResultAtIteration(size_t i);
@@ -38,11 +40,11 @@ public:
   //2D data
   bool verbose_;
   std::string filename_;
-  std::vector<int> seedPointList_;
   int maxBlocks_;
   int maxVertsPerBlock_;
   float stopDistance_;
   bool isStructured_;
+  bool userSetInitial_;
   int speedType_; // ONE (1), CURVATURE (2), NOISE (3)
   int squareLength_, squareWidth_, squareDepth_;
   int squareBlockLength_, squareBlockWidth_, squareBlockDepth_;
