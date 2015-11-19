@@ -110,7 +110,7 @@ void meshFIM2dEikonal::writeVTK(std::vector< std::vector <float> > time_values)
 
 void meshFIM2dEikonal::GraphPartition_METIS(char* partfilename, int numBlock)  //read a metis result .mesh.npart.N file and store into PartitionLabel
 {
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
   //m_PartitionLabel = new int[numVert];
   m_PartitionLabel.resize(numVert);
   FILE* partFile = fopen(partfilename, "r+");
@@ -132,9 +132,9 @@ void meshFIM2dEikonal::GraphPartition_METIS(char* partfilename, int numBlock)  /
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
   {
-    r = rand()/(double)RAND_MAX;
-    g = rand()/(double)RAND_MAX;
-    b = rand()/(double)RAND_MAX;
+    r = rand()/(float)RAND_MAX;
+    g = rand() / (float)RAND_MAX;
+    b = rand() / (float)RAND_MAX;
     colors[i] = Color(r,g,b);
   }
   m_meshPtr->colors.resize(numVert);
@@ -166,14 +166,14 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
     printf("Cannot open mesh file to write!!!!\n");
     exit(1);
   }
-  int sz = m_meshPtr->faces.size();
+  size_t sz = m_meshPtr->faces.size();
   fprintf(outf,"%d 1\n", sz);
 
   for (int i=0;i<sz;i++)
     fprintf(outf, "%d %d %d\n",m_meshPtr->faces[i].v[0]+1,m_meshPtr->faces[i].v[1]+1,m_meshPtr->faces[i].v[2]+1);
   fclose(outf);
 
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
 
   m_PartitionLabel.resize(numVert);
 
@@ -183,7 +183,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
   if(numBlock == 0)
   {
-    numBlock = numVert / maxNumBlockVerts;
+    numBlock = static_cast<int>(numVert) / maxNumBlockVerts;
     do{
       numBlock++;
       m_BlockSizes.resize(numBlock);
@@ -274,9 +274,9 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
   {
-    r = rand()/(double)RAND_MAX;
-    g = rand()/(double)RAND_MAX;
-    b = rand()/(double)RAND_MAX;
+    r = rand() / (float)RAND_MAX;
+    g = rand() / (float)RAND_MAX;
+    b = rand() / (float)RAND_MAX;
     colors[i] = Color(r,g,b);
   }
   m_meshPtr->colors.resize(numVert);
@@ -293,7 +293,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
 void meshFIM2dEikonal::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth, bool verbose)
 {
-  int numVert = m_meshPtr->vertices.size();
+  size_t numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
 
   int numBlockLength = (squareLength / blockLength);
@@ -316,9 +316,9 @@ void meshFIM2dEikonal::GraphPartition_Square(int squareLength,int squareWidth, i
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
   {
-    r = rand()/(double)RAND_MAX;
-    g = rand()/(double)RAND_MAX;
-    b = rand()/(double)RAND_MAX;
+    r = rand() / (float)RAND_MAX;
+    g = rand() / (float)RAND_MAX;
+    b = rand() / (float)RAND_MAX;
     colors[i] = Color(r,g,b);
   }
   m_meshPtr->colors.resize(numVert);
@@ -345,7 +345,7 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   m_PartitionFaces.resize(numBlock);
   m_PartitionNbFaces.resize(numBlock);
 
-  int numFaces = m_meshPtr->faces.size();
+  size_t numFaces = m_meshPtr->faces.size();
   TriMesh::Face f;
   int labelv0;
   int labelv1;
@@ -364,13 +364,13 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   for(int i = 0; i < numFaces; i++)
   {
     f = m_meshPtr->faces[i];
-    int vfCnt = m_meshPtr->faceVirtualFaces[i].size();
+    size_t vfCnt = m_meshPtr->faceVirtualFaces[i].size();
 
     for(int k = 0 ; k < 3; k++)
     {
       if(!m_meshPtr->IsNonObtuse(f[k], f))
       {
-        virtualFaceCnt[m_PartitionLabel[f[k]]] += vfCnt;
+        virtualFaceCnt[m_PartitionLabel[f[k]]] += static_cast<int>(vfCnt);
         m_PartitionVirtualFaces[m_PartitionLabel[f[k]]].insert(m_PartitionVirtualFaces[m_PartitionLabel[f[k]]].end(), m_meshPtr->faceVirtualFaces[i].begin(), m_meshPtr->faceVirtualFaces[i].end());
       }
 
@@ -428,7 +428,8 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   m_maxNumTotalFaces = 0;
   for(int j = 0; j < numBlock; j++)
   {
-    PartitionToltalFaces[j] = m_PartitionFaces[j].size() + m_PartitionNbFaces[j].size() + virtualFaceCnt[j];
+    PartitionToltalFaces[j] = static_cast<int>(m_PartitionFaces[j].size() + 
+      m_PartitionNbFaces[j].size() + virtualFaceCnt[j]);
     m_maxNumTotalFaces = MAX(PartitionToltalFaces[j],m_maxNumTotalFaces );
   }
 }
@@ -436,8 +437,8 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
 std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     int maxIterations, bool verbose)
 {
-  int numVert = m_meshPtr->vertices.size();
-  int numFaces=m_meshPtr->faces.size();
+  size_t numVert = m_meshPtr->vertices.size();
+  size_t numFaces = m_meshPtr->faces.size();
 
   if(!InitCUDA()) {
     exit(1);
@@ -502,7 +503,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   for( int i = 0; i <  numBlock; i++)
   {
     int blockIdx = i * m_maxNumTotalFaces * TRIMEMLENGTH;
-    int numPF = m_PartitionFaces[i].size();
+    size_t numPF = m_PartitionFaces[i].size();
     for(int j = 0; j< numPF; j++)
     {
       h_edgeMem0[i * m_maxNumTotalFaces + j] = m_meshPtr->faces[m_PartitionFaces[i][j]].edgeLens[0];
@@ -528,14 +529,14 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     h_BlockSizes[i] = m_BlockSizes[i];
     int blockIdx = i * m_maxNumTotalFaces * TRIMEMLENGTH;
 
-    int numPF = m_PartitionFaces[i].size();
-    int numPNF = m_PartitionNbFaces[i].size();
-    int numPVF = m_PartitionVirtualFaces[i].size();
+    size_t numPF = m_PartitionFaces[i].size();
+    size_t numPNF = m_PartitionNbFaces[i].size();
+    size_t numPVF = m_PartitionVirtualFaces[i].size();
 
     int k = 0;
     int l = 0;
 
-    for(int j = numPF; j< m_maxNumTotalFaces; j++)
+    for(int j = static_cast<int>(numPF); j< m_maxNumTotalFaces; j++)
     {
       if( j < numPF + numPNF)
       {
@@ -599,7 +600,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
         }
     }
-    m_maxNumVertMapping = MAX(m_maxNumVertMapping, blockVertMapping[i].size());
+    m_maxNumVertMapping = static_cast<int>(MAX(m_maxNumVertMapping, blockVertMapping[i].size()));
   }
 
   for(int i =0; i < numVert; i++)
@@ -648,8 +649,8 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   int maxVertMappingOutside = 0;
   for(int i =0; i< numVert; i++)
   {
-    maxVertMappingInside = MAX(maxVertMappingInside, (blockVertMappingInside[i].size()));
-    maxVertMappingOutside = MAX(maxVertMappingInside, (blockVertMappingOutside[i].size()));
+    maxVertMappingInside = static_cast<int>(MAX(maxVertMappingInside, (blockVertMappingInside[i].size())));
+    maxVertMappingOutside = static_cast<int>(MAX(maxVertMappingInside, (blockVertMappingOutside[i].size())));
   }
 
   if (verbose) {
@@ -664,7 +665,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     for(int m  = 0; m < m_PartitionVerts[i].size(); m++)
     {
 
-      int tmpsize = blockVertMappingInside[m_PartitionVerts[i][m]].size();
+      size_t tmpsize = blockVertMappingInside[m_PartitionVerts[i][m]].size();
 
       int n = 0;
       for(; n < tmpsize; n++)
@@ -675,7 +676,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     }
 
-    for(int m = m_PartitionVerts[i].size() * VERTMEMLENGTH; m < m_maxNumVert * VERTMEMLENGTH; m++)
+    for (size_t m = m_PartitionVerts[i].size() * VERTMEMLENGTH; m < m_maxNumVert * VERTMEMLENGTH; m++)
     {
       h_vertMem[vertIdx + m] = -1 + i*m_maxNumTotalFaces*TRIMEMLENGTH;
     }
@@ -693,7 +694,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     for(int m  = 0; m < m_PartitionVerts[i].size(); m++)
     {
 
-      int tmpsize = blockVertMappingOutside[m_PartitionVerts[i][m]].size();
+      size_t tmpsize = blockVertMappingOutside[m_PartitionVerts[i][m]].size();
 
       int n = 0;
       for(; n < tmpsize; n++)
@@ -703,7 +704,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     }
 
-    for(int m = m_PartitionVerts[i].size() * VERTMEMLENGTHOUTSIDE; m < m_maxNumVert * VERTMEMLENGTHOUTSIDE; m++)
+    for(size_t m = m_PartitionVerts[i].size() * VERTMEMLENGTHOUTSIDE; m < m_maxNumVert * VERTMEMLENGTHOUTSIDE; m++)
     {
       h_vertMemOutside[vertIdx + m] = -1;
     }
@@ -756,7 +757,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
   cudaSafeCall( cudaMemcpy( d_triMem,h_triMem, sizeof(float) * m_maxNumTotalFaces * numBlock * TRIMEMLENGTH, cudaMemcpyHostToDevice));
 
-  numActive =m_ActiveBlocks.size();
+  numActive = static_cast<int>(m_ActiveBlocks.size());
 
   set<int>::iterator activeiter = m_ActiveBlocks.begin();
   for(int i =0; activeiter !=  m_ActiveBlocks.end(); activeiter++)
@@ -836,7 +837,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     int nOldActiveBlock = numActive;
 
-    for(uint i=0; i<nOldActiveBlock; i++)
+    for (size_t i = 0; i < static_cast<size_t>(nOldActiveBlock); i++)
     {
       // check neighbors of current active tile
       uint currBlkIdx = h_ActiveList[i];
@@ -871,9 +872,11 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     dimBlock = dim3(m_maxNumTotalFaces, 1);
 
 
-    run_check_neighbor<<< dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+m_maxNumVert*VERTMEMLENGTH*sizeof(short)>>>(d_triMemOut, d_triMem,d_vertMem,d_vertMemOutside, d_edgeMem0,d_edgeMem1,d_edgeMem2,d_speed , d_BlockSizes, d_con,d_ActiveList, nOldActiveBlock ,m_maxNumTotalFaces, m_maxNumVert,numActive, m_StopDistance);
+    run_check_neighbor << < dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float) +
+      m_maxNumVert*VERTMEMLENGTH*sizeof(short) >> >(d_triMemOut, d_triMem, d_vertMem, d_vertMemOutside,
+      d_edgeMem0, d_edgeMem1, d_edgeMem2, d_speed, d_BlockSizes, d_con, d_ActiveList, nOldActiveBlock,
+      m_maxNumTotalFaces, m_maxNumVert, numActive, static_cast<int>(m_StopDistance));
     cudaCheckErrors();
-
 
     //////////////////////////////////////////////////////////////////
     // 5. reduction
@@ -892,7 +895,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     numActive = 0;
 
     cudaSafeCall( cudaMemcpy(h_blockCon, d_blockCon, numBlock*sizeof(int), cudaMemcpyDeviceToHost) );
-    for(uint i=0; i<numBlock; i++)
+    for (uint i = 0; i < static_cast<size_t>(numBlock); i++)
     {
       if(!h_blockCon[i]) // false : activate block (not converged)
       {

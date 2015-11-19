@@ -65,7 +65,7 @@ void Eikonal::initializeVertices(std::vector<float> values) {
       exit(0);
     }
     this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
-    for (size_t i = 1; i < values.size(); i++) {
+    for (size_t i = 0; i < values.size(); i++) {
       this->triMesh_->vertT[i] = values[i];
     }
   } else {
@@ -75,7 +75,7 @@ void Eikonal::initializeVertices(std::vector<float> values) {
       exit(0);
     }
     this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());
-    for (size_t i = 1; i < values.size(); i++) {
+    for (size_t i = 0; i < values.size(); i++) {
       this->tetMesh_->vertT[i] = values[i];
     }
 
@@ -92,9 +92,6 @@ void Eikonal::initializeMesh() {
         printf("File open failed!!\n");
         exit(0);
       }
-      this->triMesh_->need_neighbors(this->verbose_);
-      this->triMesh_->need_adjacentfaces(this->verbose_);
-      this->triMesh_->need_Rinscribe();
     }
   } else {
     if (this->tetMesh_ == NULL) {
@@ -128,17 +125,27 @@ void Eikonal::solveEikonal() {
     if (this->triMesh_ == NULL) {
       this->initializeMesh();
     }
+    FIMPtr2d_ = new meshFIM2dEikonal;
+    FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
+    FIMPtr2d_->SetStopDistance(this->stopDistance_);
     //initialize the first point as the "Seed"
     if (!this->userSetInitial_) {
       this->triMesh_->vertT.resize(this->triMesh_->vertices.size());
       this->triMesh_->vertT[0] = 0.;
-      for (size_t i = 0; i < this->triMesh_->vertices.size(); i++) {
+      for (size_t i = 1; i < this->triMesh_->vertices.size(); i++) {
         this->triMesh_->vertT[i] = LARGENUM;
       }
+      FIMPtr2d_->SetSeedPoint(std::vector<int>(1, 0));
+    } else {
+      std::vector<int> found_seeds;
+      for (size_t i = 0; i < this->triMesh_->vertices.size(); i++) {
+        if (this->triMesh_->vertT[i] == 0.) {
+          found_seeds.push_back(static_cast<int>(i));
+        }
+      }
+      FIMPtr2d_->SetSeedPoint(found_seeds);
     }
-    FIMPtr2d_ = new meshFIM2dEikonal;
-    FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
-    FIMPtr2d_->SetStopDistance(this->stopDistance_);
+
     if (this->isStructured_) {
       int numBlockLength = (this->squareLength_ / this->squareBlockLength_);
       int numBlockWidth = (this->squareWidth_ / this->squareBlockWidth_);
@@ -161,17 +168,26 @@ void Eikonal::solveEikonal() {
     if (this->tetMesh_ == NULL) {
       this->initializeMesh();
     }
+    FIMPtr3d_ = new meshFIM3dEikonal;
+    FIMPtr3d_->SetMesh(this->tetMesh_);
+    FIMPtr3d_->InitSpeedMat();
     //initialize the first point as the "Seed"
     if (!this->userSetInitial_) {
       this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());
       this->tetMesh_->vertT[0] = 0.;
-      for (size_t i = 0; i < this->tetMesh_->vertices.size(); i++) {
+      for (size_t i = 1; i < this->tetMesh_->vertices.size(); i++) {
         this->tetMesh_->vertT[i] = LARGENUM;
       }
+      FIMPtr3d_->SetSeedPoint(std::vector<int>(1, 0));
+    } else {
+      std::vector<int> found_seeds;
+      for (size_t i = 0; i < this->tetMesh_->vertices.size(); i++) {
+        if (this->tetMesh_->vertT[i] == 0.) {
+          found_seeds.push_back(static_cast<int>(i));
+        }
+      }
+      FIMPtr3d_->SetSeedPoint(found_seeds);
     }
-    FIMPtr3d_ = new meshFIM3dEikonal;
-    FIMPtr3d_->SetMesh(this->tetMesh_);
-    FIMPtr3d_->InitSpeedMat();
 
     if (this->isStructured_) {
       int numBlockLength = (this->squareLength_ / this->squareBlockLength_);
