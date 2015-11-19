@@ -133,7 +133,7 @@ library during build and includes the headers needed, which are usually no more 
 
 Then a program would setup the Eikonal parameters using the 
 <code>Eikonal object</code> object and call 
-<code>object.solveEikonal() to generate
+<code>object.solveEikonal()</code> to generate
 the array of vertex values per iteration.
 
 Here is a minimal usage example (in 3D).<br/>
