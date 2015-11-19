@@ -5,7 +5,7 @@ TEST(Improve2D, DecreaseRMSError) {
   std::vector<float> rmsError;
   //lowest granularity
   data.filename_ = TEST_DATA_DIR + std::string("sphere_12verts.ply");
-  data.maxBlocks_ = 2;
+  data.maxBlocks_ = 13;
   EXPECT_NO_THROW(data.solveEikonal());
   // find the analytical solution to each vertex and compare.
   std::vector< float > solution;

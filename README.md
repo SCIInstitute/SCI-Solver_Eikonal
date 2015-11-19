@@ -180,7 +180,7 @@ std::vector < std::vector < float > > Eikonal::iteration_values_;
 
       std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
       int maxBlocks_;                   //the max # of blocks (patches)
-                                        //   on the convergence queue         [Default 1000]
+                                        //   on the convergence queue         [Default 100]
       int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
       bool isStructured_;               //Whether the mesh is structured      [Default false]
       int squareLength_;                //if structured, the square size      [Default 16, 16, 16]

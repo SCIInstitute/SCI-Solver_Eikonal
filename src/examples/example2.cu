@@ -42,6 +42,10 @@ int main(int argc, char* argv[]) {
       if (i + 1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i + 1]);
       i++;
+    } else if (strcmp(argv[i], "-n") == 0) {
+      if (i + 1 >= argc) break;
+      data.maxIterations_= atoi(argv[i + 1]);
+      i++;
     } else if (strcmp(argv[i], "-h") == 0) {
       printf("Usage: ./Example2 [OPTIONS]\n");
       printf("  -h            Show this help.\n");
@@ -50,6 +54,7 @@ int main(int argc, char* argv[]) {
       //# of blocks affects partitioning & convergence.
       //Adjust accordingly.
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
+      printf("  -n MAX_ITER   Max # of iterations to run\n");
       exit(0);
     }
   }

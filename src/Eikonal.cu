@@ -15,7 +15,7 @@ Eikonal::Eikonal(bool isTriMesh, std::string fname, bool verbose) :
   squareBlockLength_(1),
   squareBlockWidth_(1),
   squareBlockDepth_(1),
-  maxIterations_(1000),
+  maxIterations_(100),
   triMesh_(NULL),
   tetMesh_(NULL),
   FIMPtr2d_(NULL),
@@ -90,7 +90,7 @@ void Eikonal::initializeMesh() {
       if (this->triMesh_ == NULL)
       {
         printf("File open failed!!\n");
-        exit(0);
+        exit(1);
       }
     }
   } else {

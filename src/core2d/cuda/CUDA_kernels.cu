@@ -404,7 +404,7 @@ __global__ void FIMCuda(float* d_triMem,float* d_triMemOut, int* d_vertMem, int*
   {
     float residue = oldT - newT;
     int tmpindex;
-    d_con[block_idx*REDUCTIONSHARESIZE + tx] = (residue < EPS) ? 1 : 0;
+    d_con[block_idx*REDUCTIONSHARESIZE + tx] = (residue <= EPS) ? 1 : 0;
 
     for(int j = 0; (j < VERTMEMLENGTH) && ((tmpindex = s_vertMem[tx * VERTMEMLENGTH + j]) > -1); j++) // update gloal memory inside all the old to the min
     {
@@ -432,7 +432,10 @@ extern __shared__ float s_run_check_neghbor_array[];
 
 
 
-__global__ void run_check_neighbor(float* d_triMem,float* d_triMemOut, int* d_vertMem,int* d_vertMemOutside,float* d_edgeMem0,float* d_edgeMem1,float* d_edgeMem2, float* d_speed,int* d_BlockSizes, int* d_con,int* d_ActiveList, int numOldActive ,int maxNumTotalFaces, int maxNumVert,int nTotalActive, int m_StopDistance)
+__global__ void run_check_neighbor(float* d_triMem,float* d_triMemOut, int* d_vertMem,
+  int* d_vertMemOutside,float* d_edgeMem0,float* d_edgeMem1,float* d_edgeMem2, 
+  float* d_speed,int* d_BlockSizes, int* d_con,int* d_ActiveList, int numOldActive ,
+  int maxNumTotalFaces, int maxNumVert,int nTotalActive, int m_StopDistance)
 {
 
   uint list_idx = blockIdx.y*gridDim.x + blockIdx.x;
