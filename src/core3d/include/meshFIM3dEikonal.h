@@ -14,9 +14,9 @@
 
 using namespace std;
 
-enum LabelType
+enum LabelType3d
 {
-  FarPoint = 0, ActivePoint, MaskPoint, SeedPoint, StopPoint, AlivePoint, ToBeAlivePoint
+  FarPoint3d = 0, ActivePoint3d, MaskPoint3d, SeedPoint3d, StopPoint3d, AlivePoint3d, ToBeAlivePoint3d
 };
 
 class meshFIM3dEikonal
@@ -197,8 +197,8 @@ class meshFIM3dEikonal
 
     std::set<index> m_ActiveBlocks;
     std::vector<index> m_SeedPoints;
-    std::vector<LabelType> m_VertLabel; // label of all the vertices active or not
-    vector<LabelType> m_BlockLabel; // label of blocks active or not
+    std::vector<LabelType3d> m_VertLabel; // label of all the vertices active or not
+    vector<LabelType3d> m_BlockLabel; // label of blocks active or not
 };
 
 #endif

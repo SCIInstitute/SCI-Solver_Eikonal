@@ -20,7 +20,7 @@
 
 using namespace std;
 
-enum LabelType { FarPoint = 0,ActivePoint, MaskPoint, SeedPoint,
+enum LabelType2d { FarPoint = 0,ActivePoint, MaskPoint, SeedPoint,
   StopPoint, AlivePoint,ToBeAlivePoint };
 
 class meshFIM2dEikonal {
@@ -160,8 +160,8 @@ class meshFIM2dEikonal {
   protected:
     std::set<index>                              m_ActiveBlocks;
     std::vector<index>                           m_SeedPoints;
-    std::vector<LabelType>                       m_VertLabel;             // label of all the vertices active or not
-    vector<LabelType>                            m_BlockLabel;            // label of blocks active or not
+    std::vector<LabelType2d>                       m_VertLabel;             // label of all the vertices active or not
+    vector<LabelType2d>                            m_BlockLabel;            // label of blocks active or not
     float                                        m_StopDistance;
 };
 #endif

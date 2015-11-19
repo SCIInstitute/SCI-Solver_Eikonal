@@ -28,14 +28,14 @@
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
-#include <Eikonal3D.h>
+#include <Eikonal.h>
 
 int main(int argc, char *argv[])
 {
   //3D options
-  Eikonal3D::Eikonal3D data;
+  Eikonal data(false);
   //input filename (minus extension)
-  std::string filename;
+  data.filename_ = "../src/test/test_data/sphere334";
   for (int i = 0; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       data.verbose_ = true;
@@ -55,23 +55,19 @@ int main(int argc, char *argv[])
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       exit(0);
     }
-  Eikonal3D::solveEikonal3D(data);
+  data.solveEikonal();
   //write out the VTK files
-  Eikonal3D::writeVTK();
+  data.writeVTK();
   //we know that the solution should be the euclidean distance from the center.
   std::vector <float> solution;
-  for(size_t i = 0; i < Eikonal3D::mesh_->vertices.size(); i++) {
-    float x = Eikonal3D::mesh_->vertices[i][0];
-    float y = Eikonal3D::mesh_->vertices[i][1];
-    float z = Eikonal3D::mesh_->vertices[i][2];
+  for (size_t i = 0; i < data.tetMesh_->vertices.size(); i++) {
+    float x = data.tetMesh_->vertices[i][0];
+    float y = data.tetMesh_->vertices[i][1];
+    float z = data.tetMesh_->vertices[i][2];
     solution.push_back(std::sqrt((54. - x)*(54.-x)+(54.-y)*(54.-y)+(54.-z)*(54.-z)));
   }
-
   if (data.verbose_)
-    Eikonal3D::printErrorGraph(solution);
-
-  delete Eikonal3D::mesh_;
-
+    data.printErrorGraph(solution);
   return 0;
 }
 
