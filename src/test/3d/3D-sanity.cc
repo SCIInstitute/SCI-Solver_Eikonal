@@ -7,10 +7,10 @@ TEST(Sanity3D, Filename) {
   EXPECT_EXIT(data.solveEikonal(),
       ::testing::ExitedWithCode(1), "");
   data.filename_ = TEST_DATA_DIR + std::string("sphere334");
-  std::cout << data.filename_ << std::endl;
   EXPECT_NO_THROW(data.solveEikonal());
+  delete data.tetMesh_;
+  data.tetMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("CubeMesh_size16");
-  std::cout << data.filename_ << std::endl;
   data.isStructured_ = true;
   EXPECT_NO_THROW(data.solveEikonal());
 }
