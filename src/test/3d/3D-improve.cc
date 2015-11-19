@@ -25,6 +25,8 @@ TEST(Improve3D, DecreaseRMSError) {
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //mid granularity
+  delete data.tetMesh_;
+  data.tetMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("sphere8092");
   data.maxBlocks_ = 1000;
   EXPECT_NO_THROW(data.solveEikonal());
@@ -45,6 +47,8 @@ TEST(Improve3D, DecreaseRMSError) {
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //highest granularity
+  delete data.tetMesh_;
+  data.tetMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("sphere19499");
   data.maxBlocks_ = 2000;
   EXPECT_NO_THROW(data.solveEikonal());

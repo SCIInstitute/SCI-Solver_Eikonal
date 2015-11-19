@@ -31,6 +31,8 @@ TEST(Improve2D, DecreaseRMSError) {
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //mid granularity
+  delete data.triMesh_;
+  data.triMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_266verts.ply");
   data.maxBlocks_ = 11;
   EXPECT_NO_THROW(data.solveEikonal());
@@ -51,6 +53,8 @@ TEST(Improve2D, DecreaseRMSError) {
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //high granularity
+  delete data.triMesh_;
+  data.triMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_3530verts.ply");
   data.maxBlocks_ = 100;
   EXPECT_NO_THROW(data.solveEikonal());
@@ -71,6 +75,8 @@ TEST(Improve2D, DecreaseRMSError) {
   }
   rmsError.push_back(std::sqrt(sum / static_cast<float>(solution.size())));
   //very high granularity
+  delete data.triMesh_;
+  data.triMesh_ = NULL;
   data.filename_ = TEST_DATA_DIR + std::string("sphere_7418verts.ply");
   data.maxBlocks_ = 250;
   EXPECT_NO_THROW(data.solveEikonal());
