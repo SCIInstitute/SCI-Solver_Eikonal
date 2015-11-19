@@ -1,37 +1,37 @@
 #include "Eikonal.h"
 
 Eikonal::Eikonal(bool isTriMesh, std::string fname, bool verbose) :
-verbose_(verbose),
-filename_(fname),
-seedPointList_(std::vector<int>(1, 0)),
-maxBlocks_(10003),
-maxVertsPerBlock_(64),
-stopDistance_(50000.f),
-isStructured_(false),
-speedType_(ONE),
-squareLength_(16),
-squareWidth_(16),
-squareDepth_(16),
-squareBlockLength_(1),
-squareBlockWidth_(1),
-squareBlockDepth_(1),
-maxIterations_(1000),
-triMesh_(NULL),
-tetMesh_(NULL),
-FIMPtr2d_(NULL),
-FIMPtr3d_(NULL),
-isTriMesh_(isTriMesh) {}
+  verbose_(verbose),
+  filename_(fname),
+  seedPointList_(std::vector<int>(1, 0)),
+  maxBlocks_(10003),
+  maxVertsPerBlock_(64),
+  stopDistance_(50000.f),
+  isStructured_(false),
+  speedType_(ONE),
+  squareLength_(16),
+  squareWidth_(16),
+  squareDepth_(16),
+  squareBlockLength_(1),
+  squareBlockWidth_(1),
+  squareBlockDepth_(1),
+  maxIterations_(1000),
+  triMesh_(NULL),
+  tetMesh_(NULL),
+  FIMPtr2d_(NULL),
+  FIMPtr3d_(NULL),
+  isTriMesh_(isTriMesh) {}
 
-Eikonal::~Eikonal() {
-  if (this->tetMesh_ != NULL)
-    delete this->tetMesh_;
-  if (this->triMesh_ != NULL)
-    delete this->triMesh_;
-  if (this->FIMPtr2d_ != NULL)
-    delete this->FIMPtr2d_;
-  if (this->FIMPtr3d_ != NULL)
-    delete this->FIMPtr3d_;
-}
+  Eikonal::~Eikonal() {
+    if (this->tetMesh_ != NULL)
+      delete this->tetMesh_;
+    if (this->triMesh_ != NULL)
+      delete this->triMesh_;
+    if (this->FIMPtr2d_ != NULL)
+      delete this->FIMPtr2d_;
+    if (this->FIMPtr3d_ != NULL)
+      delete this->FIMPtr3d_;
+  }
 
 
 std::vector < float >&  Eikonal::getFinalResult() {
@@ -69,13 +69,13 @@ void Eikonal::solveEikonal() {
       int numBlockWidth = (this->squareWidth_ / this->squareBlockWidth_);
       this->maxBlocks_ = numBlockLength * numBlockWidth;
       FIMPtr2d_->GraphPartition_Square(this->squareLength_, this->squareWidth_,
-        this->squareBlockLength_,
-        this->squareBlockWidth_,
-        this->verbose_);
+          this->squareBlockLength_,
+          this->squareBlockWidth_,
+          this->verbose_);
 
     } else {
       FIMPtr2d_->GraphPartition_METIS2(this->maxBlocks_,
-        this->maxVertsPerBlock_, this->verbose_);
+          this->maxVertsPerBlock_, this->verbose_);
     }
     FIMPtr2d_->PartitionFaces(this->maxBlocks_);
     FIMPtr2d_->InitializeLabels(this->maxBlocks_);
@@ -84,19 +84,21 @@ void Eikonal::solveEikonal() {
       FIMPtr2d_->GenerateData(this->maxBlocks_, this->maxIterations_, this->verbose_);
   } else {
     tetgenio in;
-    if (!in.load_tetmesh((char*)this->filename_.c_str(), this->verbose_))
+    if (!(in.load_tetmesh((char*)this->filename_.c_str(),
+            this->verbose_))) {
       exit(1);
+    }
 
     this->tetMesh_ = new TetMesh();
     this->tetMesh_->init(
-      in.pointlist,
-      in.numberofpoints,
-      in.trifacelist,
-      in.numberoffacets,
-      in.tetrahedronlist,
-      in.numberoftetrahedra,
-      in.numberoftetrahedronattributes,
-      in.tetrahedronattributelist, this->verbose_);
+        in.pointlist,
+        in.numberofpoints,
+        in.trifacelist,
+        in.numberoffacets,
+        in.tetrahedronlist,
+        in.numberoftetrahedra,
+        in.numberoftetrahedronattributes,
+        in.tetrahedronattributelist, this->verbose_);
     this->tetMesh_->need_neighbors(this->verbose_);
     this->tetMesh_->need_adjacenttets(this->verbose_);
     this->tetMesh_->need_tet_virtual_tets(this->verbose_);
@@ -109,18 +111,19 @@ void Eikonal::solveEikonal() {
     if (this->isStructured_) {
       int numBlockLength = (this->squareLength_ / this->squareBlockLength_);
       int numBlockWidth = (this->squareWidth_ / this->squareBlockWidth_);
-      this->maxBlocks_ = numBlockLength * numBlockWidth;
-      FIMPtr3d_->GraphPartition_Square(this->squareLength_, 
-        this->squareWidth_, 
-        this->squareDepth_,
-        this->squareBlockLength_,
-        this->squareBlockWidth_,
-        this->squareBlockDepth_,
-        this->verbose_);
+      int numBlockDepth  = (this->squareDepth_ / this->squareBlockDepth_);
+      this->maxBlocks_ = numBlockLength * numBlockWidth * numBlockDepth;
+      FIMPtr3d_->GraphPartition_Square(this->squareLength_,
+          this->squareWidth_,
+          this->squareDepth_,
+          this->squareBlockLength_,
+          this->squareBlockWidth_,
+          this->squareBlockDepth_,
+          this->verbose_);
 
     } else {
       FIMPtr3d_->GraphPartition_METIS2(this->maxBlocks_,
-        this->maxVertsPerBlock_, this->verbose_);
+          this->maxVertsPerBlock_, this->verbose_);
     }
     FIMPtr3d_->m_numBlock = this->maxBlocks_;
     FIMPtr3d_->PartitionTets(this->maxBlocks_, this->verbose_);
@@ -164,7 +167,7 @@ void Eikonal::printErrorGraph(std::vector<float> solution) {
     }
     for (size_t j = 0; j < numIterations(); j++) {
       if (rmsError[j] > std::pow(static_cast<float>(10), i) &&
-        rmsError[j] < std::pow(static_cast<float>(10), i + 1))
+          rmsError[j] < std::pow(static_cast<float>(10), i + 1))
         printf("*");
       else
         printf(" ");

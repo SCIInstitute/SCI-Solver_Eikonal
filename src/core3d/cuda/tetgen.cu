@@ -39,11 +39,7 @@
 
 void terminatetetgen(int x)
 {
-#ifdef TETLIBRARY
-  throw x;
-#else
   exit(x);
-#endif // #ifdef TETLIBRARY
 }
 
 //
@@ -393,7 +389,7 @@ bool tetgenio::load_node(char* filename)
   infile = fopen(innodefilename, "r");
   if (infile == (FILE *) NULL) {
     printf("File I/O Error:  Cannot access file %s.\n", innodefilename);
-    return false;
+    exit(1);
   }
   printf("Opening %s.\n", innodefilename);
   // Read the first line of the file.
@@ -782,7 +778,7 @@ bool tetgenio::load_poly(char* filename)
     if (polyfile == (FILE *) NULL) {
       printf("File I/O Error:  Cannot access file %s and %s.\n",
           inpolyfilename, insmeshfilename);
-      return false;
+          exit(1);
     } else {
       printf("Opening %s.\n", insmeshfilename);
     }
@@ -831,7 +827,7 @@ bool tetgenio::load_poly(char* filename)
     infile = fopen(innodefilename, "r");
     if (infile == (FILE *) NULL) {
       printf("File I/O Error:  Cannot access file %s.\n", innodefilename);
-      return false;
+    exit(1);
     }
     // Initialize the default values.
     mesh_dim = 3;  // Three-dimemsional accoordinates.
@@ -2028,7 +2024,7 @@ bool tetgenio::load_tetmesh(char* filename, bool verbose)
   infile = fopen(infilename, "r");
   if (infile == (FILE *) NULL) {
     printf("File I/O Error:  Cannot access file %s.\n", infilename);
-    return false;
+    exit(1);
   }
   // Read the first line of the file.
   stringptr = readnumberline(inputline, infile, infilename);
@@ -2346,7 +2342,7 @@ bool tetgenio::load_voronoi(char* filename)
   infile = fopen(infilename, "r");
   if (infile == (FILE *) NULL) {
     printf("File I/O Error:  Cannot access file %s.\n", infilename);
-    return false;
+    exit(1);
   }
   // Read the first line of the file.
   stringptr = readnumberline(inputline, infile, infilename);

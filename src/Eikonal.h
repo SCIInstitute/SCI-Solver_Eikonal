@@ -1,13 +1,13 @@
 #ifndef __EIKONAL_H__
 #define __EIKONAL_H__
 
+#include <cstring>
+#include <time.h>
 #include "TriMesh.h"
 #include "tetmesh.h"
 #include "tetgen.h"
 #include "meshFIM2d_eikonal.h"
-#include "meshFIM3deikonal.h"
-#include <cstring>
-#include <time.h>
+#include "meshFIM3dEikonal.h"
 
 /** The class that represents all of the available options for Eikonal */
 class Eikonal {

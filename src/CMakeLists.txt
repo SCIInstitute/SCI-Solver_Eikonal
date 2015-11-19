@@ -45,22 +45,6 @@ else()
 endif()
 include_directories("${METIS_INSTALL_DIR}/include")
 ###################
-# Testing
-INCLUDE(CTest)
-if (BUILD_TESTING)
-  ENABLE_TESTING()
-  # Use gcov for code coverage (useful for seeing test completeness)
-  OPTION(USE_GCOV "Enable code coverage for GNUCXX Platforms" OFF)
-  if (USE_GCOV)
-    if(CMAKE_COMPILER_IS_GNUCXX)
-      INCLUDE(${PROJECT_SOURCE_DIR}/CodeCoverage.cmake)
-      SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-      SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    endif()
-  endif()
-  ADD_SUBDIRECTORY(test)
-endif()
-###################
 #CMAKE SETTING CUDA_NVCC_FLAGS
 #############################
 # Check for GPUs present and their compute capability
@@ -142,10 +126,27 @@ add_subdirectory(core3d)
 add_subdirectory(core2d)
 include_directories(core2d/include core3d/include )
 include_directories(${CMAKE_CURRENT_DIRECTORY})
+
 CUDA_ADD_LIBRARY(EIKONAL_CORE Eikonal.cu Eikonal.h)
 TARGET_LINK_LIBRARIES(EIKONAL_CORE Eikonal-2D_CORE Eikonal-3D_CORE)
 
 
 if (${BUILD_EXAMPLES})
   add_subdirectory(examples)
+endif()
+###################
+# Testing
+INCLUDE(CTest)
+if (BUILD_TESTING)
+  ENABLE_TESTING()
+  # Use gcov for code coverage (useful for seeing test completeness)
+  OPTION(USE_GCOV "Enable code coverage for GNUCXX Platforms" OFF)
+  if (USE_GCOV)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      INCLUDE(${PROJECT_SOURCE_DIR}/CodeCoverage.cmake)
+      SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+      SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+    endif()
+  endif()
+  ADD_SUBDIRECTORY(test)
 endif()

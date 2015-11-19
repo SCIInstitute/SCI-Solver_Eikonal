@@ -20,6 +20,8 @@ ExternalProject_Add_Step( gtest copy_deps
   DEPENDEES install
 )
 include_directories("${GTEST_INSTALL_DIR}/include")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core2d/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core3d/include)
 SET(GTEST_LIBRARY "${GTEST_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX};${GTEST_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}")
 add_subdirectory(2d)
 add_subdirectory(3d)
