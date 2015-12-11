@@ -3,6 +3,7 @@
 
 #include "TriMesh.h"
 #include "TriMesh_algo.h"
+#include <cusp/array1d.h>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -19,6 +20,8 @@
 #endif
 
 using namespace std;
+typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
+typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
 enum LabelType2d { FarPoint = 0,ActivePoint, MaskPoint, SeedPoint,
   StopPoint, AlivePoint,ToBeAlivePoint };
@@ -128,7 +131,6 @@ class meshFIM2dEikonal {
     TriMesh*                                     m_meshPtr;
     vector< set<int> >                           m_BlockNbPts;
     vector< set<int> >                           m_BlockNeighbor;
-    vector<int>                                  m_BlockSizes;
     vector<int>                                  m_BlockPoints;
     vector<int>                                  m_ColorLabel;
     int                                          m_numColor;
@@ -140,12 +142,21 @@ class meshFIM2dEikonal {
     int                                          m_maxNumTotalFaces;
     int                                          m_maxNumVert;
     int                                          m_maxNumVertMapping;
-    std::vector<int>                                     m_PartitionLabel;    // label of vertices belong to which partition
   protected:
     std::set<index>                              m_ActiveBlocks;
     std::vector<index>                           m_SeedPoints;
-    std::vector<LabelType2d>                       m_VertLabel;             // label of all the vertices active or not
-    vector<LabelType2d>                            m_BlockLabel;            // label of blocks active or not
+    std::vector<LabelType2d>                     m_VertLabel;             // label of all the vertices active or not
+    vector<LabelType2d>                          m_BlockLabel;            // label of blocks active or not
     float                                        m_StopDistance;
+    vector<int> m_PartitionLabel;//TODO try to combine and use only one (npart_h on levelset)
+    vector<int> m_BlockSizes;
+
+    //LEVELSET vars ---- try to not have duplicates with eikonal
+
+    int m_numPartitions;
+    int m_largest_num_inside_mem;
+    IdxVector_d m_xadj_d;
+    IdxVector_d m_adjncy_d;
+    IdxVector_d m_neighbor_sizes_d;
 };
 #endif

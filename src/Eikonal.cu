@@ -3,7 +3,7 @@
 Eikonal::Eikonal(bool isTriMesh, std::string fname, bool verbose) :
   verbose_(verbose),
   filename_(fname),
-  maxBlocks_(10003),
+  maxBlocks_(16),
   maxVertsPerBlock_(64),
   stopDistance_(50000.f),
   isStructured_(false),
