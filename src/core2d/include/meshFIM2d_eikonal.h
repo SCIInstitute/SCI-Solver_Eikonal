@@ -115,7 +115,6 @@ class meshFIM2dEikonal {
     void writeVTK(std::vector< std::vector <float> > time_values);
     std::vector< std::vector< float > >  GenerateData(int numBlock, 
 		int maxIterations, bool verbose = false);
-    void GraphPartition_METIS(char* partfilename,int numBlock);
     void GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose = false);
     void GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth, bool verbose = false);
 

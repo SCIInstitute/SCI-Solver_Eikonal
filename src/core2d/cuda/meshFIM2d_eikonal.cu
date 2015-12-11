@@ -108,51 +108,6 @@ void meshFIM2dEikonal::writeVTK(std::vector< std::vector <float> > time_values)
   }
 }
 
-void meshFIM2dEikonal::GraphPartition_METIS(char* partfilename, int numBlock)  //read a metis result .mesh.npart.N file and store into PartitionLabel
-{
-  size_t numVert = m_meshPtr->vertices.size();
-  //m_PartitionLabel = new int[numVert];
-  m_PartitionLabel.resize(numVert);
-  FILE* partFile = fopen(partfilename, "r+");
-  if(partFile == NULL)
-  {
-    printf("NO part file found: %s\n", partfilename);
-    exit(1);
-  }
-  for(int i = 0; i < numVert; i++)
-  {
-    fscanf(partFile, "%d", &m_PartitionLabel[i]);
-  }
-  srand( (unsigned)time( NULL ) );
-  m_BlockSizes.resize(numBlock);
-  for(int i =0; i<numBlock; i++)
-    m_BlockSizes[i] = 0;
-  float r,g,b;
-  vector< Color > colors;
-  colors.resize(numBlock);
-  for(int i = 0; i< numBlock; i++)
-  {
-    r = rand()/(float)RAND_MAX;
-    g = rand() / (float)RAND_MAX;
-    b = rand() / (float)RAND_MAX;
-    colors[i] = Color(r,g,b);
-  }
-  m_meshPtr->colors.resize(numVert);
-  m_PartitionVerts.resize(numBlock);
-
-  for(int i = 0; i<numVert; i++)
-  {
-    m_PartitionVerts[m_PartitionLabel[i]].push_back(i);
-    m_BlockSizes[m_PartitionLabel[i]]++;
-    m_meshPtr->colors[i] = colors[m_PartitionLabel[i]];
-  }
-  m_maxNumVert = 0;
-
-  for(int i = 0 ; i < numBlock; i++)
-  {
-    m_maxNumVert = MAX(m_maxNumVert, m_BlockSizes[i]);
-  }
-}
 //create .mesh file from trimesh faces and call partnmesh method
 //to partition and create intermediate mesh.npart.N file and then read this file
 void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
@@ -289,6 +244,80 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
   }
   unlink("tmp.mesh");
+
+  /*
+typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
+typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
+  /////////BETTER WAY                TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  int options[10], pnumflag = 0, wgtflag = 0;
+  options[0] = 0;
+  int edgecut;
+  npart_h = IdxVector_h(numVert);
+  nparts = numVert / metissize;
+  if (nparts < 2)
+    nparts = 2;
+
+  // Counting up edges for adjacency:
+  int edgeCount = 0;
+  for (int vIt = 0; vIt < numVert; vIt++)
+  {
+    edgeCount += m_meshPtr->neighbors[vIt].size();
+  }
+
+  m_largest_num_inside_mem = 0;
+  //for(int bidx = 0; bidx < nparts; bidx++)
+  for (int i = 0; i < numVert; i++)
+  {
+    if (m_meshPtr->adjacentfaces[i].size() > m_largest_num_inside_mem)
+      m_largest_num_inside_mem = m_meshPtr->adjacentfaces[i].size();
+  }
+
+  if (verbose)
+    printf("m_largest_num_inside_mem = %d\n", m_largest_num_inside_mem);
+
+  //Allocating storage for array values of adjacency
+  int* xadj = new int[numVert + 1];
+  int* adjncy = new int[edgeCount];
+
+  // filling the arrays:
+  xadj[0] = 0;
+  int idx = 0;
+  IdxVector_h neighbor_sizes(numVert);
+  // Populating the arrays:
+  for (int i = 1; i < numVert + 1; i++)
+  {
+    neighbor_sizes[i - 1] = m_meshPtr->neighbors[i - 1].size();
+    xadj[i] = xadj[i - 1] + m_meshPtr->neighbors[i - 1].size();
+    for (int j = 0; j < m_meshPtr->neighbors[i - 1].size(); j++)
+    {
+      adjncy[idx++] = m_meshPtr->neighbors[i - 1][j];
+    }
+  }
+
+  m_neighbor_sizes_d = neighbor_sizes;
+  int* npart_h_ptr = thrust::raw_pointer_cast(&npart_h[0]);
+
+  METIS_PartGraphKway(&numVert, xadj, adjncy, NULL, NULL, &wgtflag,
+    &pnumflag, &nparts, options, &edgecut, npart_h_ptr);
+
+  m_xadj_d = IdxVector_d(&xadj[0], &xadj[numVert + 1]);
+  m_adjncy_d = IdxVector_d(&adjncy[0], &adjncy[edgeCount]);
+
+  IdxVector_h part_sizes(nparts, 0);
+  for (int i = 0; i < numVert; i++)
+  {
+    part_sizes[npart_h[i]]++;
+  }
+  int min_part_size = thrust::reduce(part_sizes.begin(),
+    part_sizes.end(), 100000000, thrust::minimum<int>());
+  largest_vert_part = thrust::reduce(part_sizes.begin(),
+    part_sizes.end(), -1, thrust::maximum<int>());
+
+  if (verbose)
+    printf("Largest vertex partition size is: %d\n", largest_vert_part);
+  if (min_part_size == 0) printf("Min partition size is 0!!\n");
+  delete[] xadj;
+  delete[] adjncy;*/
 }
 
 void meshFIM2dEikonal::GraphPartition_Square(int squareLength,int squareWidth, int blockLength, int blockWidth, bool verbose)
@@ -919,7 +948,8 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   cudaEventRecord(stop,0);
   cudaEventSynchronize(stop);
 
-  cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) * m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
+  cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) * m_maxNumTotalFaces *
+    numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
 
   cudaSafeCall( cudaThreadSynchronize() );
 
@@ -939,7 +969,8 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     printf("Total Processing time and copy time: %f (ms)\n", totalAndCopyTime);
     printf("The iteration number: %d\n", nTotalIter );
     printf("The total iteration number: %d\n", totalIterationNumber );
-    printf("The total localsolver calls per vertex: %f\n", totalIterationNumber*m_maxNumTotalFaces*(NITER+1)*3.0 / (float)numVert);
+    printf("The total localsolver calls per vertex: %f\n",
+      totalIterationNumber*m_maxNumTotalFaces*(NITER+1)*3.0 / (float)numVert);
   }
 
   vec_triMem.resize(m_maxNumTotalFaces * numBlock * 3);
@@ -959,7 +990,8 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
       vec_triMem[3*i + 2] = -2;
 
 
-    maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
+    maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , 
+      MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
   }
 
   int vertIndex = 0;
