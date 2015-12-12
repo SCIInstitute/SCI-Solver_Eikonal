@@ -11,6 +11,9 @@
 #include <time.h>
 #include <stdio.h>
 #include <vector>
+#include <cusp/array1d.h>
+typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
+typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
 using namespace std;
 
@@ -192,6 +195,11 @@ class meshFIM3dEikonal
     std::vector<index> m_SeedPoints;
     std::vector<LabelType3d> m_VertLabel; // label of all the vertices active or not
     vector<LabelType3d> m_BlockLabel; // label of blocks active or not
+
+    // LEVELSET variables TODO try not to duplicate with eikonal vars
+
+    IdxVector_d m_xadj_d;
+    IdxVector_d m_adjncy_d;
 };
 
 #endif

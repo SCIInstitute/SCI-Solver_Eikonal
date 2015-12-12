@@ -140,144 +140,85 @@ void meshFIM3dEikonal::writeVTK(std::vector < std::vector <float> > values)
 
 void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts, bool verbose)
 {
-
-  FILE * outf;
-
-  outf = fopen("tmp.mesh", "w+");
-  if(outf == NULL)
-  {
-    printf("Cannot open mesh file to write!!!!\n");
-    exit(1);
-  }
-  size_t sz = m_meshPtr->tets.size();
-
-  fprintf(outf, "%d 2\n", sz);
-
-  for(int i = 0; i < sz; i++)
-    fprintf(outf, "%d %d %d %d\n", m_meshPtr->tets[i].v[0] + 1,
-        m_meshPtr->tets[i].v[1] + 1, m_meshPtr->tets[i].v[2] + 1,
-        m_meshPtr->tets[i].v[3] + 1);
-
-  fclose(outf);
-
-
+  int options[10], pnumflag = 0, wgtflag = 0;
+  options[0] = 0;
+  int edgecut;
   size_t numVert = m_meshPtr->vertices.size();
-
   m_PartitionLabel.resize(numVert);
+  m_numBlock = numBlock = ceil((float)numVert / (float)maxNumBlockVerts);
 
-  char outputFileName[512];
-
-  char meshfile[] = "tmp.mesh";
-
-  if(numBlock == 0)
+  // Counting up edges for adjacency:
+  int edgeCount = 0;
+  for (int vIt = 0; vIt < numVert; vIt++)
   {
-    numBlock = static_cast<int>(MAX(numVert / maxNumBlockVerts - 10, 1));
-
-
-    do
-    {
-      numBlock++;
-
-      m_BlockSizes.resize(numBlock);
-      for(int i = 0; i < numBlock; i++)
-      {
-        m_BlockSizes[i] = 0;
-      }
-      partnmesh(meshfile,numBlock,verbose?1:0);
-
-      sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
-
-
-      FILE* partFile = fopen(outputFileName, "r+");
-      if(partFile == NULL)
-      {
-        printf("NO part file found!!!!\n");
-        exit(1);
-      }
-      for(int i = 0; i < numVert; i++)
-      {
-        fscanf(partFile, "%d", &m_PartitionLabel[i]);
-      }
-
-      for(int i = 0; i < numVert; i++)
-      {
-        m_BlockSizes[m_PartitionLabel[i]]++;
-      }
-      m_maxNumInVert = 0;
-
-      for(int i = 0; i < numBlock; i++)
-      {
-
-        m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
-      }
-
-      fclose(partFile);
-
-      sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
-      unlink(outputFileName);
-      sprintf(outputFileName, "tmp.mesh.epart.%d", numBlock);
-      unlink(outputFileName);
-
-    }
-    while(m_maxNumInVert != maxNumBlockVerts);
-  }
-  else
-  {
-    m_BlockSizes.resize(numBlock);
-    for(int i = 0; i < numBlock; i++)
-    {
-      m_BlockSizes[i] = 0;
-    }
-
-    partnmesh(meshfile, numBlock,verbose?1:0);
-
-    sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
-
-    FILE* partFile = fopen(outputFileName, "r+");
-    if(partFile == NULL)
-    {
-      printf("NO part file found!!!!\n");
-      exit(1);
-    }
-
-    for(int i = 0; i < numVert; i++)
-    {
-      fscanf(partFile, "%d", &m_PartitionLabel[i]);
-    }
-
-    for(int i = 0; i < numVert; i++)
-    {
-      m_BlockSizes[m_PartitionLabel[i]]++;
-    }
-    m_maxNumInVert = 0;
-
-    for(int i = 0; i < numBlock; i++)
-    {
-      m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
-    }
-
-    if (verbose)
-      printf("max num vert is : %d\n", m_maxNumInVert);
-    fclose(partFile);
-
-    sprintf(outputFileName, "tmp.mesh.npart.%d", numBlock);
-    unlink(outputFileName);
-    sprintf(outputFileName, "tmp.mesh.epart.%d", numBlock);
-    unlink(outputFileName);
+    edgeCount += m_meshPtr->neighbors[vIt].size();
   }
 
-  srand((unsigned)time(NULL));
-
+  auto m_largest_num_inside_mem = 0;
+  for (int i = 0; i < numVert; i++)
+  {
+    if (m_meshPtr->adjacenttets[i].size() > m_largest_num_inside_mem)
+      m_largest_num_inside_mem = m_meshPtr->adjacenttets[i].size();
+  }
   if (verbose)
-    printf("numBlock is : %d\n", numBlock);
+    printf("m_largest_num_inside_mem = %d\n", m_largest_num_inside_mem);
 
+
+  //Allocating storage for array values of adjacency
+  int* xadj = new int[numVert + 1];
+  int* adjncy = new int[edgeCount];
+
+  // filling the arrays:
+  xadj[0] = 0;
+  int idx = 0;
+  IdxVector_h neighbor_sizes(numVert);
+  // Populating the arrays:
+  for (int i = 1; i < numVert + 1; i++)
+  {
+    neighbor_sizes[i - 1] = m_meshPtr->neighbors[i - 1].size();
+    xadj[i] = xadj[i - 1] + m_meshPtr->neighbors[i - 1].size();
+    for (int j = 0; j < m_meshPtr->neighbors[i - 1].size(); j++)
+    {
+      adjncy[idx++] = m_meshPtr->neighbors[i - 1][j];
+    }
+  }
+
+  auto m_neighbor_sizes_d = neighbor_sizes;
+  auto nVert = static_cast<int>(numVert);
+  METIS_PartGraphKway(&nVert, xadj, adjncy, NULL, NULL, &wgtflag, &pnumflag,
+    &m_numBlock, options, &edgecut, thrust::raw_pointer_cast(&m_PartitionLabel[0]));
+
+  m_xadj_d = IdxVector_d(&xadj[0], &xadj[numVert + 1]);
+  m_adjncy_d = IdxVector_d(&adjncy[0], &adjncy[edgeCount]);
+  m_BlockSizes.resize(m_numBlock);
+  for (int i = 0; i < numVert; i++)
+  {
+    m_BlockSizes[m_PartitionLabel[i]]++;
+  }
+  m_maxNumInVert = 0;
+
+  for (int i = 0; i < numBlock; i++)
+  {
+    m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
+  }
+  printf("max num vert is : %d\n", m_maxNumInVert);
   m_PartitionInVerts.resize(numBlock);
 
-  for(int i = 0; i < numVert; i++)
+  for (int i = 0; i < numVert; i++)
   {
     m_PartitionInVerts[m_PartitionLabel[i]].push_back(i);
   }
-  unlink("tmp.mesh");
+  int min_part_size = thrust::reduce(m_BlockSizes.begin(),
+    m_BlockSizes.end(), 100000000, thrust::minimum<int>());
+  auto largest_vert_part = thrust::reduce(m_BlockSizes.begin(),
+    m_BlockSizes.end(), -1, thrust::maximum<int>());
+  if (verbose)
+    printf("Largest vertex partition size is: %d\n", largest_vert_part);
+  if (min_part_size == 0)
+    if (verbose)
+      printf("Min partition size is 0!!\n");
+  delete[] xadj;
+  delete[] adjncy;
 }
 
 void meshFIM3dEikonal::GraphPartition_Square(int squareLength, int squareWidth, int squareHeight, int blockLength, int blockWidth, int blockHeight, bool verbose)
