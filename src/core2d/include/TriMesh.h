@@ -375,9 +375,9 @@ class TriMesh {
         Face cf = this->faces[f];
 
         // travel time
-        faces[f].T[0] = this->vertT[cf[0]];
-        faces[f].T[1] = this->vertT[cf[1]];
-        faces[f].T[2] = this->vertT[cf[2]];
+        this->faces[f].T[0] = this->vertT[cf[0]];
+        this->faces[f].T[1] = this->vertT[cf[1]];
+        this->faces[f].T[2] = this->vertT[cf[2]];
 
         // speed
         //faces[f].speedInv = 1.0;

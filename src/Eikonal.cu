@@ -169,7 +169,6 @@ void Eikonal::solveEikonal() {
     }
     FIMPtr3d_ = new meshFIM3dEikonal;
     FIMPtr3d_->SetMesh(this->tetMesh_);
-    FIMPtr3d_->InitSpeedMat();
     //initialize the first point as the "Seed"
     if (!this->userSetInitial_) {
       this->tetMesh_->vertT.resize(this->tetMesh_->vertices.size());

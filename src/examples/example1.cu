@@ -43,6 +43,17 @@ int main(int argc, char *argv[])
       if (i+1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i+1]);
       i++;
+    } else if (strcmp(argv[i], "-s") == 0) {
+      if (i + 1 >= argc) break;
+      auto s = std::string(argv[i + 1]);
+      if (s == "CURVATURE") {
+        data.speedType_ = CURVATURE;
+      } else if (s == "NOISE") {
+        data.speedType_ = NOISE;
+      } else if (s != "ONE") {
+        std::cout << "Unknown speed type: " << s << std::endl;
+      }
+      i++;
     } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;
       data.filename_ = std::string(argv[i+1]);
@@ -51,6 +62,7 @@ int main(int argc, char *argv[])
       printf("Usage: ./Example2 [OPTIONS]\n");
       printf("  -h            Show this help.\n");
       printf("  -v            Verbose output.\n");
+      printf("  -s SPEEDTYPE  Speed type is [ONE], CURVATURE, or NOISE.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       exit(0);
