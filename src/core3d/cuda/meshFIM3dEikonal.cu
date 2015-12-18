@@ -154,7 +154,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
     edgeCount += m_meshPtr->neighbors[vIt].size();
   }
 
-  auto m_largest_num_inside_mem = 0;
+  int m_largest_num_inside_mem = 0;
   for (int i = 0; i < numVert; i++)
   {
     if (m_meshPtr->adjacenttets[i].size() > m_largest_num_inside_mem)
@@ -183,8 +183,8 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
     }
   }
 
-  auto m_neighbor_sizes_d = neighbor_sizes;
-  auto nVert = static_cast<int>(numVert);
+  IdxVector_d neighbor_sizes_d = neighbor_sizes;
+  int nVert = static_cast<int>(numVert);
   METIS_PartGraphKway(&nVert, xadj, adjncy, NULL, NULL, &wgtflag, &pnumflag,
     &m_numBlock, options, &edgecut, thrust::raw_pointer_cast(&m_PartitionLabel[0]));
 
@@ -210,7 +210,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   }
   int min_part_size = thrust::reduce(m_BlockSizes.begin(),
     m_BlockSizes.end(), 100000000, thrust::minimum<int>());
-  auto largest_vert_part = thrust::reduce(m_BlockSizes.begin(),
+  int largest_vert_part = thrust::reduce(m_BlockSizes.begin(),
     m_BlockSizes.end(), -1, thrust::maximum<int>());
   if (verbose)
     printf("Largest vertex partition size is: %d\n", largest_vert_part);

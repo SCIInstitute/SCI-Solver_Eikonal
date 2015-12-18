@@ -39,13 +39,17 @@ int main(int argc, char *argv[])
   for (int i = 0; i < argc; i++)
     if (strcmp(argv[i],"-v") == 0) {
       data.verbose_ = true;
+    } else if (strcmp(argv[i],"-m") == 0) {
+      if (i+1 >= argc) break;
+      data.maxIterations_ = atoi(argv[i+1]);
+      i++;
     } else if (strcmp(argv[i],"-b") == 0) {
       if (i+1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i+1]);
       i++;
     } else if (strcmp(argv[i], "-s") == 0) {
       if (i + 1 >= argc) break;
-      auto s = std::string(argv[i + 1]);
+      std::string s = std::string(argv[i + 1]);
       if (s == "CURVATURE") {
         data.speedType_ = CURVATURE;
       } else if (s == "NOISE") {
@@ -65,11 +69,12 @@ int main(int argc, char *argv[])
       printf("  -s SPEEDTYPE  Speed type is [ONE], CURVATURE, or NOISE.\n");
       printf("  -i INPUT      Use this triangle mesh \n");
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
+      printf("  -m MAX_ITER   Max # of iterations before quit\n");
       exit(0);
     }
   data.solveEikonal();
   //write out the VTK files
-  data.writeVTK();
+  data.writeVTK(false); //true to output values at each iter.
   //we know that the solution should be the euclidean distance from the center.
   std::vector <float> solution;
   for (size_t i = 0; i < data.tetMesh_->vertices.size(); i++) {

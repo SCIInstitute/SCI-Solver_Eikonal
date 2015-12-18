@@ -156,7 +156,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
   m_neighbor_sizes_d = neighbor_sizes;
   int* npart_h_ptr = thrust::raw_pointer_cast(&m_PartitionLabel[0]);
-  auto nVert = static_cast<int>(numVert);
+  int nVert = static_cast<int>(numVert);
 
   METIS_PartGraphKway(&nVert, xadj, adjncy, NULL, NULL, &wgtflag,
     &pnumflag, &m_numPartitions, options, &edgecut, npart_h_ptr);
@@ -387,7 +387,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   h_speed    = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
 
   h_triMem = (float*)malloc(sizeof(float) * TRIMEMLENGTH * m_maxNumTotalFaces * numBlock);
-  auto vertMemSize = sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock;
+  int vertMemSize = sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock;
   h_vertMem = new int[vertMemSize];
   h_BlockSizes = (int*)malloc(sizeof(int) * numBlock);
   h_blockCon = (int*)malloc(sizeof(int) * numBlock);

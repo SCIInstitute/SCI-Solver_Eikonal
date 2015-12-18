@@ -46,11 +46,16 @@ size_t  Eikonal::numIterations() {
   return iteration_values_.size();
 }
 
-void Eikonal::writeVTK() {
+void Eikonal::writeVTK(bool all) {
+  std::vector<std::vector<float> > vals;
+  for(size_t i = all?0:this->iteration_values_.size()  - 1;
+      i < this->iteration_values_.size(); i++) {
+    vals.push_back(this->iteration_values_[i]);
+  }
   if (FIMPtr2d_ != NULL)
-    FIMPtr2d_->writeVTK(this->iteration_values_);
+    FIMPtr2d_->writeVTK(vals);
   else
-    FIMPtr3d_->writeVTK(this->iteration_values_);
+    FIMPtr3d_->writeVTK(vals);
 }
 
 void Eikonal::initializeVertices(std::vector<float> values) {
@@ -97,20 +102,20 @@ void Eikonal::initializeMesh() {
     if (this->tetMesh_ == NULL) {
       tetgenio in;
       if (!(in.load_tetmesh((char*)this->filename_.c_str(),
-        this->verbose_))) {
+              this->verbose_))) {
         exit(1);
       }
 
       this->tetMesh_ = new TetMesh();
       this->tetMesh_->init(
-        in.pointlist,
-        in.numberofpoints,
-        in.trifacelist,
-        in.numberoffacets,
-        in.tetrahedronlist,
-        in.numberoftetrahedra,
-        in.numberoftetrahedronattributes,
-        in.tetrahedronattributelist, this->verbose_);
+          in.pointlist,
+          in.numberofpoints,
+          in.trifacelist,
+          in.numberoffacets,
+          in.tetrahedronlist,
+          in.numberoftetrahedra,
+          in.numberoftetrahedronattributes,
+          in.tetrahedronattributelist, this->verbose_);
       this->tetMesh_->need_neighbors(this->verbose_);
       this->tetMesh_->need_adjacenttets(this->verbose_);
       this->tetMesh_->need_tet_virtual_tets(this->verbose_);

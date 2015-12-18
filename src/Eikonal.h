@@ -22,7 +22,7 @@ public:
   std::vector < float >& getFinalResult();
   std::vector < float >& getResultAtIteration(size_t i);
   size_t numIterations();
-  void writeVTK();
+  void writeVTK(bool all);
   /**
   * Creates the mesh, partitions the mesh, and runs the algorithm.
   *

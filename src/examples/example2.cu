@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
   }
   data.solveEikonal();
   //write the output to file
-  data.writeVTK();
+  data.writeVTK(false);
   //the solution for the sphere examples (center 54,54,54, & radius 19.58)
   std::vector< float > solution;
   solution.resize(data.triMesh_->vertices.size());
