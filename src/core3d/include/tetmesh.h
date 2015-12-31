@@ -14,25 +14,26 @@
 #ifndef  SMALLNUM
 #define  SMALLNUM  0.00000001
 #endif
-#define  ONE       1
-#define  CURVATURE 2
-#define  NOISE     3
-#define  SPEEDTYPE_TET NOISE
+
+#ifndef ONE
+#define ONE 1
+#endif
+#ifndef CURVATURE
+#define CURVATURE 2
+#endif
+#ifndef NOISE
+#define NOISE 3
+#endif
 
 #include "Vec.h"
 #include "math.h"
 #include <vector>
 #include <list>
+#include <array>
 
 #ifndef M_PI
 #define M_PI 3.14159265359
 #endif
-using std::vector;
-
-
-
-#define MIN(a,b) ( (a)< (b) )?(a):(b)
-#define MAX(a,b) ((a)>(b))?(a):(b)
 
 class TetMesh {
   //protected:
@@ -107,39 +108,39 @@ class TetMesh {
     };
 
     // The basics: vertices and faces
-    vector<point> vertices;
-    vector<Face> faces;
-    vector<Tet> tets;
+    std::vector<point> vertices;
+    std::vector<Face> faces;
+    std::vector<Tet> tets;
     int numVert;
     int numTet;
 
 
     // Computed per-vertex properties
-    vector<vec> normals;
-    vector<vec> pdir1, pdir2;
-    vector<float> curv1, curv2;
-    vector< Vec<4,float> > dcurv;
-    vector<vec> cornerareas;
-    vector<float> pointareas;
-    vector<float> vertT;
+    std::vector<vec> normals;
+    std::vector<vec> pdir1, pdir2;
+    std::vector<float> curv1, curv2;
+    std::vector< Vec<4,float> > dcurv;
+    std::vector<vec> cornerareas;
+    std::vector<float> pointareas;
+    std::vector<float> vertT;
 
     // Connectivity structures:
     //  For each vertex, all neighboring vertices
-    vector< vector<int> > neighbors;
+    std::vector< std::vector<int> > neighbors;
     //  For each vertex, all neighboring faces
-    vector< vector<int> > adjacenttets;
-    vector< vector<int> > oneringstrips;
-    vector< vector<float> > oneringspeedI;
+    std::vector< std::vector<int> > adjacenttets;
+    std::vector< std::vector<int> > oneringstrips;
+    std::vector< std::vector<float> > oneringspeedI;
 
-    vector<float> radiusInscribe;
-    vector<Tet> across_face;
+    std::vector<float> radiusInscribe;
+    std::vector<Tet> across_face;
 
 
 
-    vector< vector<Tet> > vertOneringTets;
-    vector< vector<Tet> > tetVirtualTets;
+    std::vector< std::vector<Tet> > vertOneringTets;
+    std::vector< std::vector<Tet> > tetVirtualTets;
 
-    vector<float> noiseOnVert;
+    std::vector<float> noiseOnVert;
 
     void reorient();
     void need_faceedges();
@@ -156,8 +157,8 @@ class TetMesh {
     void need_across_face(bool verbose = false);
 
     bool IsNonObtuse(int v, Tet t);
-    void SplitFace(vector<Tet> &acTets, int v, Tet ct, int nfAdj);
-    vector<Tet> GetOneRing(int v);
+    void SplitFace(std::vector<Tet> &acTets, int v, Tet ct, int nfAdj);
+    std::vector<Tet> GetOneRing(int v);
     void need_tet_virtual_tets(bool verbose = false);
 
     // Debugging printout, controllable by a "verbose"ness parameter
@@ -167,7 +168,9 @@ class TetMesh {
 
 
     void init(float* pointlist, int numpoint, int*trilist, int numtri,
-      int* tetlist, int numtet, int numattr, float* attrlist, bool verbose = false);
+      int* tetlist, int numtet, float* attrlist, 
+      std::vector<std::array<float, 6> > speedMtx, 
+      bool verbose = false);
 
     //Constructor
     TetMesh(){}

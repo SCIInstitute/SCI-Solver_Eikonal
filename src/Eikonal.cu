@@ -58,6 +58,17 @@ void Eikonal::writeVTK(bool all) {
     FIMPtr3d_->writeVTK(vals);
 }
 
+void Eikonal::initializeTetSpeedMatrices(
+  std::vector<std::array<float,6> > values) {
+  this->tetSpeedMtx_ = values;
+}
+
+void Eikonal::initializeTriSpeedMatrices(
+  std::vector<std::array<float, 3> > values) {
+  this->triSpeedMtx_ = values;
+}
+
+
 void Eikonal::initializeVertices(std::vector<float> values) {
   if (this->triMesh_ == NULL && this->tetMesh_ == NULL) {
     std::cerr << "You must initialize the mesh first!" << std::endl;
@@ -114,8 +125,9 @@ void Eikonal::initializeMesh() {
           in.numberoffacets,
           in.tetrahedronlist,
           in.numberoftetrahedra,
-          in.numberoftetrahedronattributes,
-          in.tetrahedronattributelist, this->verbose_);
+          in.tetrahedronattributelist,
+          this->tetSpeedMtx_,
+          this->verbose_);
       this->tetMesh_->need_neighbors(this->verbose_);
       this->tetMesh_->need_adjacenttets(this->verbose_);
       this->tetMesh_->need_tet_virtual_tets(this->verbose_);

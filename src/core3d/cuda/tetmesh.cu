@@ -5,11 +5,9 @@
 #include <math.h>
 #include "tetmesh.h"
 
-using namespace std;
-
-
-void TetMesh::init(float* pointlist, int numpoint, int*trilist, int numtri, int* tetlist, int numtet, int numattr, float* attrlist, bool verbose)
-{
+void TetMesh::init(float* pointlist, int numpoint, int*trilist,
+  int numtri, int* tetlist, int numtet,
+  float* attrlist, std::vector<std::array<float, 6> > speedMtx, bool verbose) {
   numVert = numpoint;
   numTet  = numtet;
 
@@ -19,8 +17,7 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist, int numtri, int*
   }
   vertices.resize(numpoint);
   tets.resize(numtet);
-  for(int i =0; i< numpoint; i++)
-  {
+  for(int i =0; i< numpoint; i++){
     vertices[i][0] = pointlist[3*i+0];
     vertices[i][1] = pointlist[3*i+1];
     vertices[i][2] = pointlist[3*i+2];
@@ -28,88 +25,43 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist, int numtri, int*
 
   //check the index start from 0 or 1
   int minidx = 1000000000;
-  for(int i=0; i<numtet*4; i++)
-  {
-    minidx = MIN(minidx, tetlist[i]);
-
+  for(int i=0; i<numtet*4; i++) {
+    minidx = std::min(minidx, tetlist[i]);
   }
 
-  if(minidx == 0)
-  {
-    for(int i =0; i< numtet; i++)
-    {
+  if(minidx == 0) {
+    for(int i =0; i< numtet; i++) {
 
       tets[i][0] = tetlist[4*i+0];
       tets[i][1] = tetlist[4*i+1];
       tets[i][2] = tetlist[4*i+2];
       tets[i][3] = tetlist[4*i+3];
       tets[i].obtuseV = -1;
-      tets[i].M[0] = 1.0;
-      tets[i].M[1] = 0.0;
-      tets[i].M[2] = 0.0;
-      tets[i].M[3] = 1.0;
-      tets[i].M[4] = 0.0;
-      tets[i].M[5] = 1.0;
-
     }
-  }
-  else if(minidx == 1)
-  {
-    for(int i =0; i< numtet; i++)
-    {
+  } else if(minidx == 1) {
+    for(int i =0; i< numtet; i++) {
       tets[i][0] = tetlist[4*i+0]-1;  // -1 because the oringal index is from 1 and change it to 0
       tets[i][1] = tetlist[4*i+1]-1;
       tets[i][2] = tetlist[4*i+2]-1;
       tets[i][3] = tetlist[4*i+3]-1;
       tets[i].obtuseV = -1;
-      tets[i].M[0] = 1.0;
-      tets[i].M[1] = 0.0;
-      tets[i].M[2] = 0.0;
-      tets[i].M[3] = 1.0;
-      tets[i].M[4] = 0.0;
-      tets[i].M[5] = 1.0;
     }
-  }
-  else
-  {
+  } else {
     printf("error!!! index not start from 0 or 1!!\n");
   }
 
-
-  if(numattr > 0)
-  {
-    for(int i =0; i< numtet; i++)
-    {
-      int mat = (int)attrlist[i];
-      switch(mat)
-      {
-      case 0:
-        tets[i].M[0] = 1.0;
-        tets[i].M[1] = 0.0;
-        tets[i].M[2] = 0.0;
-        tets[i].M[3] = 1.0;
-        tets[i].M[4] = 0.0;
-        tets[i].M[5] = 1.0;
-        break;
-      case 1:
-        tets[i].M[0] = 10.0;
-        tets[i].M[1] = 0.0;
-        tets[i].M[2] = 0.0;
-        tets[i].M[3] = 10.0;
-        tets[i].M[4] = 0.0;
-        tets[i].M[5] = 10.0;
-        break;
-
-
+  if(speedMtx.size() > 0) {
+    for(int i =0; i< numtet; i++) {
+      size_t mat = static_cast<size_t>(attrlist[i]);
+      if (mat > speedMtx.size()) { //ensure mesh file not requesting out of bounds
+        mat = 0;
+      }
+      for (size_t j = 0; j < 6; j++) {
+        tets[i].M[j] = speedMtx[mat][j];
       }
     }
-
-
-  }
-  else
-  {
-    for(int i =0; i< numtet; i++)
-    {
+  } else { //default speed mtx.
+    for(int i =0; i< numtet; i++) {
       tets[i].M[0] = 1.0;
       tets[i].M[1] = 0.0;
       tets[i].M[2] = 0.0;
@@ -117,9 +69,7 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist, int numtri, int*
       tets[i].M[4] = 0.0;
       tets[i].M[5] = 1.0;
     }
-
   }
-
 }
 // Find the direct neighbors of each vertex
 void TetMesh::need_neighbors(bool verbose)
@@ -129,28 +79,28 @@ void TetMesh::need_neighbors(bool verbose)
 
 
   if (verbose)
-    cout << "Finding vertex neighbors... " << endl;
+     std::cout << "Finding vertex neighbors... " <<  std::endl;
   int nv = vertices.size(), nt = tets.size();
 
   neighbors.resize(nv);
 
   for (int i = 0; i < nt; i++) {
     for (int j = 0; j < 4; j++) {
-      vector<int> &me = neighbors[tets[i][j]];
+      std::vector<int> &me = neighbors[tets[i][j]];
       int n1 = tets[i][(j+1)%4];
       int n2 = tets[i][(j+2)%4];
       int n3 = tets[i][(j+3)%4];
-      if (find(me.begin(), me.end(), n1) == me.end())
+      if (std::find(me.begin(), me.end(), n1) == me.end())
         me.push_back(n1);
-      if (find(me.begin(), me.end(), n2) == me.end())
+      if (std::find(me.begin(), me.end(), n2) == me.end())
         me.push_back(n2);
-      if (find(me.begin(), me.end(), n3) == me.end())
+      if (std::find(me.begin(), me.end(), n3) == me.end())
         me.push_back(n3);
     }
   }
 
   if (verbose)
-    cout << "Done.\n" << endl;
+     std::cout << "Done.\n" <<  std::endl;
 }
 
 
@@ -161,7 +111,7 @@ void TetMesh::need_adjacenttets(bool verbose)
     return;
 
   if (verbose)
-    cout << "Finding vertex to triangle maps... " << endl;
+     std::cout << "Finding vertex to triangle maps... " <<  std::endl;
   int nv = vertices.size(), nt = tets.size();
 
   adjacenttets.resize(vertices.size());
@@ -172,7 +122,7 @@ void TetMesh::need_adjacenttets(bool verbose)
   }
 
   if (verbose)
-    cout << "Done.\n" << endl;
+     std::cout << "Done.\n" <<  std::endl;
 }
 
 
@@ -213,7 +163,7 @@ bool TetMesh::IsNonObtuse(int v, Tet t)
 }
 
 
-void TetMesh::SplitFace(vector<Tet> &acTets, int v, Tet ct, int nfAdj)
+void TetMesh::SplitFace(std::vector<Tet> &acTets, int v, Tet ct, int nfAdj)
 {
   // get all the four vertices in order
   /* v1         v4
@@ -319,18 +269,18 @@ void TetMesh::need_across_face(bool verbose)
       int v1 = tets[i][(j+1)%4];
       int v2 = tets[i][(j+2)%4];
       int v3 = tets[i][(j+3)%4];
-      const vector<int> &a1 = adjacenttets[v1];
-      const vector<int> &a2 = adjacenttets[v2];
-      const vector<int> &a3 = adjacenttets[v3];
+      const std::vector<int> &a1 = adjacenttets[v1];
+      const std::vector<int> &a2 = adjacenttets[v2];
+      const std::vector<int> &a3 = adjacenttets[v3];
       for (int k1 = 0; k1 < a1.size(); k1++)
       {
         int other = a1[k1];
         if (other == i)
           continue;
-        vector<int>::const_iterator it =
+        std::vector<int>::const_iterator it =
           find(a2.begin(), a2.end(), other);
 
-        vector<int>::const_iterator it2 =
+        std::vector<int>::const_iterator it2 =
           find(a3.begin(), a3.end(), other);
 
         if (it == a2.end() || it2 == a3.end())
@@ -349,15 +299,15 @@ void TetMesh::need_across_face(bool verbose)
     printf("Done.\n");
 }
 
-vector<TetMesh::Tet> TetMesh::GetOneRing(int v)
+std::vector<TetMesh::Tet> TetMesh::GetOneRing(int v)
 {
   // make sure we have the across-edge map
   if (across_face.empty())
     need_across_face();
 
   // variables required
-  vector<Tet> oneRingTets;
-  vector<Tet> t_tets;
+  std::vector<Tet> oneRingTets;
+  std::vector<Tet> t_tets;
 
   // get adjacent faces
   int naf = adjacenttets[v].size();
@@ -448,7 +398,7 @@ void TetMesh::need_oneringtets()
 void TetMesh::need_tet_virtual_tets(bool verbose)
 {
   need_across_face();
-  vector<Tet> t_tets;
+  std::vector<Tet> t_tets;
   Tet t;
   int numTets = tets.size();
   tetVirtualTets.resize(numTets);

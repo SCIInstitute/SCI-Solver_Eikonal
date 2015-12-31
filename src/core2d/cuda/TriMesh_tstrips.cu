@@ -10,8 +10,8 @@ Code for dealing with triangle strips
 
 
 // Forward declarations
-static void tstrip_build(TriMesh &mesh, int f, vector<signed char> &face_avail,
-			 vector<int> &todo);
+static void tstrip_build(TriMesh &mesh, int f, std::vector<signed char> &face_avail,
+  std::vector<int> &todo);
 //static void collect_tris_in_strips(vector<int> &tstrips);
 
 
@@ -26,8 +26,8 @@ void TriMesh::need_tstrips()
 	dprintf("Building triangle strips... ");
 	int nf = faces.size();
 
-	vector<int> todo;
-	vector<signed char> face_avail(nf);
+  std::vector<int> todo;
+  std::vector<signed char> face_avail(nf);
 	for (int i = 0; i < nf; i++) {
 		face_avail[i] = (across_edge[i][0] != -1) +
 				(across_edge[i][1] != -1) +
@@ -62,8 +62,8 @@ void TriMesh::need_tstrips()
 
 
 // Build a triangle strip starting with the given face
-static void tstrip_build(TriMesh &mesh, int f, vector<signed char> &face_avail,
-	vector<int> &todo)
+static void tstrip_build(TriMesh &mesh, int f, std::vector<signed char> &face_avail,
+  std::vector<int> &todo)
 {
 	TriMesh::Face &v = mesh.faces[f];
 	if (face_avail[f] == 0) {

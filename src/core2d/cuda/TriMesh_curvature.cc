@@ -147,7 +147,7 @@ void TriMesh::need_curvatures()
   size_t nv = vertices.size(), nf = faces.size();
 	curv1.clear(); curv1.resize(nv); curv2.clear(); curv2.resize(nv);
 	pdir1.clear(); pdir1.resize(nv); pdir2.clear(); pdir2.resize(nv);
-	vector<float> curv12(nv);
+  std::vector<float> curv12(nv);
 
 	// Set up an initial coordinate system per vertex
 #pragma omp parallel for

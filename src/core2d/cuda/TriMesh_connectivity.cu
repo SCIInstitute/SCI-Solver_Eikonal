@@ -75,94 +75,60 @@ void TriMesh::need_faceedges()
 
 }
 
-void TriMesh::need_noise()
+void TriMesh::need_noise(float low, float high)
 {
-  if (!noiseOnVert.empty())
-    return;
-
-  //FILE* file = fopen("noiseSphereR40.txt","r");
-  FILE* file = fopen("noise_1m.txt","r");
-
+  noiseOnVert.clear();
   need_neighbors();
   int nv = vertices.size();
   noiseOnVert.resize(nv);
   srand( (unsigned)time( NULL ) );
 
-  for (int i = 0;i<nv; i++)
-  {
-    //float up = 2;
-    //float down = 0;
-    //noiseOnVert[i] = (float)rand() / (RAND_MAX + 1)*(up - down) + down;  //random number between [donw,up)
-    float wgn;
-    fscanf(file,"%f",&wgn);
-    noiseOnVert[i] = wgn;
-
-
+  for (int i = 0;i<nv; i++) {
+    noiseOnVert[i] = (float)rand() / 
+    (RAND_MAX)*(high - low) + low;  //random number between [low,high]
   }
-
-  fclose(file);
 
   //iterate
   int iterNum = 0;
-  for (int i=0;i<iterNum; i++)
-  {
-    for (int j=0; j<nv;j++)
-    {
-
+  for (int i=0;i<iterNum; i++) {
+    for (int j=0; j<nv;j++) {
       noiseOnVert[j] = 0;
-      vector<int> nb = neighbors[j];
-      for (int k=0;k<nb.size();k++)
-      {
+      std::vector<int> nb = neighbors[j];
+      for (int k=0;k<nb.size();k++) {
         noiseOnVert[j] +=noiseOnVert[neighbors[j][k]];
-
       }
       noiseOnVert[j] /= nb.size();
-
     }
-
-
   }
-
-
-
 }
 
 void TriMesh::need_speed()
 {
   int nf = faces.size();
 
-  //FILE* file = fopen("noiseSphereR40.txt","r");
   for (int i =0; i<nf;i++)
   {
     Face f = faces[i];
     switch (this->speed_type_)
     {
-
-
     case CURVATURE:
-      faces[i].speedInv = ( abs(curv1[f[0]] + curv2[f[0]]) + abs(curv1[f[1]] + curv2[f[1]]) + abs(curv1[f[2]] + curv2[f[2]]) )/ 6.0;
+      faces[i].speedInv = ( abs(curv1[f[0]] + curv2[f[0]]) + 
+        abs(curv1[f[1]] + curv2[f[1]]) + abs(curv1[f[2]] + 
+        curv2[f[2]]) )/ 6.0;
       break;
     case ONE:
       faces[i].speedInv = 1.0;
       break;
     case NOISE:
-      faces[i].speedInv =( noiseOnVert[faces[i][0]] + noiseOnVert[faces[i][1]] + noiseOnVert[faces[i][2]] )/ 3;
-      //float wgn;
-      //fscanf(file,"%f",&wgn);
-      //faces[i].speedInv =1.0 / wgn;
+      faces[i].speedInv =( noiseOnVert[faces[i][0]] + 
+        noiseOnVert[faces[i][1]] +
+        noiseOnVert[faces[i][2]] ) / 3;
       break;
     default:
       faces[i].speedInv = 1.0;
       break;
-
     }
   }
-
-  //fclose(file);
-
-
-
-
 }
 
 
@@ -177,7 +143,7 @@ void TriMesh::need_neighbors(bool verbose)
     printf("Finding vertex neighbors... ");
   int nv = vertices.size(), nf = faces.size();
 
-  vector<int> numneighbors(nv);
+  std::vector<int> numneighbors(nv);
   for (int i = 0; i < nf; i++) {
     numneighbors[faces[i][0]]++;
     numneighbors[faces[i][1]]++;
@@ -190,7 +156,7 @@ void TriMesh::need_neighbors(bool verbose)
 
   for (int i = 0; i < nf; i++) {
     for (int j = 0; j < 3; j++) {
-      vector<int> &me = neighbors[faces[i][j]];
+      std::vector<int> &me = neighbors[faces[i][j]];
       int n1 = faces[i][(j+1)%3];
       int n2 = faces[i][(j+2)%3];
       if (find(me.begin(), me.end(), n1) == me.end())
@@ -216,7 +182,7 @@ void TriMesh::need_adjacentfaces(bool verbose)
     printf("Finding vertex to triangle maps... ");
   int nv = vertices.size(), nf = faces.size();
 
-  vector<int> numadjacentfaces(nv);
+  std::vector<int> numadjacentfaces(nv);
   for (int i = 0; i < nf; i++) {
     numadjacentfaces[faces[i][0]]++;
     numadjacentfaces[faces[i][1]]++;
@@ -239,7 +205,7 @@ void TriMesh::need_adjacentfaces(bool verbose)
 void TriMesh::need_face_virtual_faces()
 {
 
-  vector<Face> t_faces;
+  std::vector<Face> t_faces;
   Face f;
   int numFaces = faces.size();
   faceVirtualFaces.resize(numFaces);
@@ -266,10 +232,6 @@ void TriMesh::need_face_virtual_faces()
 
     faceVirtualFaces[i] = t_faces;
   }
-
-
-
-
 }
 
 
@@ -292,14 +254,14 @@ void TriMesh::need_across_edge()
         continue;
       int v1 = faces[i][(j+1)%3];
       int v2 = faces[i][(j+2)%3];
-      const vector<int> &a1 = adjacentfaces[v1];
-      const vector<int> &a2 = adjacentfaces[v2];
+      const std::vector<int> &a1 = adjacentfaces[v1];
+      const std::vector<int> &a2 = adjacentfaces[v2];
       for (int k1 = 0; k1 < a1.size(); k1++) {
         int other = a1[k1];
         if (other == i)
           continue;
-        vector<int>::const_iterator it =
-          find(a2.begin(), a2.end(), other);
+        std::vector<int>::const_iterator it =
+          std::find(a2.begin(), a2.end(), other);
         if (it == a2.end())
           continue;
         int ind = (faces[other].indexof(v1)+1)%3;

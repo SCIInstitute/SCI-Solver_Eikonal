@@ -146,7 +146,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   int idx = 0;
   IdxVector_h neighbor_sizes(numVert);
   // Populating the arrays:
-  for (int i = 1; i < numVert + 1; i++) {
+  for (size_t i = 1; i < numVert + 1; i++) {
     neighbor_sizes[i - 1] = m_meshPtr->neighbors[i - 1].size();
     xadj[i] = xadj[i - 1] + m_meshPtr->neighbors[i - 1].size();
     for (int j = 0; j < m_meshPtr->neighbors[i - 1].size(); j++) {

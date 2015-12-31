@@ -111,13 +111,13 @@ extern void scale(TriMesh *mesh, float s, const vec &d);
 extern void clip(TriMesh *mesh, const TriMesh::BBox &b);
 
 // Find center of mass of a bunch of points
-extern point point_center_of_mass(const vector<point> &pts);
+extern point point_center_of_mass(const std::vector<point> &pts);
 
 // Find (area-weighted) center of mass of a mesh
 extern point mesh_center_of_mass(TriMesh *mesh);
 
 // Compute covariance of a bunch of points
-extern void point_covariance(const vector<point> &pts, float C[3][3]);
+extern void point_covariance(const std::vector<point> &pts, float C[3][3]);
 
 // Compute covariance of faces (area-weighted) in a mesh
 extern void mesh_covariance(TriMesh *mesh, float C[3][3]);

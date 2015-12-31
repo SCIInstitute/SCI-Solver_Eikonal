@@ -11,9 +11,16 @@
 #ifndef LARGENUM
 #define LARGENUM 10000000.0
 #endif
-#define  ONE       1
-#define  CURVATURE 2
-#define  NOISE     3
+
+#ifndef ONE
+#define ONE 1
+#endif
+#ifndef CURVATURE
+#define CURVATURE 2
+#endif
+#ifndef NOISE
+#define NOISE 3
+#endif
 
 #include <cstdio>
 #include "Vec.h"
@@ -21,10 +28,10 @@
 #include "math.h"
 #include <vector>
 #include <list>
-using std::vector;
 
-#define  PI 3.1415927
-
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
 class TriMesh {
   protected:
     static bool read_helper(const char *filename, TriMesh *mesh);
@@ -81,30 +88,30 @@ class TriMesh {
     enum { GRID_INVALID = -1 };
 
     // The basics: vertices and faces
-    vector<point> vertices;
-    vector<Face> faces;
+    std::vector<point> vertices;
+    std::vector<Face> faces;
 
     // Triangle strips
-    vector<int> tstrips;
+    std::vector<int> tstrips;
 
     // Grid, if present
-    vector<int> grid;
+    std::vector<int> grid;
     int grid_width, grid_height;
 
     // Other per-vertex properties
-    vector<Color> colors;
-    vector<float> confidences;
-    vector<unsigned> flags;
+    std::vector<Color> colors;
+    std::vector<float> confidences;
+    std::vector<unsigned> flags;
     unsigned flag_curr;
 
     // Computed per-vertex properties
-    vector<vec> normals;
-    vector<vec> pdir1, pdir2;
-    vector<float> curv1, curv2;
-    vector< Vec<4,float> > dcurv;
-    vector<vec> cornerareas;
-    vector<float> pointareas;
-    vector<float> vertT;
+    std::vector<vec> normals;
+    std::vector<vec> pdir1, pdir2;
+    std::vector<float> curv1, curv2;
+    std::vector< Vec<4,float> > dcurv;
+    std::vector<vec> cornerareas;
+    std::vector<float> pointareas;
+    std::vector<float> vertT;
 
     //the type of speed on faces
     int speed_type_;
@@ -113,29 +120,29 @@ class TriMesh {
     BBox bbox;
     BSphere bsphere;
 
-    vector<float> noiseOnVert;
+    std::vector<float> noiseOnVert;
 
-    vector< vector<Face> > faceVirtualFaces;
+    std::vector< std::vector<Face> > faceVirtualFaces;
 
     // Connectivity structures:
     //  For each vertex, all neighboring vertices
-    vector< vector<int> > neighbors;
+    std::vector< std::vector<int> > neighbors;
 
-    vector< vector<int*> > NonObtuseNeighborFaces;
+    std::vector< std::vector<int*> > NonObtuseNeighborFaces;
 
     //  For each vertex, all neighboring faces
-    vector< vector<int> > adjacentfaces;
-    vector<float> radiusInscribe;
+    std::vector< std::vector<int> > adjacentfaces;
+    std::vector<float> radiusInscribe;
     //  For each face, the three faces attached to its edges
     //  (for example, across_edge[3][2] is the number of the face
     //   that's touching the edge opposite vertex 2 of face 3)
-    vector<Face> across_edge;
+    std::vector<Face> across_edge;
 
     // Compute all this stuff...
     void need_tstrips();
     void convert_strips(tstrip_rep rep);
     void unpack_tstrips();
-    void need_noise();
+    void need_noise(float low = 0.f, float high = 1.f);
     void need_speed();
     void triangulate_grid();
     void need_faces();
@@ -202,7 +209,7 @@ class TriMesh {
     }
 
     // FIM: given a vertex, find an all-acute neighborhood of faces
-    void SplitFace(vector<Face> &acFaces, int v, Face cf, int nfAdj)
+    void SplitFace(std::vector<Face> &acFaces, int v, Face cf, int nfAdj)
     {
       // get all the four vertices in order
       /* v1         v4
@@ -312,15 +319,15 @@ class TriMesh {
     }
 
     // FIM: one ring function
-    vector<Face> GetOneRing(int v)
+    std::vector<Face> GetOneRing(int v)
     {
       // make sure we have the across-edge map
       if (this->across_edge.empty())
         this->need_across_edge();
 
       // variables required
-      vector<Face> oneRingFaces;
-      vector<Face> t_faces;
+      std::vector<Face> oneRingFaces;
+      std::vector<Face> t_faces;
 
       // get adjacent faces
       size_t naf = this->adjacentfaces[v].size();
@@ -374,7 +381,7 @@ class TriMesh {
       {
         Face cf = this->faces[f];
 
-        // travel time
+        // travel time TODO! how to set this from the user?
         this->faces[f].T[0] = this->vertT[cf[0]];
         this->faces[f].T[1] = this->vertT[cf[1]];
         this->faces[f].T[2] = this->vertT[cf[2]];

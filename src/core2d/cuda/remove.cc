@@ -12,7 +12,7 @@ Removing sets of vertices or faces from TriMeshes.
 
 
 // Remove the indicated vertices from the TriMesh.
-void remove_vertices(TriMesh *mesh, const vector<bool> &toremove)
+void remove_vertices(TriMesh *mesh, const std::vector<bool> &toremove)
 {
   size_t nv = mesh->vertices.size();
 
@@ -21,7 +21,7 @@ void remove_vertices(TriMesh *mesh, const vector<bool> &toremove)
 		return;
 
 	TriMesh::dprintf("Removing vertices... ");
-	vector<int> remap_table(nv);
+	std::vector<int> remap_table(nv);
 	int next = 0;
 	for (int i = 0; i < nv; i++) {
 		if (toremove[i])
@@ -51,7 +51,7 @@ void remove_unused_vertices(TriMesh *mesh)
 
 	bool had_faces = !mesh->faces.empty();
 	mesh->need_faces();
-	vector<bool> unused(nv, true);
+  std::vector<bool> unused(nv, true);
 	for (int i = 0; i < mesh->faces.size(); i++) {
 		unused[mesh->faces[i][0]] = false;
 		unused[mesh->faces[i][1]] = false;
@@ -65,7 +65,7 @@ void remove_unused_vertices(TriMesh *mesh)
 
 // Remove faces as indicated by toremove.  Should probably be
 // followed by a call to remove_unused_vertices()
-void remove_faces(TriMesh *mesh, const vector<bool> &toremove)
+void remove_faces(TriMesh *mesh, const std::vector<bool> &toremove)
 {
 	bool had_tstrips = !mesh->tstrips.empty();
 	bool had_faces = !mesh->faces.empty();
@@ -115,7 +115,7 @@ void remove_sliver_faces(TriMesh *mesh)
 
 	const float l2thresh = sqr(4.0f * mesh->feature_size());
 	const float cos2thresh = 0.85f;
-	vector<bool> toremove(numfaces, false);
+  std::vector<bool> toremove(numfaces, false);
 	for (int i = 0; i < numfaces; i++) {
 		const point &v0 = mesh->vertices[mesh->faces[i][0]];
 		const point &v1 = mesh->vertices[mesh->faces[i][1]];

@@ -29,19 +29,31 @@ extern "C" {
 
 
 /////declaration for cuda kernels///////////////////////////
-extern __global__ void run_reduction(bool *con, bool *blockCon, int* ActiveList, int nActiveBlock, int* blockSizes);
+extern __global__ void run_reduction(bool *con, 
+  bool *blockCon, int* ActiveList, int nActiveBlock,
+  int* blockSizes);
 
 
-extern __global__ void FIMCuda(float3* d_tetMem0, float3* d_tetMem1, float4* d_tetT, float* d_vertT, float* d_speedInv, int* d_vertMem, int* d_vertMemOutside,
+extern __global__ void FIMCuda(float3* d_tetMem0, 
+  float3* d_tetMem1, float4* d_tetT, float* d_vertT, 
+  float* d_speedInv, int* d_vertMem, int* d_vertMemOutside,
     int* d_BlockSizes, bool* d_con, int* d_ActiveList,
-    int m_maxNumInVert, int m_maxVertMappingInside, int m_maxNumOutVertMapping, int nIter);
+    int m_maxNumInVert, int m_maxVertMappingInside, 
+    int m_maxNumOutVertMapping, int nIter);
 
-extern __global__ void CopyOutBack(float4* d_tetT, float* d_vertT, int* d_vertMem, int* d_vertMemOutside, int* d_BlockSizes, int* d_ActiveList, int m_maxNumInVert, int m_maxNumTotalTets, int m_maxVertMappingInside, int m_maxVertMappingOutside);
+extern __global__ void CopyOutBack(float4* d_tetT, 
+  float* d_vertT, int* d_vertMem, int* d_vertMemOutside,
+  int* d_BlockSizes, int* d_ActiveList, int m_maxNumInVert, 
+  int m_maxNumTotalTets, int m_maxVertMappingInside,
+  int m_maxVertMappingOutside);
 
 
-extern __global__ void run_check_neghbor(float3* d_tetMem0, float3* d_tetMem1, float4* d_tetT, float* d_speedInv, int* d_vertMem, int* d_vertMemOutside,
+extern __global__ void run_check_neghbor(float3* d_tetMem0,
+  float3* d_tetMem1, float4* d_tetT, float* d_speedInv,
+  int* d_vertMem, int* d_vertMemOutside,
     int* d_BlockSizes, bool* d_con, int* d_ActiveList,
-    int m_maxNumInVert, int m_maxVertMappingInside, int m_maxNumOutVertMapping);
+    int m_maxNumInVert, int m_maxVertMappingInside,
+    int m_maxNumOutVertMapping);
 
 #if __DEVICE_EMULATION__
 
@@ -199,7 +211,7 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
 
   for (int i = 0; i < numBlock; i++)
   {
-    m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
+    m_maxNumInVert = std::max(m_maxNumInVert, m_BlockSizes[i]);
   }
   printf("max num vert is : %d\n", m_maxNumInVert);
   m_PartitionInVerts.resize(numBlock);
@@ -261,7 +273,7 @@ void meshFIM3dEikonal::GraphPartition_Square(int squareLength, int squareWidth, 
 
   for(int i = 0; i < numBlock; i++)
   {
-    m_maxNumInVert = MAX(m_maxNumInVert, m_BlockSizes[i]);
+    m_maxNumInVert = std::max(m_maxNumInVert, m_BlockSizes[i]);
   }
   if (verbose)
     printf("final number of blocks: %d\n", numBlock);
@@ -395,7 +407,7 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
   size_t maxActive = 0;
   while(numActive > 0)
   {
-    maxActive = static_cast<int>(MAX(maxActive, numActive));
+    maxActive = static_cast<int>(std::max(maxActive, numActive));
     ///////step 1: run solver /////////////////////////////////////
     nTotalIter++;
     //don't do more than maxIters
@@ -608,7 +620,7 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   for(int j = 0; j < numBlock; j++)
   {
     PartitionToltalTets[j] = static_cast<int>(m_PartitionTets[j].size() + m_PartitionNbTets[j].size() + virtualTetCnt[j]);
-    m_maxNumTotalTets = MAX(PartitionToltalTets[j], m_maxNumTotalTets);
+    m_maxNumTotalTets = std::max(PartitionToltalTets[j], m_maxNumTotalTets);
   }
 
   if (verbose)
@@ -828,7 +840,8 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
     for(int m = 0; m < m_PartitionInVerts[i].size(); m++)
     {
 
-      m_maxNumVertMapping = static_cast<int>(MAX(m_maxNumVertMapping, m_blockVertMapping[i%m_blockVertMapping.size()].size()));
+      m_maxNumVertMapping = static_cast<int>(std::max(static_cast<size_t>(m_maxNumVertMapping),
+        m_blockVertMapping[i%m_blockVertMapping.size()].size()));
 
       vector<int> tmp = m_blockVertMapping[m_PartitionInVerts[i][m]%m_blockVertMapping.size()];
 
@@ -849,8 +862,10 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
   m_maxVertMappingOutside = 0;
   for(int i = 0; i < numVert; i++)
   {
-    m_maxVertMappingInside = static_cast<int>(MAX(m_maxVertMappingInside, (m_blockVertMappingInside[i].size())));
-    m_maxVertMappingOutside = static_cast<int>(MAX(m_maxVertMappingOutside, (m_blockVertMappingOutside[i].size())));
+    m_maxVertMappingInside = static_cast<int>(std::max(
+      static_cast<size_t>(m_maxVertMappingInside), (m_blockVertMappingInside[i].size())));
+    m_maxVertMappingOutside = static_cast<int>(std::max(
+      static_cast<size_t>(m_maxVertMappingOutside), (m_blockVertMappingOutside[i].size())));
   }
 
   h_vertMem = (int*)malloc(sizeof(int)* m_maxVertMappingInside * m_maxNumInVert * m_numBlock);

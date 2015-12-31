@@ -47,6 +47,11 @@ int main(int argc, char *argv[])
       if (i+1 >= argc) break;
       data.maxBlocks_ = atoi(argv[i+1]);
       i++;
+    } else if (strcmp(argv[i], "-x") == 0) {
+      while (i + 1 < argc && argv[i + 1][0] != '-') {
+        float val = atof(argv[++i]);
+        data.tetSpeedMtx_.push_back({ { val, 0., 0., val, 0., val } });
+      }
     } else if (strcmp(argv[i], "-s") == 0) {
       if (i + 1 >= argc) break;
       std::string s = std::string(argv[i + 1]);
@@ -63,13 +68,14 @@ int main(int argc, char *argv[])
       data.filename_ = std::string(argv[i+1]);
       i++;
     } else if (strcmp(argv[i],"-h") == 0) {
-      printf("Usage: ./Example2 [OPTIONS]\n");
-      printf("  -h            Show this help.\n");
-      printf("  -v            Verbose output.\n");
-      printf("  -s SPEEDTYPE  Speed type is [ONE], CURVATURE, or NOISE.\n");
-      printf("  -i INPUT      Use this triangle mesh \n");
-      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
-      printf("  -m MAX_ITER   Max # of iterations before quit\n");
+      printf("Usage: ./Example1 [OPTIONS]\n");
+      printf("  -h              Show this help.\n");
+      printf("  -v              Verbose output.\n");
+      printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
+      printf("  -i INPUT        Use this triangle mesh \n");
+      printf("  -b MAX_BLOCKS   Max # of blocks to use\n");
+      printf("  -m MAX_ITER     Max # of iterations before quit\n");
+      printf("  -x s1, s2, ...  Speed matrix multipliers from tetmesh attributes.\n");
       exit(0);
     }
   data.solveEikonal();

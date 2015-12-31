@@ -166,7 +166,7 @@ void reorder_verts(TriMesh *mesh)
 	TriMesh::dprintf("Reordering vertices... ");
 
   size_t nv = mesh->vertices.size();
-	vector<int> remap(nv, -1);
+  std::vector<int> remap(nv, -1);
 	int next = 0;
 	if (!mesh->grid.empty()) {
 		for (int i = 0; i < mesh->grid.size(); i++) {
