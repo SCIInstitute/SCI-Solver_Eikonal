@@ -2,7 +2,6 @@
 #define __EIKONAL_H__
 
 #include <cstring>
-#include <array>
 #include <vector>
 #include <time.h>
 #include "TriMesh.h"
@@ -20,10 +19,10 @@ public:
   virtual ~Eikonal();
   void initializeMesh();
   void initializeVertices(std::vector<float> values);
-  void Eikonal::initializeTetSpeedMatrices(
-    std::vector<std::array<float, 6> > values);
-  void Eikonal::initializeTriSpeedMatrices(
-    std::vector<std::array<float, 3> > values);
+  void initializeTetSpeedMatrices(
+    std::vector<float> values);
+  void initializeTriSpeedMatrices(
+    std::vector<float> values);
   //accessor functions to the results.
   std::vector < float >& getFinalResult();
   std::vector < float >& getResultAtIteration(size_t i);
@@ -61,8 +60,8 @@ public:
   meshFIM2dEikonal *FIMPtr2d_;
   meshFIM3dEikonal *FIMPtr3d_;
   bool isTriMesh_;
-  std::vector<std::array<float, 6> > tetSpeedMtx_;
-  std::vector<std::array<float, 3> > triSpeedMtx_;
+  std::vector<float> tetSpeedMtx_;
+  std::vector<float> triSpeedMtx_;
 };
 
 #endif

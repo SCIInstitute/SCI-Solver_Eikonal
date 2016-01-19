@@ -59,12 +59,12 @@ void Eikonal::writeVTK(bool all) {
 }
 
 void Eikonal::initializeTetSpeedMatrices(
-  std::vector<std::array<float,6> > values) {
+  std::vector<float> values) {
   this->tetSpeedMtx_ = values;
 }
 
 void Eikonal::initializeTriSpeedMatrices(
-  std::vector<std::array<float, 3> > values) {
+  std::vector<float > values) {
   this->triSpeedMtx_ = values;
 }
 

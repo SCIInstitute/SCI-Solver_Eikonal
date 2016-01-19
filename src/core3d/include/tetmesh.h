@@ -29,7 +29,6 @@
 #include "math.h"
 #include <vector>
 #include <list>
-#include <array>
 
 #ifndef M_PI
 #define M_PI 3.14159265359
@@ -169,7 +168,7 @@ class TetMesh {
 
     void init(float* pointlist, int numpoint, int*trilist, int numtri,
       int* tetlist, int numtet, float* attrlist, 
-      std::vector<std::array<float, 6> > speedMtx, 
+      std::vector<float> speedMtx, 
       bool verbose = false);
 
     //Constructor

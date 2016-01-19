@@ -28037,7 +28037,7 @@ void tetgenmesh::perturbrepairencsegs(queue* flipqueue)
                   starttet = * (triface *)(* tetlist)[i];
                   vol = volumebound(starttet.tet);
                   if (vol > 0.0) {
-                    varlen = std::powf(6 * vol, 1.0/3.0);
+                    varlen = powf(6 * vol, 1.0/3.0);
                     if (ploop[pointmtrindex] > varlen) {
                       ploop[pointmtrindex] = varlen;
                     }

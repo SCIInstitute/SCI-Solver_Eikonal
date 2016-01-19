@@ -6,8 +6,8 @@
 #include "tetmesh.h"
 
 void TetMesh::init(float* pointlist, int numpoint, int*trilist,
-  int numtri, int* tetlist, int numtet,
-  float* attrlist, std::vector<std::array<float, 6> > speedMtx, bool verbose) {
+    int numtri, int* tetlist, int numtet,
+    float* attrlist, std::vector<float> speedMtx, bool verbose) {
   numVert = numpoint;
   numTet  = numtet;
 
@@ -57,7 +57,11 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist,
         mat = 0;
       }
       for (size_t j = 0; j < 6; j++) {
-        tets[i].M[j] = speedMtx[mat][j];
+        if (j == 0 || j == 3 || j == 5) {
+          tets[i].M[j] = speedMtx[mat];
+        } else {
+          tets[i].M[j] = 0.;
+        }
       }
     }
   } else { //default speed mtx.
@@ -79,7 +83,7 @@ void TetMesh::need_neighbors(bool verbose)
 
 
   if (verbose)
-     std::cout << "Finding vertex neighbors... " <<  std::endl;
+    std::cout << "Finding vertex neighbors... " <<  std::endl;
   int nv = vertices.size(), nt = tets.size();
 
   neighbors.resize(nv);
@@ -100,7 +104,7 @@ void TetMesh::need_neighbors(bool verbose)
   }
 
   if (verbose)
-     std::cout << "Done.\n" <<  std::endl;
+    std::cout << "Done.\n" <<  std::endl;
 }
 
 
@@ -111,7 +115,7 @@ void TetMesh::need_adjacenttets(bool verbose)
     return;
 
   if (verbose)
-     std::cout << "Finding vertex to triangle maps... " <<  std::endl;
+    std::cout << "Finding vertex to triangle maps... " <<  std::endl;
   int nv = vertices.size(), nt = tets.size();
 
   adjacenttets.resize(vertices.size());
@@ -122,7 +126,7 @@ void TetMesh::need_adjacenttets(bool verbose)
   }
 
   if (verbose)
-     std::cout << "Done.\n" <<  std::endl;
+    std::cout << "Done.\n" <<  std::endl;
 }
 
 
