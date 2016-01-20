@@ -8,7 +8,6 @@ TEST(Improve2D, DecreaseRMSError) {
   //lowest granularity
   Eikonal* data = new Eikonal(true);
   data->filename_ = TEST_DATA_DIR + std::string("sphere_12verts.ply");
-  data->maxBlocks_ = 13;
   EXPECT_NO_THROW(data->solveEikonal());
   // find the analytical solution to each vertex and compare.
   solution.resize(data->triMesh_->vertices.size());
@@ -33,7 +32,6 @@ TEST(Improve2D, DecreaseRMSError) {
   delete data;
   data = new Eikonal(true);
   data->filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
-  data->maxBlocks_ = 11;
   EXPECT_NO_THROW(data->solveEikonal());
   // find the analytical solution to each vertex and compare.
   solution.resize(data->triMesh_->vertices.size());
@@ -58,7 +56,6 @@ TEST(Improve2D, DecreaseRMSError) {
   delete data;
   data = new Eikonal(true);
   data->filename_ = TEST_DATA_DIR + std::string("sphere_1154verts.ply");
-  data->maxBlocks_ = 100;
   EXPECT_NO_THROW(data->solveEikonal());
   // find the analytical solution to each vertex and compare.
   solution.resize(data->triMesh_->vertices.size());
@@ -83,7 +80,7 @@ TEST(Improve2D, DecreaseRMSError) {
   delete data;
   data = new Eikonal(true);
   data->filename_ = TEST_DATA_DIR + std::string("sphere_4610verts.ply");
-  data->maxBlocks_ = 250;
+  data->maxVertsPerBlock_ = 150;
   EXPECT_NO_THROW(data->solveEikonal());
   // find the analytical solution to each vertex and compare.
   solution.resize(data->triMesh_->vertices.size());

@@ -197,9 +197,9 @@ std::vector < std::vector < float > > Eikonal::iteration_values_;
 You will need to make sure your CMake/Makfile/Build setup knows where 
 to point for the library and header files. See the examples and their CMakeLists.txt.<br/><br/>
 
-**NOTE** The maxBlocks_ parameter for the 2D library often needs to be tuned per mesh. If the library fails
+**NOTE** The maxVertsPerBlock_ parameter for the 2D library often needs to be tuned per mesh. If the library fails
 to converge all vertices (reaches the max iterations), try a different number for this parameter. Various 
-possiblities per mesh ranging from 2-20,000 may improve error once a good range is determined.<br/>
+possiblities per mesh ranging from 2-2000 may improve error once a good range is determined.<br/>
 
 Testing
 ==============

@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
       i++;
     } else if (strcmp(argv[i], "-b") == 0) {
       if (i + 1 >= argc) break;
-      data.maxBlocks_ = atoi(argv[i + 1]);
+      data.maxVertsPerBlock_ = atoi(argv[i + 1]);
       i++;
     } else if (strcmp(argv[i], "-n") == 0) {
       if (i + 1 >= argc) break;
