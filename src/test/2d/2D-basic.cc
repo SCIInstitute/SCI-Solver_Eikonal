@@ -2,7 +2,7 @@
 #include "Eikonal.h"
 TEST(Basic2D, NonMaxUnstructured) {
   Eikonal data(true);
-  data.filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
+  data.filename_ = TEST_DATA_DIR + std::string("sphere_74verts.ply");
   data.maxBlocks_ = 11;
   data.stopDistance_ = 700.f;
   EXPECT_NO_THROW(data.solveEikonal());

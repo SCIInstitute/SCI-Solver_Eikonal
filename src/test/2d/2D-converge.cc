@@ -2,7 +2,7 @@
 #include "Eikonal.h"
 TEST(Converge2D, Unstructured) {
   Eikonal data(true);
-  data.filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
+  data.filename_ = TEST_DATA_DIR + std::string("sphere_74verts.ply");
   data.maxBlocks_ = 1000;
   EXPECT_NO_THROW(data.solveEikonal());
   for (size_t i = 1; i < data.numIterations(); i ++) {

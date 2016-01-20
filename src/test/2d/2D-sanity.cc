@@ -8,7 +8,7 @@ TEST(Sanity2D, Filename) {
       ::testing::ExitedWithCode(1), "");
   delete data;
   data = new Eikonal(true);
-  data->filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
+  data->filename_ = TEST_DATA_DIR + std::string("sphere_74verts.ply");
   EXPECT_NO_THROW(data->solveEikonal());
   delete data;
   data = new Eikonal(true);
@@ -17,6 +17,7 @@ TEST(Sanity2D, Filename) {
   data->squareWidth_ = 16;
   data->squareBlockLength_ = 4;
   data->squareBlockWidth_ = 4;
+  data->isStructured_ = true;
   EXPECT_NO_THROW(data->solveEikonal());
   delete data;
 }

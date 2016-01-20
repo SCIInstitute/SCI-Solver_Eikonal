@@ -346,9 +346,8 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   }
 }
 
-void meshFIM2dEikonal::GenerateData(int numBlock,
+std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock,
     int maxIterations,
-    std::vector< std::vector<float> >& iteration_values, 
     bool verbose) {
   size_t numVert = m_meshPtr->vertices.size();
   size_t numFaces = m_meshPtr->faces.size();
@@ -680,7 +679,7 @@ void meshFIM2dEikonal::GenerateData(int numBlock,
   cudaEventRecord(start,0);
 
   int totalIterationNumber = 0;
-  
+  std::vector< std::vector< float > > iteration_values;
   while ( numActive > 0)
   {
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
@@ -861,4 +860,5 @@ void meshFIM2dEikonal::GenerateData(int numBlock,
   delete[] h_BlockLabel;
   delete[] h_blockCon;
   delete[] h_BlockSizes;
+  return iteration_values;
 }

@@ -178,8 +178,8 @@ void Eikonal::solveEikonal() {
     FIMPtr2d_->PartitionFaces(this->maxBlocks_);
     FIMPtr2d_->InitializeLabels(this->maxBlocks_);
 
-    FIMPtr2d_->GenerateData(this->maxBlocks_,
-      this->maxIterations_, iteration_values_, this->verbose_);
+    iteration_values_ =
+      FIMPtr2d_->GenerateData(this->maxBlocks_, this->maxIterations_, this->verbose_);
   } else {
     if (this->tetMesh_ == NULL) {
       this->initializeMesh();

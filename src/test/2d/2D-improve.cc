@@ -31,7 +31,7 @@ TEST(Improve2D, DecreaseRMSError) {
   //mid granularity
   delete data;
   data = new Eikonal(true);
-  data->filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
+  data->filename_ = TEST_DATA_DIR + std::string("sphere_74verts.ply");
   EXPECT_NO_THROW(data->solveEikonal());
   // find the analytical solution to each vertex and compare.
   solution.resize(data->triMesh_->vertices.size());

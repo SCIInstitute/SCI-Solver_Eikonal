@@ -158,7 +158,9 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   size_t numVert = m_meshPtr->vertices.size();
   m_PartitionLabel.resize(numVert);
   m_numBlock = numBlock = ceil((float)numVert / (float)maxNumBlockVerts);
-
+  if (m_numBlock < 2) {
+    m_numBlock = numBlock = 2;
+  }
   // Counting up edges for adjacency:
   int edgeCount = 0;
   for (int vIt = 0; vIt < numVert; vIt++)
