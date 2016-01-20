@@ -14,7 +14,7 @@
 class Eikonal {
 public:
   Eikonal(bool isTriMesh,
-    std::string fname = "../src/test/test_data/sphere_266verts.ply",
+    std::string fname = "../src/test/test_data/sphere_290verts.ply",
     bool verbose = false);
   virtual ~Eikonal();
   void initializeMesh();

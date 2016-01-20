@@ -480,6 +480,7 @@ __global__ void FIMCuda(float3* d_tetMem0,float3* d_tetMem1, float4* d_tetT, flo
   if(tx < block_size)
   {
     float residue = oldT - newT;
+    if (residue < 0.) residue *= -1.;
     d_con[vert_base + tx] = (residue < EPS) ? true : false;
     d_vertT[vert_base + tx] = newT;
   }

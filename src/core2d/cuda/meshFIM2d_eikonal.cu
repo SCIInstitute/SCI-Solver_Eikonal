@@ -118,7 +118,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   int edgecut;
   m_numPartitions = numBlock = numVert / maxNumBlockVerts;
   if (m_numPartitions < 2)
-    m_numPartitions = 2;
+    m_numPartitions = numBlock = 2;
 
   // Counting up edges for adjacency:
   int edgeCount = 0;
@@ -713,7 +713,9 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
 
     nTotalIter++;
-    if (nTotalIter > maxIterations) break;
+    if (nTotalIter > maxIterations){
+      break;
+    }
 
     totalIterationNumber += numActive;
     if (verbose ) {
@@ -732,7 +734,9 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     cudaSafeCall( cudaMemcpy( d_ActiveList,h_ActiveList,sizeof(int) * numBlock, cudaMemcpyHostToDevice));
 
-    FIMCuda<<<dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+m_maxNumVert*VERTMEMLENGTH*sizeof(short)>>>( d_triMem,d_triMemOut, d_vertMem,d_vertMemOutside,d_edgeMem0,d_edgeMem1,d_edgeMem2, d_speed, d_BlockSizes, d_con,d_ActiveList, numActive,m_maxNumTotalFaces, m_maxNumVert, m_StopDistance);
+    FIMCuda<<<dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+m_maxNumVert*VERTMEMLENGTH*sizeof(short)>>>( 
+      d_triMem,d_triMemOut, d_vertMem,d_vertMemOutside,d_edgeMem0,d_edgeMem1,d_edgeMem2,
+      d_speed, d_BlockSizes, d_con,d_ActiveList, numActive,m_maxNumTotalFaces, m_maxNumVert, m_StopDistance);
     cudaCheckErrors();
 
     //////////////////////step 2: reduction////////////////////////////////////////////////
@@ -820,11 +824,20 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     ////////////////////////copy values from each iteration
     cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) *
           m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
+    bool allConv = true; 
+    std::vector<std::pair<size_t, float> > unconverged;
     for(int i =0; i < numVert; i++) {
+      float diff = std::abs(m_meshPtr->vertT[i] - h_triMem[blockVertMapping[i][0]]);
+      bool conv = (diff <= EPS) && (h_triMem[blockVertMapping[i][0]] != LARGENUM);
+      if (!conv) unconverged.push_back(std::pair<size_t, float>(i, diff));
+      allConv &= conv;
       m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
     }
     iteration_values.push_back(m_meshPtr->vertT);
     ////////////////////////////////END copy
+    if (allConv) {
+      break;
+    }
   }
 
   cudaSafeCall( cudaThreadSynchronize() );

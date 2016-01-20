@@ -213,7 +213,8 @@ void meshFIM3dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   {
     m_maxNumInVert = std::max(m_maxNumInVert, m_BlockSizes[i]);
   }
-  printf("max num vert is : %d\n", m_maxNumInVert);
+  if (verbose)
+    printf("max num vert is : %d\n", m_maxNumInVert);
   m_PartitionInVerts.resize(numBlock);
 
   for (int i = 0; i < numVert; i++)

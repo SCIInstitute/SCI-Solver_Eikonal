@@ -61,15 +61,18 @@ int main(int argc, char* argv[]) {
   data.solveEikonal();
   //write the output to file
   data.writeVTK(false);
-  //the solution for the sphere examples (center 54,54,54, & radius 19.58)
+  //the solution for the sphere examples (center 0,0,0, & radius 100)
   std::vector< float > solution;
   solution.resize(data.triMesh_->vertices.size());
+  point first = data.triMesh_->vertices[0];
   for (size_t i = 0; i < solution.size(); i++) {
-    float xDot = data.triMesh_->vertices[i][0] - 54.f;
-    float yDot = data.triMesh_->vertices[i][1] - 54.f;
-    float zDot = data.triMesh_->vertices[i][2] - 54.f;
-    solution[i] = 19.58f * std::acos(zDot /
-      std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot));
+    float xDot = data.triMesh_->vertices[i][0];
+    float yDot = data.triMesh_->vertices[i][1];
+    float zDot = data.triMesh_->vertices[i][2];
+    solution[i] = 100.f * std::acos(
+      (first[0] * xDot + first[1] * yDot + first[2] * zDot) /
+      std::sqrt(xDot * xDot + yDot * yDot + zDot * zDot) /
+      len(first));
   }
   if (data.verbose_)
     data.printErrorGraph(solution);

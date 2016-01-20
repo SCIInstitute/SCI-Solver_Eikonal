@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     float x = data.tetMesh_->vertices[i][0];
     float y = data.tetMesh_->vertices[i][1];
     float z = data.tetMesh_->vertices[i][2];
-    solution.push_back(std::sqrt((54.f - x)*(54.f-x)+(54.f-y)*(54.f-y)+(54.f-z)*(54.f-z)));
+    solution.push_back(std::sqrt((0.f - x)*(0.f-x)+(0.f-y)*(0.f-y)+(0.f-z)*(0.f-z)));
   }
   if (data.verbose_)
     data.printErrorGraph(solution);

@@ -7,41 +7,25 @@
 
 __global__ void run_reduction(int *con, int *blockCon,int* ActiveList, int nActiveBlock, int* blockSizes)
 {
-  int list_idx = blockIdx.y*gridDim.x + blockIdx.x;
+  int list_idx = blockIdx.x;
+  int tx = threadIdx.x;
+  int block_idx = ActiveList[list_idx];
+  int start = block_idx*blockDim.x * 2;
+  int blocksize = blockSizes[block_idx];
+  __shared__ int s_block_conv;
+  s_block_conv = 1;
+  __syncthreads();
 
-
-  if(list_idx < nActiveBlock)
+  if (tx < blocksize)
   {
-    int block_idx = ActiveList[list_idx];
+    if (!con[start + tx])
+      s_block_conv = 0;
+  }
+  __syncthreads();
 
-    __shared__ int s_conv[REDUCTIONSHARESIZE];
-
-
-    uint base_addr = block_idx*blockDim.x*2;   // *2 because there are only half block size number of thread
-    uint tx = threadIdx.x;
-
-
-    s_conv[tx] = con[base_addr + tx];
-    s_conv[tx + blockDim.x] = con[base_addr + tx + blockDim.x];
-
-    __syncthreads();
-
-    for(uint i=blockDim.x; i>0; i/=2)
-    {
-      if(tx < i)
-      {
-        bool b1, b2;
-        b1 = s_conv[tx];
-        b2 = s_conv[tx+i];
-        s_conv[tx] = (b1 && b2) ? 1 : 0 ;
-      }
-      __syncthreads();
-    }
-
-    if(tx == 0)
-    {
-      blockCon[block_idx] = s_conv[0]; // active list is negation of tile convergence (active = not converged)
-    }
+  if(tx == 0)
+  {
+    blockCon[block_idx] = s_block_conv; // active list is negation of tile convergence (active = not converged)
   }
 }
 
@@ -49,7 +33,10 @@ __global__ void run_reduction(int *con, int *blockCon,int* ActiveList, int nActi
 extern __shared__ char s_array[];
 
 
-__global__ void FIMCuda(float* d_triMem,float* d_triMemOut, int* d_vertMem, int* d_vertMemOutside, float* d_edgeMem0,float* d_edgeMem1,float* d_edgeMem2,float* d_speed, int* d_BlockSizes, int* d_con, int* ActiveList, int nActiveBlock,int maxNumTotalFaces, int maxNumVert,/*int nIter,*/ float m_StopDistance)
+__global__ void FIMCuda(float* d_triMem,float* d_triMemOut, int* d_vertMem,
+  int* d_vertMemOutside, float* d_edgeMem0,float* d_edgeMem1,float* d_edgeMem2,
+  float* d_speed, int* d_BlockSizes, int* d_con, int* ActiveList, int nActiveBlock,
+  int maxNumTotalFaces, int maxNumVert,/*int nIter,*/ float m_StopDistance)
 {
   uint list_idx = blockIdx.y*gridDim.x + blockIdx.x;
 
@@ -403,29 +390,22 @@ __global__ void FIMCuda(float* d_triMem,float* d_triMemOut, int* d_vertMem, int*
   if(tx < block_size)
   {
     float residue = oldT - newT;
+    if (residue < 0.) residue *= -1.;
     int tmpindex;
     d_con[block_idx*REDUCTIONSHARESIZE + tx] = (residue <= EPS) ? 1 : 0;
 
-    for(int j = 0; (j < VERTMEMLENGTH) && ((tmpindex = s_vertMem[tx * VERTMEMLENGTH + j]) > -1); j++) // update gloal memory inside all the old to the min
-    {
+    // update gloal memory inside all the old to the min
+    for(int j = 0; (j < VERTMEMLENGTH) &&
+      ((tmpindex = s_vertMem[tx * VERTMEMLENGTH + j]) > -1); j++)  {
       d_triMemOut[tmpindex + tri_base_addr] = newT;
     }
-
-    for(int j = 0; (j < VERTMEMLENGTHOUTSIDE) && ((tmpindex = d_vertMemOutside[block_idx*VERTMEMLENGTHOUTSIDE*maxNumVert +  tx * VERTMEMLENGTHOUTSIDE + j]) > -1 ); j++) // update gloal memory outside all the old to the min
-    {
-
+    // update gloal memory outside all the old to the min
+    for(int j = 0; (j < VERTMEMLENGTHOUTSIDE) &&
+      ((tmpindex = d_vertMemOutside[block_idx*VERTMEMLENGTHOUTSIDE*maxNumVert + 
+      tx * VERTMEMLENGTHOUTSIDE + j]) > -1 ); j++) {
       d_triMemOut[tmpindex] = newT;
     }
-
   }
-  else if(tx < REDUCTIONSHARESIZE)
-  {
-    d_con[block_idx*REDUCTIONSHARESIZE + tx] = 1;   //assign the rest 1 so that in reduction, these values can be & with the effective values
-
-  }
-
-
-
 }
 
 extern __shared__ float s_run_check_neghbor_array[];

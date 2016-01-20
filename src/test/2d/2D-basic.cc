@@ -18,6 +18,7 @@ TEST(Basic2D, NonMaxStructured) {
   data.squareBlockLength_ = 4;
   data.squareBlockWidth_ = 4;
   data.stopDistance_ = 100.f;
+  data.isStructured_ = true;
   EXPECT_NO_THROW(data.solveEikonal());
   for (size_t i = 0; i < data.getFinalResult().size(); i ++) {
     EXPECT_TRUE(data.getFinalResult()[i] < data.stopDistance_);
