@@ -9,7 +9,6 @@ TEST(Sanity2D, Filename) {
   delete data;
   data = new Eikonal(true);
   data->filename_ = TEST_DATA_DIR + std::string("sphere_290verts.ply");
-  data->maxBlocks_ = 11;
   EXPECT_NO_THROW(data->solveEikonal());
   delete data;
   data = new Eikonal(true);
@@ -19,4 +18,5 @@ TEST(Sanity2D, Filename) {
   data->squareBlockLength_ = 4;
   data->squareBlockWidth_ = 4;
   EXPECT_NO_THROW(data->solveEikonal());
+  delete data;
 }

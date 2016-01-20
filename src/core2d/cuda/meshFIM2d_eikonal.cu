@@ -346,9 +346,10 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   }
 }
 
-std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
-    int maxIterations, bool verbose)
-{
+void meshFIM2dEikonal::GenerateData(int numBlock,
+    int maxIterations,
+    std::vector< std::vector<float> >& iteration_values, 
+    bool verbose) {
   size_t numVert = m_meshPtr->vertices.size();
   size_t numFaces = m_meshPtr->faces.size();
 
@@ -368,29 +369,19 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   float      *d_triMemOut;
   int        *d_vertMem;
   int        *d_BlockSizes;
+
+  /////////////////////////////new cpu memories///////////////////////////
   index      *h_ActiveList= 0;    //list of active blocks
-  int        *h_BlockLabel = 0;   //block active or not
-  float      *h_triMem;
-  float      *h_edgeMem0;
-  float      *h_edgeMem1;
-  float      *h_edgeMem2;
-  float      *h_speed;
-  int        *h_vertMem;
-  int        *h_blockCon;
-  int        *h_BlockSizes;
-  /////////////////////////////malloc cpu memories///////////////////////////
-  h_BlockLabel = (int*) malloc(sizeof(int) * numBlock);
-
-  h_edgeMem0 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
-  h_edgeMem1 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
-  h_edgeMem2 = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
-  h_speed    = (float*)malloc(sizeof(float)  * m_maxNumTotalFaces * numBlock);
-
-  h_triMem = (float*)malloc(sizeof(float) * TRIMEMLENGTH * m_maxNumTotalFaces * numBlock);
-  int vertMemSize = sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock;
-  h_vertMem = new int[vertMemSize];
-  h_BlockSizes = (int*)malloc(sizeof(int) * numBlock);
-  h_blockCon = (int*)malloc(sizeof(int) * numBlock);
+  int        *h_BlockLabel = new int[numBlock];   //block active or not
+  float      *h_triMem = new float[TRIMEMLENGTH * m_maxNumTotalFaces * numBlock];
+  float      *h_edgeMem0 = new float[m_maxNumTotalFaces * numBlock];
+  float      *h_edgeMem1 = new float[m_maxNumTotalFaces * numBlock];
+  float      *h_edgeMem2 = new float[m_maxNumTotalFaces * numBlock];
+  float      *h_speed = new float[m_maxNumTotalFaces * numBlock];
+  int        vertMemSize = sizeof(int) * VERTMEMLENGTH * m_maxNumVert * numBlock;
+  int        *h_vertMem = new int[vertMemSize];
+  int        *h_blockCon = new int[numBlock];
+  int        *h_BlockSizes = new int[numBlock];
   /////////////////////////malloc gpu memories//////////////////////////////
 
   cudaSafeCall( cudaMalloc((void**) &d_con, sizeof(int) * numBlock * REDUCTIONSHARESIZE));
@@ -651,22 +642,6 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
       h_triMem[blockVertMapping[seed][j]] = 0.0;
     }
   }
-  /////////////copy triMem and verMem to a vector just for debugging/////////////////
-  vector<float> vec_triMem;
-  vector<int>   vec_vertMem;
-  vector<int>   vec_vertMemOutside;
-
-  vec_triMem.resize(TRIMEMLENGTH * m_maxNumTotalFaces * numBlock);
-  vec_vertMem.resize(VERTMEMLENGTH * m_maxNumVert * numBlock);
-  vec_vertMemOutside.resize(VERTMEMLENGTHOUTSIDE * m_maxNumVert * numBlock);
-  for(int i =0; i < TRIMEMLENGTH * m_maxNumTotalFaces * numBlock; i++)
-    vec_triMem[i] = h_triMem[i];
-
-  for(int i = 0; i< VERTMEMLENGTH * m_maxNumVert * numBlock; i++)
-    vec_vertMem[i] = h_vertMem[i];
-  for(int i = 0; i< VERTMEMLENGTHOUTSIDE * m_maxNumVert * numBlock; i++)
-    vec_vertMemOutside[i] = h_vertMemOutside[i];
-  ////////////////////////////////////////////////////////////////////////////
 
   cudaSafeCall( cudaMemcpy( d_triMem,h_triMem, sizeof(float) * m_maxNumTotalFaces * numBlock * TRIMEMLENGTH, cudaMemcpyHostToDevice));
 
@@ -705,9 +680,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   cudaEventRecord(start,0);
 
   int totalIterationNumber = 0;
-
-  std::vector<std::vector<float> > iteration_values;
-
+  
   while ( numActive > 0)
   {
     ///////////step 1: run solver /////////////////////////////////////////////////////////////
@@ -734,15 +707,20 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     cudaSafeCall( cudaMemcpy( d_ActiveList,h_ActiveList,sizeof(int) * numBlock, cudaMemcpyHostToDevice));
 
-    FIMCuda<<<dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+m_maxNumVert*VERTMEMLENGTH*sizeof(short)>>>( 
-      d_triMem,d_triMemOut, d_vertMem,d_vertMemOutside,d_edgeMem0,d_edgeMem1,d_edgeMem2,
-      d_speed, d_BlockSizes, d_con,d_ActiveList, numActive,m_maxNumTotalFaces, m_maxNumVert, m_StopDistance);
+    FIMCuda <<< dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float)+
+      m_maxNumVert*VERTMEMLENGTH*sizeof(short) >>> ( 
+      d_triMem,d_triMemOut, d_vertMem,d_vertMemOutside,
+      d_edgeMem0,d_edgeMem1,d_edgeMem2,
+      d_speed, d_BlockSizes, d_con,d_ActiveList, 
+      numActive,m_maxNumTotalFaces, m_maxNumVert,
+      m_StopDistance);
     cudaCheckErrors();
 
     //////////////////////step 2: reduction////////////////////////////////////////////////
 
     dimBlock = dim3(REDUCTIONSHARESIZE / 2 , 1);
-    run_reduction<<<dimGrid, dimBlock/*, sizeof(int)*m_maxNumVert*/>>>(d_con, d_blockCon,d_ActiveList, numActive, d_BlockSizes);
+    run_reduction<<<dimGrid, dimBlock/*, sizeof(int)*m_maxNumVert*/>>>(d_con, d_blockCon,
+      d_ActiveList, numActive, d_BlockSizes);
     cudaCheckErrors();
 
     //////////////////////////////////////////////////////////////////
@@ -787,8 +765,7 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
 
     dimGrid = dim3(numActive, 1);
     dimBlock = dim3(m_maxNumTotalFaces, 1);
-
-
+    
     run_check_neighbor << < dimGrid, dimBlock, m_maxNumTotalFaces*TRIMEMLENGTH*sizeof(float) +
       m_maxNumVert*VERTMEMLENGTH*sizeof(short) >> >(d_triMemOut, d_triMem, d_vertMem, d_vertMemOutside,
       d_edgeMem0, d_edgeMem1, d_edgeMem2, d_speed, d_BlockSizes, d_con, d_ActiveList, nOldActiveBlock,
@@ -823,15 +800,14 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     }
     ////////////////////////copy values from each iteration
     cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) *
-          m_maxNumTotalFaces * numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
+      m_maxNumTotalFaces * numBlock * TRIMEMLENGTH, cudaMemcpyDeviceToHost));
+    cudaSafeCall(cudaThreadSynchronize());
     bool allConv = true; 
-    std::vector<std::pair<size_t, float> > unconverged;
     for(int i =0; i < numVert; i++) {
       float diff = std::abs(m_meshPtr->vertT[i] - h_triMem[blockVertMapping[i][0]]);
-      bool conv = (diff <= EPS) && (h_triMem[blockVertMapping[i][0]] != LARGENUM);
-      if (!conv) unconverged.push_back(std::pair<size_t, float>(i, diff));
-      allConv &= conv;
-      m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
+      bool conv = (diff <= EPS) && (h_triMem[blockVertMapping[i][0]] < LARGENUM);
+      allConv = allConv && conv;
+      m_meshPtr->vertT[i] = h_triMem[blockVertMapping[i][0]];
     }
     iteration_values.push_back(m_meshPtr->vertT);
     ////////////////////////////////END copy
@@ -845,11 +821,6 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   cudaEventRecord(stop,0);
   cudaEventSynchronize(stop);
 
-  cudaSafeCall( cudaMemcpy(h_triMem, d_triMem,sizeof(float) * m_maxNumTotalFaces *
-    numBlock * TRIMEMLENGTH , cudaMemcpyDeviceToHost) );
-
-  cudaSafeCall( cudaThreadSynchronize() );
-
   cudaEventRecord(stopCopy,0);
   cudaEventSynchronize(stopCopy);
 
@@ -857,10 +828,8 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
   cudaEventElapsedTime(&totalTime, start, stop);
   cudaEventElapsedTime(&totalAndCopyTime, startCopy, stopCopy);
 
-
   cudaCheckErrors();
-
-
+  
   if (verbose) {
     printf("Total Processing time: %f (ms)\n", totalTime);
     printf("Total Processing time and copy time: %f (ms)\n", totalAndCopyTime);
@@ -869,56 +838,27 @@ std::vector< std::vector<float> > meshFIM2dEikonal::GenerateData(int numBlock,
     printf("The total localsolver calls per vertex: %f\n",
       totalIterationNumber*m_maxNumTotalFaces*(NITER+1)*3.0 / (float)numVert);
   }
-
-  vec_triMem.resize(m_maxNumTotalFaces * numBlock * 3);
-  float maxVertT = 0;
-  for(int i = 0 ; i <  m_maxNumTotalFaces * numBlock; i++)
-  {
-
-    vec_triMem[3*i + 0] =  h_triMem[i*TRIMEMLENGTH + 0];
-    vec_triMem[3*i + 1] =  h_triMem[i*TRIMEMLENGTH + 1];
-    vec_triMem[3*i + 2] =  h_triMem[i*TRIMEMLENGTH + 2];
-
-    if(h_triMem[i*TRIMEMLENGTH + 0] >= LARGENUM)
-      vec_triMem[3*i + 0] = -2;
-    if(h_triMem[i*TRIMEMLENGTH + 1] >= LARGENUM)
-      vec_triMem[3*i + 1] = -2;
-    if(h_triMem[i*TRIMEMLENGTH + 2] >= LARGENUM)
-      vec_triMem[3*i + 2] = -2;
-
-
-    maxVertT = MAX(maxVertT,MAX(vec_triMem[3*i + 2] , 
-      MAX(vec_triMem[3*i + 1] , vec_triMem[3*i + 0])));
-  }
-
-  int vertIndex = 0;
-
   for(int i =0; i < numVert; i++)
   {
     m_meshPtr->vertT[i] =  h_triMem[blockVertMapping[i][0]];
-    if(m_meshPtr->vertT[i] == maxVertT)
-      vertIndex = i;
   }
-  if (verbose)
-    printf("The maximun vertT is: %f, the vert index is: %d \n", maxVertT,vertIndex );
   cudaSafeCall( cudaFree(d_ActiveList));
   cudaSafeCall( cudaFree(d_triMem));
-  cudaSafeCall( cudaFree(d_vertMem));
+  cudaSafeCall(cudaFree(d_vertMem));
   cudaSafeCall( cudaFree(d_edgeMem0));
   cudaSafeCall( cudaFree(d_edgeMem1));
-  cudaSafeCall( cudaFree(d_edgeMem2));
+  cudaSafeCall(cudaFree(d_edgeMem2));
   cudaSafeCall( cudaFree(d_speed));
   cudaSafeCall( cudaFree(d_con));
-  cudaSafeCall( cudaFree(d_blockCon));
-  free(h_ActiveList);
-  free(h_edgeMem0);
-  free(h_edgeMem1);
-  free(h_edgeMem2);
-  free(h_speed);
-  free(h_triMem);
+  cudaSafeCall(cudaFree(d_blockCon));
+  delete[] h_ActiveList;
+  delete[] h_edgeMem0;
+  delete[] h_edgeMem1;
+  delete[] h_edgeMem2;
+  delete[] h_speed;
+  delete[] h_triMem;
   delete[] h_vertMem;
-  free(h_BlockLabel);
-  free(h_blockCon);
-  free(h_BlockSizes);
-  return iteration_values;
+  delete[] h_BlockLabel;
+  delete[] h_blockCon;
+  delete[] h_BlockSizes;
 }
