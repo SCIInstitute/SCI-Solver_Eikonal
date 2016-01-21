@@ -130,8 +130,62 @@ void TetMesh::need_adjacenttets(bool verbose)
 }
 
 
-void TetMesh::need_speed()
+void TetMesh::need_noise(float low, float high)
 {
+  //TODO only copied from trimesh code.
+  noiseOnVert.clear();
+  need_neighbors();
+  int nv = vertices.size();
+  noiseOnVert.resize(nv);
+  srand((unsigned)time(NULL));
+
+  for (int i = 0; i<nv; i++) {
+    noiseOnVert[i] = (float)rand() /
+      (RAND_MAX)*(high - low) + low;  //random number between [low,high]
+  }
+
+  //iterate
+  int iterNum = 0;
+  for (int i = 0; i<iterNum; i++) {
+    for (int j = 0; j<nv; j++) {
+      noiseOnVert[j] = 0;
+      std::vector<int> nb = neighbors[j];
+      for (int k = 0; k<nb.size(); k++) {
+        noiseOnVert[j] += noiseOnVert[neighbors[j][k]];
+      }
+      noiseOnVert[j] /= nb.size();
+    }
+  }
+}
+
+void TetMesh::need_speed(int speed_type)
+{
+  //TODO only copied from trimesh code.
+  int nf = faces.size();
+
+  for (int i = 0; i<nf; i++)
+  {
+    Face f = faces[i];
+    switch (speed_type)
+    {
+    case CURVATURE:
+      faces[i].speedInv = (abs(curv1[f[0]] + curv2[f[0]]) +
+        abs(curv1[f[1]] + curv2[f[1]]) + abs(curv1[f[2]] +
+        curv2[f[2]])) / 6.0;
+      break;
+    case ONE:
+      faces[i].speedInv = 1.0;
+      break;
+    case NOISE:
+      faces[i].speedInv = (noiseOnVert[faces[i][0]] +
+        noiseOnVert[faces[i][1]] +
+        noiseOnVert[faces[i][2]]) / 3;
+      break;
+    default:
+      faces[i].speedInv = 1.0;
+      break;
+    }
+  }
 }
 
 

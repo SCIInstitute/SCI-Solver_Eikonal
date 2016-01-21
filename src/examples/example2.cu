@@ -38,6 +38,17 @@ int main(int argc, char* argv[]) {
       if (i + 1 >= argc) break;
       data.filename_ = std::string(argv[i + 1]);
       i++;
+    } else if (strcmp(argv[i], "-s") == 0) {
+      if (i + 1 >= argc) break;
+      std::string type = std::string(argv[i + 1]);
+      if (type == "CURVATURE") {
+        data.speedType_ = CURVATURE;
+      } else if (type == "NOISE") {
+        data.speedType_ = NOISE;
+      } else {
+        data.speedType_ = ONE;
+      }
+      i++;
     } else if (strcmp(argv[i], "-b") == 0) {
       if (i + 1 >= argc) break;
       data.maxVertsPerBlock_ = atoi(argv[i + 1]);
@@ -55,6 +66,7 @@ int main(int argc, char* argv[]) {
       //Adjust accordingly.
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       printf("  -n MAX_ITER   Max # of iterations to run\n");
+      printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
       exit(0);
     }
   }

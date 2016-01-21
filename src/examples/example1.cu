@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
       printf("  -h              Show this help.\n");
       printf("  -v              Verbose output.\n");
       printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
-      printf("  -i INPUT        Use this triangle mesh \n");
+      printf("  -i INPUT        Use this tet mesh \n");
       printf("  -b MAX_BLOCKS   Max # of blocks to use\n");
       printf("  -m MAX_ITER     Max # of iterations before quit\n");
       printf("  -x s1, s2, ...  Speed matrix multipliers from tetmesh attributes.\n");
