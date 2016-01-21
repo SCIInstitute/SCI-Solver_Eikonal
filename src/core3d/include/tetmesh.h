@@ -143,8 +143,8 @@ class TetMesh {
 
     void reorient();
     void need_faceedges();
-    void need_speed();
-    void need_noise();
+    void need_speed(int speedtype);
+    void need_noise(float low, float high);
     void need_oneringtets();
     void need_normals();
     void need_pointareas();
