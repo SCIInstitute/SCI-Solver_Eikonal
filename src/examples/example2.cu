@@ -64,13 +64,13 @@ int main(int argc, char* argv[]) {
       i++;
     } else if (strcmp(argv[i], "-h") == 0) {
       printf("Usage: ./Example2 [OPTIONS]\n");
-      printf("  -h            Show this help.\n");
-      printf("  -v            Verbose output.\n");
-      printf("  -i INPUT      Use this triangle mesh \n");
-      //# of blocks affects partitioning & convergence.
+      printf("  -h              Show this help.\n");
+      printf("  -v              Verbose output.\n");
+      printf("  -i INPUT        Use this triangle mesh \n");
+      //# of verts/block affects partitioning & convergence.
       //Adjust accordingly.
-      printf("  -b MAX_BLOCKS Max # of blocks to use\n");
-      printf("  -n MAX_ITER   Max # of iterations to run\n");
+      printf("  -b MAX_BLK_VERT Max # of verts/block to use\n");
+      printf("  -n MAX_ITER     Max # of iterations to run\n");
       printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
       printf("  -x s1, s2, ...  Speed matrix multipliers for random patches.\n");
       exit(0);
