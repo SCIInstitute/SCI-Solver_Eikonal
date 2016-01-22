@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     } else if (strcmp(argv[i], "-x") == 0) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
         float val = atof(argv[++i]);
-        data.tetSpeedMtx_.push_back(val);
+        data.speedMtxMultipliers_.push_back(val);
       }
     } else if (strcmp(argv[i], "-s") == 0) {
       if (i + 1 >= argc) break;

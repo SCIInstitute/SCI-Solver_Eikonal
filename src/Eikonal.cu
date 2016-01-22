@@ -58,16 +58,10 @@ void Eikonal::writeVTK(bool all) {
     FIMPtr3d_->writeVTK(vals);
 }
 
-void Eikonal::initializeTetSpeedMatrices(
+void Eikonal::initSpeedMtxMultipliers(
   std::vector<float> values) {
-  this->tetSpeedMtx_ = values;
+  this->speedMtxMultipliers_ = values;
 }
-
-void Eikonal::initializeTriSpeedMatrices(
-  std::vector<float > values) {
-  this->triSpeedMtx_ = values;
-}
-
 
 void Eikonal::initializeVertices(std::vector<float> values) {
   if (this->triMesh_ == NULL && this->tetMesh_ == NULL) {
@@ -126,7 +120,7 @@ void Eikonal::initializeMesh() {
           in.tetrahedronlist,
           in.numberoftetrahedra,
           in.tetrahedronattributelist,
-          this->tetSpeedMtx_,
+          this->speedMtxMultipliers_,
           this->verbose_);
       this->tetMesh_->need_neighbors(this->verbose_);
       this->tetMesh_->need_adjacenttets(this->verbose_);
@@ -160,7 +154,7 @@ void Eikonal::solveEikonal() {
       }
       FIMPtr2d_->SetSeedPoint(found_seeds);
     }
-    FIMPtr2d_->SetMesh(this->triMesh_, this->speedType_);
+    FIMPtr2d_->SetMesh(this->triMesh_, this->speedMtxMultipliers_, this->speedType_);
     FIMPtr2d_->SetStopDistance(this->stopDistance_);
     if (this->isStructured_) {
       int numBlockLength = (this->squareLength_ / this->squareBlockLength_);

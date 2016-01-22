@@ -38,7 +38,7 @@ class meshFIM2dEikonal {
       m_SeedPoints = SeedPoints;
     }
 
-    void SetMesh(TriMesh* mesh, int speed_type = ONE)
+    void SetMesh(TriMesh* mesh, const std::vector<float>& face_speeds, int speed_type = ONE)
     {
       m_meshPtr = mesh;
       m_meshPtr->speed_type_ = speed_type;
@@ -69,7 +69,7 @@ class meshFIM2dEikonal {
       m_meshPtr->need_speed();
 
       m_meshPtr->need_faceedges();
-      m_meshPtr->InitializeAttributes();
+      m_meshPtr->InitializeAttributes(face_speeds);
     }
 
     void InitializeLabels(int numBlock)

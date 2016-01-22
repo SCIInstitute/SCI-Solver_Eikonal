@@ -49,6 +49,11 @@ int main(int argc, char* argv[]) {
         data.speedType_ = ONE;
       }
       i++;
+    } else if (strcmp(argv[i], "-x") == 0) {
+      while (i + 1 < argc && argv[i + 1][0] != '-') {
+        float val = atof(argv[++i]);
+        data.speedMtxMultipliers_.push_back(val);
+      }
     } else if (strcmp(argv[i], "-b") == 0) {
       if (i + 1 >= argc) break;
       data.maxVertsPerBlock_ = atoi(argv[i + 1]);
@@ -67,7 +72,21 @@ int main(int argc, char* argv[]) {
       printf("  -b MAX_BLOCKS Max # of blocks to use\n");
       printf("  -n MAX_ITER   Max # of iterations to run\n");
       printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
+      printf("  -x s1, s2, ...  Speed matrix multipliers for random patches.\n");
       exit(0);
+    }
+  }
+  //set pole bloches of triangles to be a random material if > 1 mats exist
+  if (!data.speedMtxMultipliers_.empty()) {
+    data.initializeMesh();
+    for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
+      if (data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][0] < 75.f ||
+        data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][1] < 75.f ||
+        data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][2] < 75.f) {
+        float choose = (float)rand() / (float)RAND_MAX;
+        int val = data.speedMtxMultipliers_.size() * choose;
+        data.triMesh_->faces[i].material_ = val;
+      }
     }
   }
   data.solveEikonal();

@@ -19,9 +19,7 @@ public:
   virtual ~Eikonal();
   void initializeMesh();
   void initializeVertices(std::vector<float> values);
-  void initializeTetSpeedMatrices(
-    std::vector<float> values);
-  void initializeTriSpeedMatrices(
+  void initSpeedMtxMultipliers(
     std::vector<float> values);
   //accessor functions to the results.
   std::vector < float >& getFinalResult();
@@ -60,8 +58,7 @@ public:
   meshFIM2dEikonal *FIMPtr2d_;
   meshFIM3dEikonal *FIMPtr3d_;
   bool isTriMesh_;
-  std::vector<float> tetSpeedMtx_;
-  std::vector<float> triSpeedMtx_;
+  std::vector<float> speedMtxMultipliers_;
 };
 
 #endif

@@ -43,13 +43,13 @@ class TriMesh {
       float speedInv;
       float T[3];
       Vec<3,float> edgeLens;  // edge length for 01, 12, 20
-
-      Face() {}
-      Face(const int &v0, const int &v1, const int &v2)
+      int material_;
+      Face() : material_(0) {}
+      Face(const int &v0, const int &v1, const int &v2) : material_(0)
       {
         v[0] = v0; v[1] = v1; v[2] = v2;
       }
-      Face(const int *v_)
+      Face(const int *v_) : material_(0)
       {
         v[0] = v_[0]; v[1] = v_[1]; v[2] = v_[2];
       }
@@ -365,7 +365,7 @@ class TriMesh {
 
     // FIM: initialize attributes
     //typedef std::<int> ListType;
-    void InitializeAttributes()
+    void InitializeAttributes(const std::vector<float>& face_speeds )
     {
       // pre-compute faces, normals, and other per-vertex properties that may be needed
       this->need_neighbors();
@@ -380,14 +380,21 @@ class TriMesh {
       for (int f = 0; f < nf; f++)
       {
         Face cf = this->faces[f];
+        if (face_speeds.empty()){
+          // travel time
+          this->faces[f].T[0] = this->vertT[cf[0]];
+          this->faces[f].T[1] = this->vertT[cf[1]];
+          this->faces[f].T[2] = this->vertT[cf[2]];
+        } else {
+          int mat = this->faces[f].material_;
+          if (mat >= face_speeds.size()) 
+            mat = face_speeds[face_speeds.size() - 1];
+          this->faces[f].T[0] = face_speeds[mat];
+          this->faces[f].T[1] = face_speeds[mat];
+          this->faces[f].T[2] = face_speeds[mat];
+        }
 
-        // travel time TODO! how to set this from the user?
-        this->faces[f].T[0] = this->vertT[cf[0]];
-        this->faces[f].T[1] = this->vertT[cf[1]];
-        this->faces[f].T[2] = this->vertT[cf[2]];
-
-        // speed
-        //faces[f].speedInv = 1.0;
+        // speedInv set elsewhere for 1 vs curvature vs noise;
       }
     }
 
