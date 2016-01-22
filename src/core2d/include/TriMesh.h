@@ -55,7 +55,7 @@ class TriMesh {
       }
       int &operator[] (int i) { return v[i]; }
       const int &operator[] (int i) const { return v[i]; }
-      Face& operator=(Face o) {
+      /*Face& operator=(Face o) {
         this->speedInv = o.speedInv; 
         this->material_ = o.material_;
         for (size_t i = 0; i < 3; i++) {
@@ -64,7 +64,7 @@ class TriMesh {
           this->v[i] = o.v[i];
         }
         return *this;
-      }
+      }*/
       operator const int * () const { return &(v[0]); }
       operator const int * () { return &(v[0]); }
       operator int * () { return &(v[0]); }
@@ -249,16 +249,16 @@ class TriMesh {
 
 
         case CURVATURE:
-          f1.speedInv *= ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
+          f1.speedInv = ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
           break;
         case ONE:
-          f1.speedInv *= 1.0;
+          f1.speedInv = 1.0;
           break;
         case NOISE:
-          f1.speedInv *=( noiseOnVert[f1[0]] + noiseOnVert[f1[1]] + noiseOnVert[f1[2]] )/ 3;
+          f1.speedInv =( noiseOnVert[f1[0]] + noiseOnVert[f1[1]] + noiseOnVert[f1[2]] )/ 3;
           break;
         default:
-          f1.speedInv *= 1.0;
+          f1.speedInv = 1.0;
           break;
 
         }
@@ -286,19 +286,17 @@ class TriMesh {
       {
         switch (this->speed_type_)
         {
-
-
         case CURVATURE:
-          f2.speedInv *= ( abs(curv1[f2[0]] + curv2[f2[0]]) + abs( curv1[f2[1]] + curv2[f2[1]]) + abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
+          f2.speedInv = ( abs(curv1[f2[0]] + curv2[f2[0]]) + abs( curv1[f2[1]] + curv2[f2[1]]) + abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
           break;
         case ONE:
-          f2.speedInv *= 1.0;
+          f2.speedInv = 1.0;
           break;
         case NOISE:
-          f2.speedInv *=( noiseOnVert[f2[0]] + noiseOnVert[f2[1]] + noiseOnVert[f2[2]] )/ 3;
+          f2.speedInv = ( noiseOnVert[f2[0]] + noiseOnVert[f2[1]] + noiseOnVert[f2[2]] )/ 3;
           break;
         default:
-          f2.speedInv *= 1.0;
+          f2.speedInv = 1.0;
           break;
 
         }
@@ -367,35 +365,7 @@ class TriMesh {
 
     // FIM: initialize attributes
     //typedef std::<int> ListType;
-    void InitializeAttributes(const std::vector<float>& face_speeds )
-    {
-      // pre-compute faces, normals, and other per-vertex properties that may be needed
-      this->need_neighbors();
-      this->need_normals();
-      this->need_adjacentfaces();
-      this->need_across_edge();
-      this->need_faces();
-      this->need_face_virtual_faces();
-
-      // for all faces: initialize per-vertex travel time and face-speed
-      size_t nf = this->faces.size();
-      for (int f = 0; f < nf; f++)
-      {
-        Face cf = this->faces[f];
-        // travel time
-        this->faces[f].T[0] = this->vertT[cf[0]];
-        this->faces[f].T[1] = this->vertT[cf[1]];
-        this->faces[f].T[2] = this->vertT[cf[2]];
-        if (face_speeds.empty()){
-          cf.speedInv *= 1.f;
-        } else {
-          int mat = this->faces[f].material_;
-          if (mat >= face_speeds.size()) 
-            mat = face_speeds[face_speeds.size() - 1];
-          cf.speedInv *= face_speeds[mat];
-        }
-      }
-    }
+    void InitializeAttributes(const std::vector<float>& face_speeds);
 
     // Debugging printout, controllable by a "verbose"ness parameter
     static int verbose;

@@ -44,3 +44,33 @@ float TriMesh::feature_size()
 	return sqrt(samples[samples.size()/2]);
 }
 
+
+void TriMesh::InitializeAttributes(const std::vector<float>& face_speeds)
+{
+  // pre-compute faces, normals, and other per-vertex properties that may be needed
+  this->need_neighbors();
+  this->need_normals();
+  this->need_adjacentfaces();
+  this->need_across_edge();
+  this->need_faces();
+  this->need_face_virtual_faces();
+
+  // for all faces: initialize per-vertex travel time and face-speed
+  size_t nf = this->faces.size();
+  for (int f = 0; f < nf; f++)
+  {
+    // travel time
+    this->faces[f].T[0] = this->vertT[this->faces[f][0]];
+    this->faces[f].T[1] = this->vertT[this->faces[f][1]];
+    this->faces[f].T[2] = this->vertT[this->faces[f][2]];
+    if (face_speeds.empty()){
+      this->faces[f].speedInv *= 1.f;
+    } else {
+      int mat = this->faces[f].material_;
+      if (mat >= face_speeds.size()) {
+        mat = face_speeds[face_speeds.size() - 1];
+      }
+      this->faces[f].speedInv *= face_speeds[mat];
+    }
+  }
+}

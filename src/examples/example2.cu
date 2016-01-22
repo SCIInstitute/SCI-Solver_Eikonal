@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
       exit(0);
     }
   }
-  //set blotch 3 away from (7.5,7.5,0) to be different material
+  //set blotches 30 away from y/z poles to be different material
   if (data.speedMtxMultipliers_.size() > 1) {
     data.initializeMesh();
     for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
@@ -85,14 +85,12 @@ int main(int argc, char* argv[]) {
       p = p + data.triMesh_->vertices[data.triMesh_->faces[i].v[2]];
       p = p / 3.f;
       data.triMesh_->faces[i].material_ =
-        (len(p - point(7.5, 7.5, 0)) < 3.) ? 0 : 1;
+        ((std::abs(p[0]) < 30. && 
+        ((std::abs(p[1]) < 30.) != (std::abs(p[2]) < 30.))))
+        ? 1 : 0;
     }
   }
   data.solveEikonal();
-  std::vector<float> mats;
-  for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
-    mats.push_back(data.triMesh_->faces[i].speedInv);
-  }
   //write the output to file
   data.writeVTK(false);
   //the solution for the sphere examples (center 0,0,0, & radius 100)

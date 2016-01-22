@@ -75,10 +75,7 @@ class TetMesh {
     struct Tet {
       int v[4];
       int obtuseV;
-      //float speedInv;
       float M[6];
-      //float T[3];
-      //Vec<3,float> edgeLens;  // edge length for 01, 12, 20
 
       Tet() {}
       Tet(const int &v0, const int &v1, const int &v2, const int &v3)

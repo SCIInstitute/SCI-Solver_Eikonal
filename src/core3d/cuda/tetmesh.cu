@@ -165,13 +165,14 @@ void TetMesh::need_speed(int speed_type)
 
   for (int i = 0; i<nf; i++)
   {
-    Face f = faces[i];
     switch (speed_type)
     {
     case CURVATURE:
-      faces[i].speedInv = (abs(curv1[f[0]] + curv2[f[0]]) +
-        abs(curv1[f[1]] + curv2[f[1]]) + abs(curv1[f[2]] +
-        curv2[f[2]])) / 6.0;
+      faces[i].speedInv = (abs(curv1[faces[i][0]] + 
+        curv2[faces[i][0]]) +
+        abs(curv1[faces[i][1]] + curv2[faces[i][1]]) + 
+        abs(curv1[faces[i][2]] +
+        curv2[faces[i][2]])) / 6.0;
       break;
     case ONE:
       faces[i].speedInv = 1.0;
