@@ -63,7 +63,7 @@ class TriMesh {
           this->edgeLens[i] = o.edgeLens[i];
           this->v[i] = o.v[i];
         }
-        *this;
+        return *this;
       }
       operator const int * () const { return &(v[0]); }
       operator const int * () { return &(v[0]); }

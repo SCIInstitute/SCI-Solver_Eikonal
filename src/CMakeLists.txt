@@ -139,6 +139,7 @@ add_subdirectory(core2d)
 include_directories(core2d/include core3d/include )
 include_directories(${CMAKE_CURRENT_DIRECTORY})
 
+ADD_DEPENDENCIES(EIKONAL_CORE cusp)
 CUDA_ADD_LIBRARY(EIKONAL_CORE Eikonal.cu Eikonal.h)
 TARGET_LINK_LIBRARIES(EIKONAL_CORE Eikonal-2D_CORE Eikonal-3D_CORE)
 
