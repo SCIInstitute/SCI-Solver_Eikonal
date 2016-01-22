@@ -44,17 +44,27 @@ class TriMesh {
       float T[3];
       Vec<3,float> edgeLens;  // edge length for 01, 12, 20
       int material_;
-      Face() : material_(0) {}
-      Face(const int &v0, const int &v1, const int &v2) : material_(0)
+      Face() : speedInv(1.f), material_(0) {}
+      Face(const int &v0, const int &v1, const int &v2) : speedInv(1.f), material_(0)
       {
         v[0] = v0; v[1] = v1; v[2] = v2;
       }
-      Face(const int *v_) : material_(0)
+      Face(const int *v_) : speedInv(1.f), material_(0)
       {
         v[0] = v_[0]; v[1] = v_[1]; v[2] = v_[2];
       }
       int &operator[] (int i) { return v[i]; }
       const int &operator[] (int i) const { return v[i]; }
+      Face& operator=(Face o) {
+        this->speedInv = o.speedInv; 
+        this->material_ = o.material_;
+        for (size_t i = 0; i < 3; i++) {
+          this->T[i] = o.T[i];
+          this->edgeLens[i] = o.edgeLens[i];
+          this->v[i] = o.v[i];
+        }
+        *this;
+      }
       operator const int * () const { return &(v[0]); }
       operator const int * () { return &(v[0]); }
       operator int * () { return &(v[0]); }
@@ -229,16 +239,8 @@ class TriMesh {
 
       // create faces (v1,v3,v4) and (v1,v2,v3), check angle at v1
       Face f1(v1,v3,v4);
-      //f1.T[f1.indexof(v1)] = this->vertT[v1];
-      //f1.T[f1.indexof(v3)] = this->vertT[v3];
-      //f1.T[f1.indexof(v4)] = this->vertT[v4];
-      //f1.speedInv = 1.0;
 
       Face f2(v1,v2,v3);
-      //f2.T[f2.indexof(v1)] = this->vertT[v1];
-      //f2.T[f2.indexof(v2)] = this->vertT[v2];
-      //f2.T[f2.indexof(v3)] = this->vertT[v3];
-      //f2.speedInv = 1.0;
 
       if (IsNonObtuse(v,f1))
       {
@@ -247,16 +249,16 @@ class TriMesh {
 
 
         case CURVATURE:
-          f1.speedInv = ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
+          f1.speedInv *= ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
           break;
         case ONE:
-          f1.speedInv = 1.0;
+          f1.speedInv *= 1.0;
           break;
         case NOISE:
-          f1.speedInv =( noiseOnVert[f1[0]] + noiseOnVert[f1[1]] + noiseOnVert[f1[2]] )/ 3;
+          f1.speedInv *=( noiseOnVert[f1[0]] + noiseOnVert[f1[1]] + noiseOnVert[f1[2]] )/ 3;
           break;
         default:
-          f1.speedInv = 1.0;
+          f1.speedInv *= 1.0;
           break;
 
         }
@@ -287,16 +289,16 @@ class TriMesh {
 
 
         case CURVATURE:
-          f2.speedInv = ( abs(curv1[f2[0]] + curv2[f2[0]]) + abs( curv1[f2[1]] + curv2[f2[1]]) + abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
+          f2.speedInv *= ( abs(curv1[f2[0]] + curv2[f2[0]]) + abs( curv1[f2[1]] + curv2[f2[1]]) + abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
           break;
         case ONE:
-          f2.speedInv = 1.0;
+          f2.speedInv *= 1.0;
           break;
         case NOISE:
-          f2.speedInv =( noiseOnVert[f2[0]] + noiseOnVert[f2[1]] + noiseOnVert[f2[2]] )/ 3;
+          f2.speedInv *=( noiseOnVert[f2[0]] + noiseOnVert[f2[1]] + noiseOnVert[f2[2]] )/ 3;
           break;
         default:
-          f2.speedInv = 1.0;
+          f2.speedInv *= 1.0;
           break;
 
         }
@@ -380,21 +382,18 @@ class TriMesh {
       for (int f = 0; f < nf; f++)
       {
         Face cf = this->faces[f];
+        // travel time
+        this->faces[f].T[0] = this->vertT[cf[0]];
+        this->faces[f].T[1] = this->vertT[cf[1]];
+        this->faces[f].T[2] = this->vertT[cf[2]];
         if (face_speeds.empty()){
-          // travel time
-          this->faces[f].T[0] = this->vertT[cf[0]];
-          this->faces[f].T[1] = this->vertT[cf[1]];
-          this->faces[f].T[2] = this->vertT[cf[2]];
+          cf.speedInv *= 1.f;
         } else {
           int mat = this->faces[f].material_;
           if (mat >= face_speeds.size()) 
             mat = face_speeds[face_speeds.size() - 1];
-          this->faces[f].T[0] = face_speeds[mat];
-          this->faces[f].T[1] = face_speeds[mat];
-          this->faces[f].T[2] = face_speeds[mat];
+          cf.speedInv *= face_speeds[mat];
         }
-
-        // speedInv set elsewhere for 1 vs curvature vs noise;
       }
     }
 

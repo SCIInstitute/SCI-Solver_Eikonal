@@ -76,20 +76,23 @@ int main(int argc, char* argv[]) {
       exit(0);
     }
   }
-  //set pole bloches of triangles to be a random material if > 1 mats exist
-  if (!data.speedMtxMultipliers_.empty()) {
+  //set blotch 3 away from (7.5,7.5,0) to be different material
+  if (data.speedMtxMultipliers_.size() > 1) {
     data.initializeMesh();
     for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
-      if (data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][0] < 75.f ||
-        data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][1] < 75.f ||
-        data.triMesh_->vertices[data.triMesh_->faces[i].v[0]][2] < 75.f) {
-        float choose = (float)rand() / (float)RAND_MAX;
-        int val = data.speedMtxMultipliers_.size() * choose;
-        data.triMesh_->faces[i].material_ = val;
-      }
+      point p = data.triMesh_->vertices[data.triMesh_->faces[i].v[0]];
+      p = p + data.triMesh_->vertices[data.triMesh_->faces[i].v[1]];
+      p = p + data.triMesh_->vertices[data.triMesh_->faces[i].v[2]];
+      p = p / 3.f;
+      data.triMesh_->faces[i].material_ =
+        (len(p - point(7.5, 7.5, 0)) < 3.) ? 0 : 1;
     }
   }
   data.solveEikonal();
+  std::vector<float> mats;
+  for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
+    mats.push_back(data.triMesh_->faces[i].speedInv);
+  }
   //write the output to file
   data.writeVTK(false);
   //the solution for the sphere examples (center 0,0,0, & radius 100)
