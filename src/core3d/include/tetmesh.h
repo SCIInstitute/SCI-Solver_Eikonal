@@ -18,8 +18,8 @@
 #ifndef ONE
 #define ONE 1
 #endif
-#ifndef CURVATURE
-#define CURVATURE 2
+#ifndef MANUAL_SPEED
+#define MANUAL_SPEED 4
 #endif
 #ifndef NOISE
 #define NOISE 3

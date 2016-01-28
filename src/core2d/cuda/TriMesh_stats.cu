@@ -63,14 +63,14 @@ void TriMesh::InitializeAttributes(const std::vector<float>& face_speeds)
     this->faces[f].T[0] = this->vertT[this->faces[f][0]];
     this->faces[f].T[1] = this->vertT[this->faces[f][1]];
     this->faces[f].T[2] = this->vertT[this->faces[f][2]];
-    if (face_speeds.empty()){
-      this->faces[f].speedInv *= 1.f;
+    if (face_speeds.empty() || face_speeds.size() != this->faces.size()){
+      this->faces[f].speedInv = 1.f;
     } else {
       int mat = this->faces[f].material_;
       if (mat >= face_speeds.size()) {
         mat = face_speeds[face_speeds.size() - 1];
       }
-      this->faces[f].speedInv *= face_speeds[mat];
+      this->faces[f].speedInv = 1.f / face_speeds[mat];
     }
   }
 }

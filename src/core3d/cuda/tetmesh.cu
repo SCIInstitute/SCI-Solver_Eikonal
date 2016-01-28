@@ -50,17 +50,19 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist,
     printf("error!!! index not start from 0 or 1!!\n");
   }
 
-  if(speedMtx.size() > 0) {
+  if(speedMtx.size() == 6 * numtet) {
     for(int i =0; i< numtet; i++) {
-      size_t mat = static_cast<size_t>(attrlist[i]);
-      if (mat > speedMtx.size()) { //ensure mesh file not requesting out of bounds
-        mat = 0;
+      for (size_t j = 0; j < 6; j++) {
+        tets[i].M[j] = speedMtx[i*6 + j];
       }
+    }
+  } else if (speedMtx.size() == numtet) {
+    for(int i =0; i< numtet; i++) {
       for (size_t j = 0; j < 6; j++) {
         if (j == 0 || j == 3 || j == 5) {
-          tets[i].M[j] = speedMtx[mat];
+          tets[i].M[j] = speedMtx[i];
         } else {
-          tets[i].M[j] = 0.;
+          tets[i].M[j] = 0.f;
         }
       }
     }
@@ -160,30 +162,22 @@ void TetMesh::need_noise(float low, float high)
 
 void TetMesh::need_speed(int speed_type)
 {
-  //TODO only copied from trimesh code.
+  //convenience options for setting speed
   int nf = faces.size();
 
   for (int i = 0; i<nf; i++)
   {
     switch (speed_type)
     {
-    case CURVATURE:
-      faces[i].speedInv = (abs(curv1[faces[i][0]] + 
-        curv2[faces[i][0]]) +
-        abs(curv1[faces[i][1]] + curv2[faces[i][1]]) + 
-        abs(curv1[faces[i][2]] +
-        curv2[faces[i][2]])) / 6.0;
-      break;
     case ONE:
       faces[i].speedInv = 1.0;
       break;
     case NOISE:
       faces[i].speedInv = (noiseOnVert[faces[i][0]] +
-        noiseOnVert[faces[i][1]] +
-        noiseOnVert[faces[i][2]]) / 3;
+          noiseOnVert[faces[i][1]] +
+          noiseOnVert[faces[i][2]]) / 3;
       break;
     default:
-      faces[i].speedInv = 1.0;
       break;
     }
   }

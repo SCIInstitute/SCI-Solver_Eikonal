@@ -48,7 +48,7 @@ public:
   float stopDistance_;
   bool isStructured_;
   bool userSetInitial_;
-  int speedType_; // ONE (1), CURVATURE (2), NOISE (3)
+  int speedType_; // ONE (1), CURVATURE (2), NOISE (3), MANUAL (4)
   int squareLength_, squareWidth_, squareDepth_;
   int squareBlockLength_, squareBlockWidth_, squareBlockDepth_;
   int maxIterations_;

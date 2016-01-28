@@ -60,6 +60,8 @@ void Eikonal::writeVTK(bool all) {
 
 void Eikonal::initSpeedMtxMultipliers(
   std::vector<float> values) {
+  // num triangles size for 2D
+  // num tets or num tets * 6 size for 3D
   this->speedMtxMultipliers_ = values;
 }
 

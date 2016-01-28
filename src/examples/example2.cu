@@ -45,8 +45,8 @@ int main(int argc, char* argv[]) {
         data.speedType_ = CURVATURE;
       } else if (type == "NOISE") {
         data.speedType_ = NOISE;
-      } else {
-        data.speedType_ = ONE;
+      } else if (type == "MANUAL"){
+        data.speedType_ = MANUAL_SPEED;
       }
       i++;
     } else if (strcmp(argv[i], "-x") == 0) {

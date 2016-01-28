@@ -59,8 +59,10 @@ int main(int argc, char *argv[])
         data.speedType_ = CURVATURE;
       } else if (s == "NOISE") {
         data.speedType_ = NOISE;
-      } else if (s != "ONE") {
-        std::cout << "Unknown speed type: " << s << std::endl;
+      } else if (s == "ONE") {
+        data.speedType_ = ONE;
+      } else {
+        data.speedType_ = MANUAL_SPEED;
       }
       i++;
     } else if (strcmp(argv[i],"-i") == 0) {
@@ -75,7 +77,11 @@ int main(int argc, char *argv[])
       printf("  -i INPUT        Use this tet mesh \n");
       printf("  -b MAX_BLOCKS   Max # of blocks to use\n");
       printf("  -m MAX_ITER     Max # of iterations before quit\n");
-      printf("  -x s1, s2, ...  Speed matrix multipliers from tetmesh attributes.\n");
+      // The tensors are 6 unique values in a matrix per tet
+      // [ 0 1 2 ]
+      // [ 1 3 4 ]
+      // [ 2 4 5 ]
+      printf("  -x MATRIX_FILE  File of tensor matrices per tet (N*6 values).\n");
       exit(0);
     }
   data.solveEikonal();

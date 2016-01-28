@@ -21,6 +21,9 @@
 #ifndef NOISE
 #define NOISE 3
 #endif
+#ifndef MANUAL_SPEED
+#define MANUAL_SPEED 3
+#endif
 
 #include <cstdio>
 #include "Vec.h"
@@ -56,15 +59,15 @@ class TriMesh {
       int &operator[] (int i) { return v[i]; }
       const int &operator[] (int i) const { return v[i]; }
       /*Face& operator=(Face o) {
-        this->speedInv = o.speedInv; 
+        this->speedInv = o.speedInv;
         this->material_ = o.material_;
         for (size_t i = 0; i < 3; i++) {
-          this->T[i] = o.T[i];
-          this->edgeLens[i] = o.edgeLens[i];
-          this->v[i] = o.v[i];
+        this->T[i] = o.T[i];
+        this->edgeLens[i] = o.edgeLens[i];
+        this->v[i] = o.v[i];
         }
         return *this;
-      }*/
+        }*/
       operator const int * () const { return &(v[0]); }
       operator const int * () { return &(v[0]); }
       operator int * () { return &(v[0]); }
@@ -247,7 +250,6 @@ class TriMesh {
         switch (this->speed_type_)
         {
 
-
         case CURVATURE:
           f1.speedInv = ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
           break;
@@ -258,7 +260,7 @@ class TriMesh {
           f1.speedInv =( noiseOnVert[f1[0]] + noiseOnVert[f1[1]] + noiseOnVert[f1[2]] )/ 3;
           break;
         default:
-          f1.speedInv = 1.0;
+          f1.speedInv = cf.speedInv;
           break;
 
         }
@@ -296,7 +298,7 @@ class TriMesh {
           f2.speedInv = ( noiseOnVert[f2[0]] + noiseOnVert[f2[1]] + noiseOnVert[f2[2]] )/ 3;
           break;
         default:
-          f2.speedInv = 1.0;
+          f2.speedInv = cf.speedInv;
           break;
 
         }
