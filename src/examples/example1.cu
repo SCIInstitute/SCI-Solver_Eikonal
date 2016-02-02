@@ -52,19 +52,6 @@ int main(int argc, char *argv[])
         float val = atof(argv[++i]);
         data.speedMtxMultipliers_.push_back(val);
       }
-    } else if (strcmp(argv[i], "-s") == 0) {
-      if (i + 1 >= argc) break;
-      std::string s = std::string(argv[i + 1]);
-      if (s == "CURVATURE") {
-        data.speedType_ = CURVATURE;
-      } else if (s == "NOISE") {
-        data.speedType_ = NOISE;
-      } else if (s == "ONE") {
-        data.speedType_ = ONE;
-      } else {
-        data.speedType_ = MANUAL_SPEED;
-      }
-      i++;
     } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;
       data.filename_ = std::string(argv[i+1]);
@@ -73,7 +60,6 @@ int main(int argc, char *argv[])
       printf("Usage: ./Example1 [OPTIONS]\n");
       printf("  -h              Show this help.\n");
       printf("  -v              Verbose output.\n");
-      printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
       printf("  -i INPUT        Use this tet mesh \n");
       printf("  -b MAX_BLOCKS   Max # of blocks to use\n");
       printf("  -m MAX_ITER     Max # of iterations before quit\n");
@@ -81,7 +67,8 @@ int main(int argc, char *argv[])
       // [ 0 1 2 ]
       // [ 1 3 4 ]
       // [ 2 4 5 ]
-      printf("  -x MATRIX_FILE  File of tensor matrices per tet (N*6 values).\n");
+      printf("  -x MATRIX_FILE  File of tensor matrices per tet (N*6 floats).\n");
+      printf("                  N floats if considered scalar speeds per tet.\n");
       exit(0);
     }
   data.solveEikonal();

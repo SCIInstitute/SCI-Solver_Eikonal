@@ -58,16 +58,6 @@ class TriMesh {
       }
       int &operator[] (int i) { return v[i]; }
       const int &operator[] (int i) const { return v[i]; }
-      /*Face& operator=(Face o) {
-        this->speedInv = o.speedInv;
-        this->material_ = o.material_;
-        for (size_t i = 0; i < 3; i++) {
-        this->T[i] = o.T[i];
-        this->edgeLens[i] = o.edgeLens[i];
-        this->v[i] = o.v[i];
-        }
-        return *this;
-        }*/
       operator const int * () const { return &(v[0]); }
       operator const int * () { return &(v[0]); }
       operator int * () { return &(v[0]); }
