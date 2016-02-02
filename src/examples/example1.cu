@@ -49,8 +49,14 @@ int main(int argc, char *argv[])
       i++;
     } else if (strcmp(argv[i], "-x") == 0) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
-        float val = atof(argv[++i]);
-        data.speedMtxMultipliers_.push_back(val);
+        std::ifstream mat(argv[++i]);
+        while (mat.good()) {
+          float val;
+          mat >> val;
+          if (!mat.good()) break;
+          data.speedMtxMultipliers_.push_back(val);
+        }
+        mat.close();
       }
     } else if (strcmp(argv[i],"-i") == 0) {
       if (i+1 >= argc) break;

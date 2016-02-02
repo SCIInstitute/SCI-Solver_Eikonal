@@ -4,6 +4,7 @@
 #include <time.h>
 #include <math.h>
 #include "tetmesh.h"
+#include <fstream>
 
 void TetMesh::init(float* pointlist, int numpoint, int*trilist,
     int numtri, int* tetlist, int numtet,
@@ -67,7 +68,51 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist,
       }
     }
   } else { //default speed mtx.
-    for(int i =0; i< numtet; i++) {
+    //DEBUG write out torus matrix floats
+    std::ofstream out("torus_matrices.txt");
+    for (int i = 0; i< numtet; i++) {
+      //find average point
+      point center = (this->vertices[this->tets[i][0]] +
+        this->vertices[this->tets[i][1]] +
+        this->vertices[this->tets[i][2]] +
+        this->vertices[this->tets[i][3]]) / 4.f;
+      center[2] = 0.f;
+      //the speed matrix
+      float matrix[9] = {
+        20., 0.f, 0.f,
+        0.f, 1.f, 0.f,
+        0.f, 0.f, 1.f
+      };
+      //rotation matrix
+      float angle = std::acos(center DOT point(1.f, 0.f, 1.f) / len(center));
+      float rotation[9] = {
+        std::cos(angle), -std::sin(angle), 0.f,
+        std::sin(angle), std::cos(angle), 0.f,
+        0.f, 0.f, 1.f
+      };
+      //multiply
+      float mat[9];
+      float temp = 0.f;
+      int a, b, c;
+
+      for (a = 0; a < 3; a++)
+      {
+        for (b = 0; b < 3; b++)
+        {
+          for (c = 0; c < 3; c++)
+          {
+            temp += rotation[3 * b + c] * matrix[3 * c + a];
+          }
+          mat[3 * b + a] = temp;
+          temp = 0;
+        }
+      }
+      out << mat[0] << std::endl;
+      out << mat[1] << std::endl;
+      out << mat[2] << std::endl;
+      out << mat[4] << std::endl;
+      out << mat[5] << std::endl;
+      out << mat[8] << std::endl;
       tets[i].M[0] = 1.0;
       tets[i].M[1] = 0.0;
       tets[i].M[2] = 0.0;
@@ -75,6 +120,7 @@ void TetMesh::init(float* pointlist, int numpoint, int*trilist,
       tets[i].M[4] = 0.0;
       tets[i].M[5] = 1.0;
     }
+    out.close();
   }
 }
 // Find the direct neighbors of each vertex
