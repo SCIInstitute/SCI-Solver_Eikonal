@@ -34,7 +34,7 @@ are supported, and are read by the <a href="http://graphics.stanford.edu/softwar
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
-<br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/>
 
 <h4>Eikonal 3D Aknowledgements</h4>
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
@@ -55,9 +55,9 @@ Google Test</a> is used for testing.
 Requirements
 ==============
 
- * Git, CMake (3.0+ recommended), and the standard system build environment tools.
+ * Git, CMake (2.8+ recommended), and the standard system build environment tools.
  * You will need a CUDA Compatible Graphics card. See <a href="https://developer.nvidia.com/cuda-gpus">here</a> You will also need to be sure your card has CUDA compute capability of at least 2.0.
- * SCI-Solver_Eikonal is compatible with the latest CUDA toolkit (7.0). Download <a href="https://developer.nvidia.com/cuda-downloads">here</a>.
+ * SCI-Solver_Eikonal is compatible with the latest CUDA toolkit (7.5). Download <a href="https://developer.nvidia.com/cuda-downloads">here</a>.
  * This project has been tested on OpenSuse 13.1 (Bottle) on NVidia GeForce GTX 680 HD, Windows 7 on NVidia GeForce GTX 775M, and OSX 10.10 on NVidia GeForce GTX 775M. 
  * If you have a CUDA graphics card equal to or greater than our test machines and are experiencing issues, please contact the repository owners.
  * Windows: You will need Microsoft Visual Studio 2010+ build tools. This document describes the "NMake" process.
@@ -87,7 +87,7 @@ nmake
 
 **Note:** For all platforms, you may need to specify your CUDA toolkit location (especially if you have multiple CUDA versions installed):
 ```c++
-cmake -DCUDA_TOOLKIT_ROOT_DIR="~/NVIDIA/CUDA-7.0" ../src
+cmake -DCUDA_TOOLKIT_ROOT_DIR="~/NVIDIA/CUDA-7.5" ../src
 ```
 (Assuming this is the location).
 
@@ -120,6 +120,18 @@ examples/Example2
 Each example has a <code>-h</code> flag that prints options for that example. <br/>
 
 Follow the example source code in <code>src/examples</code> to learn how to use the library.
+<br/>
+To run examples similar to the paper, the following example calls would do so:<br/>
+<b>2D Eikonal Homogeneous, Sphere </b>(add <code>-b 10</code> or another #verts/block if 2D fails)<br/>
+<code>examples/Example2 -v -i ../src/test/test_data/sphere_1154verts.ply</code><br/>
+<b>2D Eikonal Scalar Heterogeneous, Square </b> <br/>
+<code>examples/Example2 -v -i ../src/test/test_data/SquareMesh_size32.ply -x ../src/test/test_data/square_scalars.txt</code><br/>
+<b>3D Eikonal Homogeneous, Sphere </b><br/>
+<code>examples/Example1 -v -i ../src/test/test_data/sphere_8092</code><br/>
+<b>3D Eikonal Tensor Heterogeneous, Torus </b> <br/>
+<code>examples/Example1 -v -i ../src/test/test_data/torus -x ../src/test/test_data/torus_matrices.txt -n 300</code><br/>
+<b>3D Eikonal Scalar Heterogeneous, Cube </b> <br/>
+<code>examples/Example1 -v -i ../src/test/test_data/CubeMesh_size256step8_correct -x ../src/test/test_data/cube_matrices.txt -n 300</code><br/>
 
 Using the Library
 ==============
@@ -155,12 +167,18 @@ int main(int argc, char *argv[])
 }
 ```
 
+The following helper functions are available before running the solver:
+```c++
+void Eikonal::initializeMesh();
+void Eikonal::initSpeedMtxMultipliers(std::vector<float> speeds); //set the speeds per face/tet
+void Eikonal::initializeVertices(std::vector<float> values); //set the seed points to 0, others to LARGENUM
+```
 The following helper functions are available after running the solver:
 ```c++
 std::vector < float > Eikonal::getFinalResult();
 std::vector < float > Eikonal::getResultAtIteration(size_t i);
 size_t Eikonal::numIterations(); 
-void Eikonal::writeVTK(); //write the vtk files that show progression of the solver
+void Eikonal::writeVTK(bool writeEachIteration); //write the vtk files that show progression of the solver
 ```
 You can also access the results and the mesh directly after running the solver:
 ```c++
@@ -177,11 +195,10 @@ std::vector < std::vector < float > > Eikonal::iteration_values_;
   class Eikonal {
       bool verbose_;                    //option to set for runtime verbosity [Default false]
       std::string filename_;            //the input tet mesh filename         [Default ../src/test/test_data/sphere339
-
-      std::vector<int> seedPointList_;  //the seed point(s) to start with     [Default vertex 0 only]
       int maxBlocks_;                   //the max # of blocks (patches)
                                         //   on the convergence queue         [Default 100]
       int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
+      float stopDistance_;		//Stop distance for Eikonal	      [Default 50000.]
       bool isStructured_;               //Whether the mesh is structured      [Default false]
       int squareLength_;                //if structured, the square size      [Default 16, 16, 16]
       int squareWidth_;                 
@@ -189,7 +206,7 @@ std::vector < std::vector < float > > Eikonal::iteration_values_;
       int squareBlockLength_;           //if structured, CUDA block length    [Default 1]
       int squareBlockWidth_;            //if structured, CUDA block width     [Default 1]
       int squareBlockDepth;             //if structured, CUDA block width     [Default 1]
-      int maxIterations_;               //when to stop iterating if fail      [Default 1000]
+      int maxIterations_;               //when to stop iterating if fail      [Default 100]
       bool isTriMesh_;                  //This is a triangle mesh             [Default true]
   };
 ```
