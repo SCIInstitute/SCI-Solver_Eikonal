@@ -37,15 +37,15 @@ int main(int argc, char *argv[])
   //input filename (minus extension)
   data.filename_ = "../src/test/test_data/sphere334";
   for (int i = 0; i < argc; i++)
-    if (strcmp(argv[i],"-v") == 0) {
-      data.verbose_ = true;
-    } else if (strcmp(argv[i],"-m") == 0) {
-      if (i+1 >= argc) break;
-      data.maxIterations_ = atoi(argv[i+1]);
-      i++;
-    } else if (strcmp(argv[i],"-b") == 0) {
-      if (i+1 >= argc) break;
-      data.maxBlocks_ = atoi(argv[i+1]);
+    if (strcmp(argv[i], "-v") == 0) {
+    data.verbose_ = true;
+    } else if (strcmp(argv[i], "-m") == 0) {
+    if (i + 1 >= argc) break;
+    data.maxIterations_ = atoi(argv[i + 1]);
+    i++;
+    } else if (strcmp(argv[i], "-b") == 0) {
+      if (i + 1 >= argc) break;
+      data.maxBlocks_ = atoi(argv[i + 1]);
       i++;
     } else if (strcmp(argv[i], "-x") == 0) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
@@ -58,11 +58,11 @@ int main(int argc, char *argv[])
         }
         mat.close();
       }
-    } else if (strcmp(argv[i],"-i") == 0) {
-      if (i+1 >= argc) break;
-      data.filename_ = std::string(argv[i+1]);
+    } else if (strcmp(argv[i], "-i") == 0) {
+      if (i + 1 >= argc) break;
+      data.filename_ = std::string(argv[i + 1]);
       i++;
-    } else if (strcmp(argv[i],"-h") == 0) {
+    } else if (strcmp(argv[i], "-h") == 0) {
       printf("Usage: ./Example1 [OPTIONS]\n");
       printf("  -h              Show this help.\n");
       printf("  -v              Verbose output.\n");
@@ -77,19 +77,19 @@ int main(int argc, char *argv[])
       printf("                  N floats if considered scalar speeds per tet.\n");
       exit(0);
     }
-  data.solveEikonal();
-  //write out the VTK files
-  data.writeVTK(false); //true to output values at each iter.
-  //we know that the solution should be the euclidean distance from the center.
-  std::vector <float> solution;
-  for (size_t i = 0; i < data.tetMesh_->vertices.size(); i++) {
-    float x = data.tetMesh_->vertices[i][0];
-    float y = data.tetMesh_->vertices[i][1];
-    float z = data.tetMesh_->vertices[i][2];
-    solution.push_back(std::sqrt((0.f - x)*(0.f-x)+(0.f-y)*(0.f-y)+(0.f-z)*(0.f-z)));
-  }
-  if (data.verbose_)
-    data.printErrorGraph(solution);
-  return 0;
+    data.solveEikonal();
+    //write out the VTK files
+    data.writeVTK(false); //true to output values at each iter.
+    //we know that the solution should be the euclidean distance from the center.
+    std::vector <float> solution;
+    for (size_t i = 0; i < data.tetMesh_->vertices.size(); i++) {
+      float x = data.tetMesh_->vertices[i][0];
+      float y = data.tetMesh_->vertices[i][1];
+      float z = data.tetMesh_->vertices[i][2];
+      solution.push_back(std::sqrt((0.f - x)*(0.f - x) + (0.f - y)*(0.f - y) + (0.f - z)*(0.f - z)));
+    }
+    if (data.verbose_)
+      data.printErrorGraph(solution);
+    return 0;
 }
 

@@ -51,8 +51,14 @@ int main(int argc, char* argv[]) {
       i++;
     } else if (strcmp(argv[i], "-x") == 0) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
-        float val = atof(argv[++i]);
-        data.speedMtxMultipliers_.push_back(val);
+        std::ifstream mat(argv[++i]);
+        while (mat.good()) {
+          float val;
+          mat >> val;
+          if (!mat.good()) break;
+          data.speedMtxMultipliers_.push_back(val);
+        }
+        mat.close();
       }
     } else if (strcmp(argv[i], "-b") == 0) {
       if (i + 1 >= argc) break;
@@ -72,24 +78,24 @@ int main(int argc, char* argv[]) {
       printf("  -b MAX_BLK_VERT Max # of verts/block to use\n");
       printf("  -n MAX_ITER     Max # of iterations to run\n");
       printf("  -s SPEEDTYPE    Speed type is [ONE], CURVATURE, or NOISE.\n");
-      printf("  -x s1, s2, ...  Speed matrix multipliers for random patches.\n");
+      printf("  -x SCALAR_FILE  File with speed scalars per face.\n");
       exit(0);
     }
   }
-  //set blotches 30 away from y/z poles to be different material
-  if (data.speedMtxMultipliers_.size() > 1) {
-    data.initializeMesh();
-    for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
-      point p = data.triMesh_->vertices[data.triMesh_->faces[i].v[0]];
-      p = p + data.triMesh_->vertices[data.triMesh_->faces[i].v[1]];
-      p = p + data.triMesh_->vertices[data.triMesh_->faces[i].v[2]];
-      p = p / 3.f;
-      data.triMesh_->faces[i].material_ =
-        ((std::abs(p[0]) < 30. && 
-        ((std::abs(p[1]) < 30.) != (std::abs(p[2]) < 30.))))
-        ? 1 : 0;
+  data.initializeMesh();
+  std::ofstream out("square_scalars.txt");
+  for (size_t i = 0; i < data.triMesh_->faces.size(); i++) {
+    point p = (data.triMesh_->vertices[data.triMesh_->faces[i][0]] +
+      data.triMesh_->vertices[data.triMesh_->faces[i][1]] +
+      data.triMesh_->vertices[data.triMesh_->faces[i][2]]) / 3.f;
+    if (len(p - point(16., 16., 0.)) < 6.) {
+      out << 20. << std::endl;
+    } else {
+      out << 1. << std::endl;
     }
   }
+  out.close(); 
+
   data.solveEikonal();
   //write the output to file
   data.writeVTK(false);

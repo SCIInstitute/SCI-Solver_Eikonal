@@ -19,8 +19,7 @@ public:
   virtual ~Eikonal();
   void initializeMesh();
   void initializeVertices(std::vector<float> values);
-  void initSpeedMtxMultipliers(
-    std::vector<float> values);
+  void initSpeedMtxMultipliers(std::vector<float> values);
   //accessor functions to the results.
   std::vector < float >& getFinalResult();
   std::vector < float >& getResultAtIteration(size_t i);
@@ -40,7 +39,7 @@ public:
   * @param solution The vector of expected solutions.
   */
   void printErrorGraph(std::vector<float> solution);
-  //2D data
+  //data
   bool verbose_;
   std::string filename_;
   int maxBlocks_;
