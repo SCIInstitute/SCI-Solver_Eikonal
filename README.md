@@ -198,7 +198,7 @@ std::vector < std::vector < float > > Eikonal::iteration_values_;
       int maxBlocks_;                   //the max # of blocks (patches)
                                         //   on the convergence queue         [Default 100]
       int maxVertsPerBlock_;            //Max # of vertices per block         [Default 64]
-      float stopDistance_;		//Stop distance for Eikonal	      [Default 50000.]
+      float stopDistance_;            	//Stop distance for Eikonal	      [Default 50000.]
       bool isStructured_;               //Whether the mesh is structured      [Default false]
       int squareLength_;                //if structured, the square size      [Default 16, 16, 16]
       int squareWidth_;                 
