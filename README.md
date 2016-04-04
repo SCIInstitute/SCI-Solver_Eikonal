@@ -22,7 +22,7 @@ Table of Contents
 Eikonal Equation on Triangulated Surfaces</a>**<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20" width=450>
 *NOTE*<br/>
-This code is a merge of Zhisong's 2D and 3D Unstructured Eikonal code. The oldest commit history for 2D can be found here: https://github.com/SCIInstitute/SCI-Solver_Eikonal-2D.
+This code is a merge of Zhisong's 2D and 3D Unstructured Eikonal code. The oldest commit history for 2D can be found <a href="https://github.com/SCIInstitute/SCI-Solver_Eikonal-2D">here</a>.
 
 **AUTHORS:**
 <br/>Zhisong Fu(*a*) <br/>
@@ -36,7 +36,7 @@ are supported, and are read by the <a href="http://graphics.stanford.edu/softwar
 The <a href="http://glaros.dtc.umn.edu/gkhome/metis/metis/download">METIS library</a> is used to partition unstructured 
 meshes. <a href="https://code.google.com/p/googletest/">
 Google Test</a> is used for testing.
-<br/><br/><br/><br/><br/><br/><br/>
+<br/>
 
 <h4>Eikonal 3D Aknowledgements</h4>
 **<a href="http://epubs.siam.org/doi/abs/10.1137/120881956"> A Fast Iterative Method for 
