@@ -21,6 +21,8 @@ Table of Contents
 **<a href ="http://epubs.siam.org/doi/abs/10.1137/100788951">A Fast Iterative Method for Solving the 
 Eikonal Equation on Triangulated Surfaces</a>**<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/SCI-Solver_Eikonal/master/src/Resources/eikonal2d.png"  align="right" hspace="20" width=450>
+*NOTE*<br/>
+This code is a merge of Zhisong's 2D and 3D Unstructured Eikonal code. The oldest commit history for 2D can be found here: https://github.com/SCIInstitute/SCI-Solver_Eikonal-2D.
 
 **AUTHORS:**
 <br/>Zhisong Fu(*a*) <br/>
