@@ -1,7 +1,7 @@
-SCI-Solver_Eikonal
+GPUTUM: Unstructured Eikonal
 =====================
 
-SCI-Solver_Eikonal is a C++/CUDA library written to solve the Eikonal equation on a 3D tet meshes and 2D triangular meshes. It uses the fast iterative method (FIM) to solve efficiently, and uses GPU hardware.
+GPUTUM: Unstructured Eikonal is a C++/CUDA library written to solve the Eikonal equation on a 3D tet meshes and 2D triangular meshes. It uses the fast iterative method (FIM) to solve efficiently, and uses GPU hardware.
 
 The code was written by Zhisong Fu at the Scientific Computing and Imaging Institute, 
 University of Utah, Salt Lake City, USA. The theory behind this code is published in the papers linked below. 
