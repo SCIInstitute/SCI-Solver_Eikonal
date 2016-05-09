@@ -133,7 +133,11 @@ To run examples similar to the paper, the following example calls would do so:<b
 <b>3D Eikonal Tensor Heterogeneous, Torus </b> <br/>
 <code>examples/Example1 -v -i ../src/test/test_data/torus -x ../src/test/test_data/torus_matrices.txt -n 300</code><br/>
 <b>3D Eikonal Scalar Heterogeneous, Cube </b> <br/>
-<code>examples/Example1 -v -i ../src/test/test_data/CubeMesh_size256step8_correct -x ../src/test/test_data/cube_matrices.txt -n 300</code><br/>
+<code>examples/Example1 -v -i ../src/test/test_data/CubeMesh_size256step8_correct -x ../src/test/test_data/cube_scalars.txt -n 300</code><br/>
+
+**NOTE** All examples output a <code>result0.vtk</code> VTK file in the current directory.
+These files are easily viewed via VTK readers like Paraview. You can clip and add iso-values to 
+more distinctly visualize the result.
 
 Using the Library
 ==============
