@@ -114,8 +114,8 @@ void TriMesh::need_speed()
     case CURVATURE:
       faces[i].speedInv = (abs(curv1[faces[i][0]] +
             curv2[faces[i][0]]) +
-          abs(curv1[faces[i][1]] + curv2[faces[i][1]]) +
-          abs(curv1[faces[i][2]] +
+          std::abs(curv1[faces[i][1]] + curv2[faces[i][1]]) +
+          std::abs(curv1[faces[i][2]] +
             curv2[faces[i][2]])) / 6.0;
       break;
     case ONE:

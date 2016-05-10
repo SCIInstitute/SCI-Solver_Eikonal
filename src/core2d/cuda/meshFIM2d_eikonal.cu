@@ -81,7 +81,7 @@ void meshFIM2dEikonal::writeVTK(std::vector< std::vector <float> > time_values)
     ss << "result" << j << ".vtk";
     vtkfile = fopen(ss.str().c_str(), "w+");
     fprintf(vtkfile, "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET UNSTRUCTURED_GRID\n");
-    fprintf(vtkfile, "POINTS %d float\n", nv);
+    fprintf(vtkfile, "POINTS %lu float\n", nv);
     for (size_t i = 0; i < nv; i++)
     {
       fprintf(vtkfile, "%.12f %.12f %.12f\n", m_meshPtr->vertices[i][0], 

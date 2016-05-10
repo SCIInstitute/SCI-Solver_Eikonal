@@ -241,7 +241,9 @@ class TriMesh {
         {
 
         case CURVATURE:
-          f1.speedInv = ( abs(curv1[f1[0]] + curv2[f1[0]]) + abs(curv1[f1[1]] + curv2[f1[1]]) + abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
+          f1.speedInv = ( std::abs(curv1[f1[0]] + curv2[f1[0]]) + 
+            std::abs(curv1[f1[1]] + curv2[f1[1]]) + 
+            std::abs(curv1[f1[2]] + curv2[f1[2]]) ) / 6;
           break;
         case ONE:
           f1.speedInv = 1.0;
@@ -279,7 +281,7 @@ class TriMesh {
         switch (this->speed_type_)
         {
         case CURVATURE:
-          f2.speedInv = ( abs(curv1[f2[0]] + curv2[f2[0]]) + abs( curv1[f2[1]] + curv2[f2[1]]) + abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
+          f2.speedInv = ( std::abs(curv1[f2[0]] + curv2[f2[0]]) + std::abs( curv1[f2[1]] + curv2[f2[1]]) + std::abs(curv1[f2[2]] + curv2[f2[2]]) ) / 6;
           break;
         case ONE:
           f2.speedInv = 1.0;
