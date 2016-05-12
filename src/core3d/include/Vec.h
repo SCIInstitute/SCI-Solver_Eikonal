@@ -49,10 +49,6 @@ fract, clamp, mix, step, smoothstep, and trinorm
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::sqrt;
 
 
 // Let gcc optimize conditional branches a bit better...
