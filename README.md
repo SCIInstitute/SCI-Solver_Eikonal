@@ -233,6 +233,7 @@ expected results. To build the tests, you will need to set
 ```c++
 cmake -DBUILD_TESTING=ON ../src
 ```
+After building, run <code>make test</code> or <code>ctest</code> in the build directory to run tests.<br/>
 <h4>Windows</h4>
 The gtest library included in the repo needs to be built with 
 forced shared libraries on Windows, so use the following:
