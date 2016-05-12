@@ -129,7 +129,7 @@ To run examples similar to the paper, the following example calls would do so:<b
 <b>2D Eikonal Scalar Heterogeneous, Square </b> <br/>
 <code>examples/Example2 -v -i ../src/test/test_data/SquareMesh_size32.ply -x ../src/test/test_data/square_scalars.txt</code><br/>
 <b>3D Eikonal Homogeneous, Sphere </b><br/>
-<code>examples/Example1 -v -i ../src/test/test_data/sphere_8092</code><br/>
+<code>examples/Example1 -v -i ../src/test/test_data/sphere8092</code><br/>
 <b>3D Eikonal Tensor Heterogeneous, Torus </b> <br/>
 <code>examples/Example1 -v -i ../src/test/test_data/torus -x ../src/test/test_data/torus_matrices.txt -n 300</code><br/>
 <b>3D Eikonal Scalar Heterogeneous, Cube </b> <br/>
