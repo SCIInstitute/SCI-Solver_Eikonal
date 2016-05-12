@@ -119,10 +119,10 @@ static inline void swap_double(double &x)
 {
   unsigned char buf[8];
   memcpy(buf, &x, 8);
-  swap(buf[0], buf[7]);
-  swap(buf[1], buf[6]);
-  swap(buf[2], buf[5]);
-  swap(buf[3], buf[4]);
+  std::swap(buf[0], buf[7]);
+  std::swap(buf[1], buf[6]);
+  std::swap(buf[2], buf[5]);
+  std::swap(buf[3], buf[4]);
   memcpy(&x, buf, 8);
 }
 

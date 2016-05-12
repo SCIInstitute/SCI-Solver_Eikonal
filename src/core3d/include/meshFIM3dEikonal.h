@@ -88,7 +88,7 @@ class meshFIM3dEikonal
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
         double x = m_meshPtr->vertices[i][0];
-        minx = min(minx, x);
+        minx = std::min(minx, x);
       }
       printf("Min X is %.12f\n", minx);
 

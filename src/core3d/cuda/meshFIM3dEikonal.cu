@@ -300,8 +300,8 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
   bool* h_blockCon;
   int* h_BlockSizes;
   int* h_BlockLabel;
-  vector<int> h_ActiveList;
-  vector<int> h_ActiveListNew;
+  std::vector<int> h_ActiveList;
+  std::vector<int> h_ActiveListNew;
 
   int* d_ActiveList = 0;
   bool* d_con;
@@ -356,7 +356,7 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
 
   h_ActiveList.resize(m_numBlock);
 
-  set<int>::iterator activeiter = m_ActiveBlocks.begin();
+  std::set<int>::iterator activeiter = m_ActiveBlocks.begin();
   for(int i = 0; activeiter != m_ActiveBlocks.end(); activeiter++)
     h_ActiveList[i++] = *activeiter;
 
@@ -395,8 +395,8 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
   cudaFuncSetCacheConfig(FIMCuda, cudaFuncCachePreferShared);
   cudaFuncSetCacheConfig(run_check_neghbor, cudaFuncCachePreferShared);
 
-  vector< vector<float> > tmp_h_verrT;
-  vector< vector<float> > tmp_h_verrT2;
+  std::vector< std::vector<float> > tmp_h_verrT;
+  std::vector< std::vector<float> > tmp_h_verrT2;
   tmp_h_verrT.resize(m_numBlock);
   tmp_h_verrT2.resize(m_numBlock);
 
@@ -462,9 +462,9 @@ std::vector < std::vector < float > >  meshFIM3dEikonal::GenerateData(size_t max
 
       if(h_blockCon[currBlkIdx]) //converged
       {
-        set<int> nb = m_BlockNeighbor[currBlkIdx];
+        std::set<int> nb = m_BlockNeighbor[currBlkIdx];
 
-        set<int>::iterator iter;
+        std::set<int>::iterator iter;
         for(iter = nb.begin(); iter != nb.end(); iter++)
         {
           int currIdx = *iter;
@@ -577,12 +577,12 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   size_t numVerts = m_meshPtr->vertices.size();
   TetMesh::Tet t;
 
-  vector<TetMesh::Tet> virtualTets;
-  vector<int> virtualTetCnt;
+  std::vector<TetMesh::Tet> virtualTets;
+  std::vector<int> virtualTetCnt;
 
   virtualTetCnt.resize(numBlock);
   m_PartitionVirtualTets.resize(numBlock);
-  set<int> labels;
+  std::set<int> labels;
 
   for(int i = 0; i < numTets; i++)
   {
@@ -607,8 +607,8 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
     }
     else if(labels.size() > 1)
     {
-      set<int>::iterator it = labels.begin();
-      for(set<int>::iterator it = labels.begin(); it != labels.end(); it++)
+      std::set<int>::iterator it = labels.begin();
+      for(std::set<int>::iterator it = labels.begin(); it != labels.end(); it++)
       {
         m_PartitionNbTets[*it].push_back(i);
       }
@@ -617,7 +617,7 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
       printf("Error!!\n");
   }
 
-  vector<int> PartitionToltalTets;
+  std::vector<int> PartitionToltalTets;
   PartitionToltalTets.resize(numBlock);
   m_maxNumTotalTets = 0;
   for(int j = 0; j < numBlock; j++)
@@ -634,7 +634,7 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
   m_BlockNeighbor.resize(numBlock);
   for(int i = 0; i < numVerts; i++)
   {
-    vector<int> nbs = m_meshPtr->neighbors[i];
+    std::vector<int> nbs = m_meshPtr->neighbors[i];
     for(int j = 0; j < nbs.size(); j++)
     {
       int nb = nbs[j];
@@ -647,7 +647,7 @@ void meshFIM3dEikonal::PartitionTets(int numBlock, bool verbose)
     printf("done!\n");
 }
 
-bool meshFIM3dEikonal::gettetmem(vector<float>& tetmem, TetMesh::Tet t)
+bool meshFIM3dEikonal::gettetmem(std::vector<float>& tetmem, TetMesh::Tet t)
 {
   bool needswap = false;
   tetmem.resize(6);
@@ -700,7 +700,7 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
     {
 
       t = m_meshPtr->tets[m_PartitionTets[i][j]];
-      vector<float> tetmem;
+      std::vector<float> tetmem;
       bool needswap = gettetmem(tetmem, t);
 
       h_tetMem0[blockIdx + j * 3 + 0] = tetmem[0];
@@ -751,7 +751,7 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
       if(j < numPF + numPNF)
       {
 
-        vector<float> tetmem;
+        std::vector<float> tetmem;
         t = m_meshPtr->tets[m_PartitionNbTets[i][k]];
         bool needswap = gettetmem(tetmem, t);
 
@@ -785,7 +785,7 @@ void meshFIM3dEikonal::GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h
       else if(j < numPF + numPNF + numPVF)
       {
         t = m_PartitionVirtualTets[i][l];
-        vector<float> tetmem;
+        std::vector<float> tetmem;
         bool needswap = gettetmem(tetmem, t);
 
         h_tetMem0[blockIdx + j * 3 + 0] = tetmem[0];
@@ -846,7 +846,7 @@ void meshFIM3dEikonal::GetVertMem(int* &h_vertMem, int* &h_vertMemOutside)
       m_maxNumVertMapping = static_cast<int>(std::max(static_cast<size_t>(m_maxNumVertMapping),
         m_blockVertMapping[i%m_blockVertMapping.size()].size()));
 
-      vector<int> tmp = m_blockVertMapping[m_PartitionInVerts[i][m]%m_blockVertMapping.size()];
+      std::vector<int> tmp = m_blockVertMapping[m_PartitionInVerts[i][m]%m_blockVertMapping.size()];
 
 
       for(int n = 0; n < tmp.size(); n++)
