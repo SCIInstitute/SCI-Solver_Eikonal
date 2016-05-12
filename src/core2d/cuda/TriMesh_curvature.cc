@@ -125,7 +125,7 @@ void diagonalize_curv(const vec &old_u, const vec &old_v,
   if (fabs(k1) >= fabs(k2)) {
     pdir1 = c*r_old_u - s*r_old_v;
   } else {
-    swap(k1, k2);
+    std::swap(k1, k2);
     pdir1 = s*r_old_u + c*r_old_v;
   }
   pdir2 = new_norm CROSS pdir1;

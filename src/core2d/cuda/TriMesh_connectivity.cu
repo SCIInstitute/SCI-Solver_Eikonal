@@ -11,7 +11,6 @@
 #include <time.h>
 #include "TriMesh.h"
 #include <algorithm>
-using std::find;
 
 void TriMesh::need_Rinscribe()
 {

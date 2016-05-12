@@ -8,8 +8,6 @@
 
 #include "TriMesh.h"
 #include <algorithm>
-using namespace std;
-
 
 // A characteristic "feature size" for the mesh.  Computed as an approximation
 // to the median edge length
@@ -20,9 +18,9 @@ float TriMesh::feature_size()
     return 0.0f;
 
   int nf = faces.size();
-  int nsamp = min(nf / 2, 333);
+  int nsamp = std::min(nf / 2, 333);
 
-  vector<float> samples;
+  std::vector<float> samples;
   samples.reserve(nsamp * 3);
 
   for (int i = 0; i < nsamp; i++) {

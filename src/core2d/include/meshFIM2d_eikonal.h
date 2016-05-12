@@ -19,7 +19,6 @@
 #define _EPS 1e-06
 #endif
 
-using namespace std;
 typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
 typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
@@ -106,7 +105,7 @@ class meshFIM2dEikonal {
           }
         }
         else
-          cout<< "Initialize seed points before labels!!!" << endl;
+          std::cout << "Initialize seed points before labels!!!" << std::endl;
       }
     }
 
@@ -129,16 +128,16 @@ class meshFIM2dEikonal {
     ~meshFIM2dEikonal(){};
 
     TriMesh*                                     m_meshPtr;
-    vector< set<int> >                           m_BlockNbPts;
-    vector< set<int> >                           m_BlockNeighbor;
-    vector<int>                                  m_BlockPoints;
-    vector<int>                                  m_ColorLabel;
+    std::vector< std::set<int> >                           m_BlockNbPts;
+    std::vector< std::set<int> >                           m_BlockNeighbor;
+    std::vector<int>                                  m_BlockPoints;
+    std::vector<int>                                  m_ColorLabel;
     int                                          m_numColor;
-    vector<Color>                                m_faceColors;
-    vector< vector<int> >                        m_PartitionFaces;
-    vector< vector<int> >                        m_PartitionVerts;
-    vector< vector<int> >                        m_PartitionNbFaces;
-    vector< vector<TriMesh::Face> >              m_PartitionVirtualFaces;
+    std::vector<Color>                                m_faceColors;
+    std::vector< std::vector<int> >                        m_PartitionFaces;
+    std::vector< std::vector<int> >                        m_PartitionVerts;
+    std::vector< std::vector<int> >                        m_PartitionNbFaces;
+    std::vector< std::vector<TriMesh::Face> >              m_PartitionVirtualFaces;
     int                                          m_maxNumTotalFaces;
     int                                          m_maxNumVert;
     int                                          m_maxNumVertMapping;
@@ -146,10 +145,10 @@ class meshFIM2dEikonal {
     std::set<index>                              m_ActiveBlocks;
     std::vector<index>                           m_SeedPoints;
     std::vector<LabelType2d>                     m_VertLabel;             // label of all the vertices active or not
-    vector<LabelType2d>                          m_BlockLabel;            // label of blocks active or not
+    std::vector<LabelType2d>                          m_BlockLabel;            // label of blocks active or not
     float                                        m_StopDistance;
-    vector<int> m_PartitionLabel;//TODO try to combine and use only one (npart_h on levelset)
-    vector<int> m_BlockSizes;
+    std::vector<int> m_PartitionLabel;//TODO try to combine and use only one (npart_h on levelset)
+    std::vector<int> m_BlockSizes;
 
     //LEVELSET vars ---- try to not have duplicates with eikonal
 

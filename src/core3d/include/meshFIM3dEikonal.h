@@ -15,8 +15,6 @@
 typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
 typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
-using namespace std;
-
 enum LabelType3d
 {
   FarPoint3d = 0, ActivePoint3d, MaskPoint3d, SeedPoint3d, StopPoint3d, AlivePoint3d, ToBeAlivePoint3d
@@ -65,7 +63,7 @@ class meshFIM3dEikonal
     void GraphColoring();
     void PartitionTets(int numBlock, bool verbose = false);
 
-    bool gettetmem(vector<float>& tetmem, TetMesh::Tet t);
+    bool gettetmem(std::vector<float>& tetmem, TetMesh::Tet t);
     void GetTetMem(float* &h_tetMem0, float* &h_tetMem1, float* &h_tetT);
     void GetVertMem(int* &h_vertMem, int* &h_vertMemOutside);
 
@@ -126,7 +124,7 @@ class meshFIM3dEikonal
 
         v1 = x1 * x1 / (K1 * K1) + y1 * y1 * 1 / (K1 * K1) + z1 * z1 * 1 / (K1 * K1) - 1;
 
-        vector< int > nbs = m_meshPtr->neighbors[i];
+        std::vector< int > nbs = m_meshPtr->neighbors[i];
         for (int j = 0; j < nbs.size(); j++)
         {
 
@@ -158,25 +156,25 @@ class meshFIM3dEikonal
     {
     };
     TetMesh* m_meshPtr;
-    vector< set<int> > m_BlockNbPts;
-    vector< set<int> > m_BlockNeighbor;
-    vector<int> m_BlockSizes;
-    vector<int> m_BlockPoints;
-    vector<int> m_ColorLabel;
+    std::vector< std::set<int> > m_BlockNbPts;
+    std::vector< std::set<int> > m_BlockNeighbor;
+    std::vector<int> m_BlockSizes;
+    std::vector<int> m_BlockPoints;
+    std::vector<int> m_ColorLabel;
     int m_numColor;
-    vector< vector<int> > m_PartitionTets;
-    vector< vector<int> > m_PartitionInVerts;
-    vector< set<int> > m_PartitionOutVerts;
-    vector< vector<int> > m_PartitionNbTets;
-    vector< vector< vector<int> > > m_VertMapping;
-    vector< vector<int> > m_OutVertMapping;
-    vector< vector<int> > m_OneRingStrip;
-    vector< vector< vector<float> > > m_tetMem;
-    vector< vector<int> > m_blockVertMapping;
-    vector< vector<int> > m_blockVertMappingInside;
-    vector< vector<int> > m_blockVertMappingOutside;
+    std::vector< std::vector<int> > m_PartitionTets;
+    std::vector< std::vector<int> > m_PartitionInVerts;
+    std::vector< std::set<int> > m_PartitionOutVerts;
+    std::vector< std::vector<int> > m_PartitionNbTets;
+    std::vector< std::vector< std::vector<int> > > m_VertMapping;
+    std::vector< std::vector<int> > m_OutVertMapping;
+    std::vector< std::vector<int> > m_OneRingStrip;
+    std::vector< std::vector< std::vector<float> > > m_tetMem;
+    std::vector< std::vector<int> > m_blockVertMapping;
+    std::vector< std::vector<int> > m_blockVertMappingInside;
+    std::vector< std::vector<int> > m_blockVertMappingOutside;
 
-    vector< vector<TetMesh::Tet> > m_PartitionVirtualTets;
+    std::vector< std::vector<TetMesh::Tet> > m_PartitionVirtualTets;
     int m_maxNumTotalTets;
     int m_maxNumInVert;
     int m_maxNumVertMapping;
@@ -185,7 +183,7 @@ class meshFIM3dEikonal
     int m_maxNumOutVertMapping;
     int m_maxLengthStrip;
     int m_numBlock;
-    vector<float> m_SeedPointValues;
+    std::vector<float> m_SeedPointValues;
 
     std::vector<int> m_PartitionLabel; // label of vertices belong to which partition
 
@@ -194,7 +192,7 @@ class meshFIM3dEikonal
     std::set<index> m_ActiveBlocks;
     std::vector<index> m_SeedPoints;
     std::vector<LabelType3d> m_VertLabel; // label of all the vertices active or not
-    vector<LabelType3d> m_BlockLabel; // label of blocks active or not
+    std::vector<LabelType3d> m_BlockLabel; // label of blocks active or not
 
     // LEVELSET variables TODO try not to duplicate with eikonal vars
 

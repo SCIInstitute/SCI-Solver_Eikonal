@@ -12,7 +12,6 @@ Miscellaneous filtering operations on trimeshes
 #include "TriMesh_algo.h"
 #include "lineqn.h"
 #include <numeric>
-using namespace std;
 
 
 // Quick 'n dirty portable random number generator 
@@ -100,7 +99,7 @@ void scale(TriMesh *mesh, float s, const vec &d)
 void clip(TriMesh *mesh, const TriMesh::BBox &b)
 {
   size_t nv = mesh->vertices.size();
-	vector<bool> toremove(nv, false);
+  std::vector<bool> toremove(nv, false);
 	for (int i = 0; i < nv; i++)
 		if (mesh->vertices[i][0] < b.min[0] ||
 		    mesh->vertices[i][0] > b.max[0] ||
@@ -115,7 +114,7 @@ void clip(TriMesh *mesh, const TriMesh::BBox &b)
 
 
 // Find center of mass of a bunch of points
-point point_center_of_mass(const vector<point> &pts)
+point point_center_of_mass(const std::vector<point> &pts)
 {
 	point com = accumulate(pts.begin(), pts.end(), point());
 	return com / (float) pts.size();
@@ -148,7 +147,7 @@ point mesh_center_of_mass(TriMesh *mesh)
 
 
 // Compute covariance of a bunch of points
-void point_covariance(const vector<point> &pts, float C[3][3])
+void point_covariance(const std::vector<point> &pts, float C[3][3])
 {
 	for (int j = 0; j < 3; j++)
 		for (int k = 0; k < 3; k++)
@@ -186,7 +185,7 @@ void mesh_covariance(TriMesh *mesh, float C[3][3])
 			C[j][k] = 0.0f;
 
 	float totarea = 0.0f;
-	const vector<point> &p = mesh->vertices;
+  const std::vector<point> &p = mesh->vertices;
   size_t n = mesh->faces.size();
 	for (int i = 0; i < n; i++) {
 		const TriMesh::Face &f = mesh->faces[i];
@@ -360,7 +359,7 @@ void pca_snap(TriMesh *mesh)
 // Helper function: return the largest X coord for this face
 static float max_x(const TriMesh *mesh, int i)
 {
-	return max(max(mesh->vertices[mesh->faces[i][0]][0],
+  return std::max(std::max(mesh->vertices[mesh->faces[i][0]][0],
 		       mesh->vertices[mesh->faces[i][1]][0]),
 		       mesh->vertices[mesh->faces[i][2]][0]);
 }
@@ -379,7 +378,7 @@ void orient(TriMesh *mesh)
 
 	TriMesh::dprintf("Auto-orienting mesh... ");
 	unsigned cc = 0;
-	vector<int> cc_farthest;
+  std::vector<int> cc_farthest;
 	for (int i = 0; i < mesh->faces.size(); i++) {
 		if (mesh->flags[i] != NONE)
 			continue;
@@ -387,7 +386,7 @@ void orient(TriMesh *mesh)
 		cc_farthest.push_back(i);
 		float farthest_val = max_x(mesh, i);
 
-		vector<int> q;
+    std::vector<int> q;
 		q.push_back(i);
 		while (!q.empty()) {
 			int f = q.back();
@@ -395,7 +394,7 @@ void orient(TriMesh *mesh)
 			for (int j = 0; j < 3; j++) {
 				int v0 = mesh->faces[f][j];
 				int v1 = mesh->faces[f][(j+1)%3];
-				const vector<int> &a = mesh->adjacentfaces[v0];
+        const std::vector<int> &a = mesh->adjacentfaces[v0];
 				for (int k = 0; k < a.size(); k++) {
 					int f1 = a[k];
 					if (mesh->flags[f1] != NONE)
@@ -405,7 +404,7 @@ void orient(TriMesh *mesh)
 					if (i0 < 0 || i1 < 0)
 						continue;
 					if (i1 == (i0 + 1) % 3)
-						swap(mesh->faces[f1][1],
+            std::swap(mesh->faces[f1][1],
 						     mesh->faces[f1][2]);
 					mesh->flags[f1] = cc;
 					if (max_x(mesh, f1) > farthest_val) {
@@ -419,7 +418,7 @@ void orient(TriMesh *mesh)
 		cc++;
 	}
 
-	vector<bool> cc_flip(cc, false);
+  std::vector<bool> cc_flip(cc, false);
   for (size_t i = 0; i < cc; i++) {
 		int f = cc_farthest[i];
 		const point &v0 = mesh->vertices[mesh->faces[f][0]];
@@ -431,7 +430,7 @@ void orient(TriMesh *mesh)
 		else
 			if (v2[0] > v0[0]) j = 2;
 		int v = mesh->faces[f][j];
-		const vector<int> &a = mesh->adjacentfaces[v];
+    const std::vector<int> &a = mesh->adjacentfaces[v];
 		vec n;
 		for (int k = 0; k < a.size(); k++) {
 			int f1 = a[k];
@@ -446,7 +445,7 @@ void orient(TriMesh *mesh)
 
 	for (int i = 0; i < mesh->faces.size(); i++) {
 		if (cc_flip[mesh->flags[i]])
-			swap(mesh->faces[i][1], mesh->faces[i][2]);
+      std::swap(mesh->faces[i][1], mesh->faces[i][2]);
 	}
 	TriMesh::dprintf("Done.\n");
 }
@@ -456,7 +455,7 @@ void orient(TriMesh *mesh)
 void erode(TriMesh *mesh)
 {
   size_t nv = mesh->vertices.size();
-	vector<bool> bdy(nv);
+  std::vector<bool> bdy(nv);
 	for (int i = 0; i < nv; i++)
 		bdy[i] = mesh->is_bdy(i);
 	remove_vertices(mesh, bdy);
@@ -469,7 +468,7 @@ void noisify(TriMesh *mesh, float amount)
 	mesh->need_normals();
 	mesh->need_neighbors();
   size_t nv = mesh->vertices.size();
-	vector<vec> disp(nv);
+  std::vector<vec> disp(nv);
 
 	for (int i = 0; i < nv; i++) {
 		point &v = mesh->vertices[i];

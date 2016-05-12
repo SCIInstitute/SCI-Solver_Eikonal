@@ -11,8 +11,6 @@
 
 #include <cmath>
 #include <algorithm>
-using std::sqrt;
-using std::fabs;
 
 #ifndef likely
 #  if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)

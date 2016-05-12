@@ -49,10 +49,6 @@ fract, clamp, mix, step, smoothstep, and trinorm
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::sqrt;
 
 
 // Let gcc optimize conditional branches a bit better...
@@ -346,7 +342,7 @@ static inline T cube(const T &x)
 template <class T>
 static inline T fract(const T &x)
 {
-	return x - floor(x);
+	return x - std::floor(x);
 }
 
 template <class T>

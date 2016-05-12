@@ -13,9 +13,6 @@ a given point, or to a ray).
 #include "mempool.h"
 #include <vector>
 #include <algorithm>
-using std::vector;
-using std::swap;
-using std::sqrt;
 
 
 // Small utility fcns
@@ -142,7 +139,7 @@ KDtree::Node::Node(const float **pts, int n)
 			right--;
 		if (right < left)
 			break;
-		swap(*left, *right);
+		std::swap(*left, *right);
 		left++; right--;
 	}
 
@@ -236,7 +233,7 @@ void KDtree::Node::find_closest_to_ray(KDtree::Node::Traversal_Info &k) const
 // Create a KDtree from a list of points (i.e., ptlist is a list of 3*n floats)
 void KDtree::build(const float *ptlist, int n)
 {
-	vector<const float *> pts(n);
+	std::vector<const float *> pts(n);
 	for (int i = 0; i < n; i++)
 		pts[i] = ptlist + i * 3;
 

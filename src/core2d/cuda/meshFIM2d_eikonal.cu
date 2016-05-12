@@ -179,7 +179,7 @@ void meshFIM2dEikonal::GraphPartition_METIS2(int& numBlock, int maxNumBlockVerts
   if (verbose)
     printf("numBlock is : %d\n", numBlock);
   float r, g, b;
-  vector< Color > colors;
+  std::vector< Color > colors;
   colors.resize(numBlock);
   for (int i = 0; i< numBlock; i++) {
     r = rand() / (float)RAND_MAX;
@@ -224,7 +224,7 @@ void meshFIM2dEikonal::GraphPartition_Square(int squareLength,int squareWidth, i
     m_BlockSizes[i] = 0;
 
   float r,g,b;
-  vector< Color > colors;
+  std::vector< Color > colors;
   colors.resize(numBlock);
   for(int i = 0; i< numBlock; i++)
   {
@@ -262,8 +262,8 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
   int labelv0;
   int labelv1;
   int labelv2;
-  vector<TriMesh::Face> virtualfaces;
-  vector<int> virtualFaceCnt;
+  std::vector<TriMesh::Face> virtualfaces;
+  std::vector<int> virtualFaceCnt;
 
   virtualFaceCnt.resize(numBlock);
   m_PartitionVirtualFaces.resize(numBlock);
@@ -335,7 +335,7 @@ void meshFIM2dEikonal::PartitionFaces(int numBlock)
       m_BlockNeighbor[labelv2].insert(m_BlockNeighbor[labelv2].end(), labelv1);
     }
   }
-  vector<int> PartitionToltalFaces;
+  std::vector<int> PartitionToltalFaces;
   PartitionToltalFaces.resize(numBlock);
   m_maxNumTotalFaces = 0;
   for(int j = 0; j < numBlock; j++)
@@ -401,7 +401,7 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
 
   cudaSafeCall( cudaMalloc((void**) &d_BlockSizes, sizeof(int) * numBlock));
   /////////////////initialize cpu memories//////////////////////////////
-  vector< vector<int> > blockVertMapping;
+  std::vector< std::vector<int> > blockVertMapping;
   blockVertMapping.resize(numVert);     //for each vertex, store the addresses where it appears in the global triMem array.
   for( int i = 0; i <  numBlock; i++)
   {
@@ -518,8 +518,8 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
     }
   }
 
-  vector< vector<int> > blockVertMappingInside;
-  vector< vector<int> > blockVertMappingOutside;
+  std::vector< std::vector<int> > blockVertMappingInside;
+  std::vector< std::vector<int> > blockVertMappingOutside;
 
   blockVertMappingInside.resize(numVert);
   blockVertMappingOutside.resize(numVert);
@@ -531,7 +531,7 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
     for(int m  = 0; m < m_PartitionVerts[i].size(); m++)
     {
 
-      vector<int> tmp = blockVertMapping[m_PartitionVerts[i][m]];
+      std::vector<int> tmp = blockVertMapping[m_PartitionVerts[i][m]];
 
 
       for(int n = 0; n < tmp.size(); n++)
@@ -617,7 +617,7 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
   cudaSafeCall( cudaMalloc((void**) &d_ActiveList, sizeof(int) * numBlock));
 
   //////////////////////////////////////////////////////////////////////////////////
-  vector<int>  nb;
+  std::vector<int>  nb;
   int numActive;
 
   for( int i = 0; i <  numBlock; i++)
@@ -646,7 +646,7 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
 
   numActive = static_cast<int>(m_ActiveBlocks.size());
 
-  set<int>::iterator activeiter = m_ActiveBlocks.begin();
+  std::set<int>::iterator activeiter = m_ActiveBlocks.begin();
   for(int i =0; activeiter !=  m_ActiveBlocks.end(); activeiter++)
     h_ActiveList[i++] = *activeiter;
 
@@ -738,9 +738,9 @@ std::vector< std::vector< float > >  meshFIM2dEikonal::GenerateData(int numBlock
 
       if(h_blockCon[currBlkIdx]) // not active : converged
       {
-        set<int> nb = m_BlockNeighbor[currBlkIdx];
+        std::set<int> nb = m_BlockNeighbor[currBlkIdx];
 
-        set<int>::iterator iter;
+        std::set<int>::iterator iter;
         for( iter = nb.begin(); iter != nb.end() ; iter++)
         {
           int currIdx = *iter;

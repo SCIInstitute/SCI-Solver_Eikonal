@@ -30,10 +30,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-using std::min;
-using std::max;
-using std::swap;
-using std::sqrt;
 
 template <class T>
 class XForm {
@@ -80,7 +76,7 @@ class XForm {
         const T &rx, const T &ry, const T &rz)
     {
       // Angle in radians, unlike OpenGL
-      T l = sqrt(rx*rx+ry*ry+rz*rz);
+      T l = std::sqrt(rx*rx + ry*ry + rz*rz);
       if (l == T(0))
         return XForm<T>();
       T l1 = T(1)/l, x = rx*l1, y = ry*l1, z = rz*l1;
@@ -235,9 +231,9 @@ static inline XForm<T> norm_xf(const XForm<T> &xf)
 {
   XForm<T> M = inv(xf);
   M[12] = M[13] = M[14] = T(0);
-  swap(M[1], M[4]);
-  swap(M[2], M[8]);
-  swap(M[6], M[9]);
+  std::swap(M[1], M[4]);
+  std::swap(M[2], M[8]);
+  std::swap(M[6], M[9]);
   return M;
 }
 

@@ -11,10 +11,6 @@
 #include "Vec.h"
 #include <cmath>
 #include <algorithm>
-using std::fmod;
-using std::floor;
-using std::min;
-using std::max;
 #ifndef M_PI
 # define M_PI 3.14159265358979323846
 #endif

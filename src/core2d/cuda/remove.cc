@@ -126,7 +126,7 @@ void remove_sliver_faces(TriMesh *mesh)
 		if (d01 < l2thresh && d12 < l2thresh && d20 < l2thresh)
 			continue;
 		// c2 is square of cosine of smallest angle
-		float m = min(min(d01,d12),d20);
+    float m = std::min(std::min(d01, d12), d20);
 		float c2 = sqr(d01+d12+d20-2.0f*m) * m/(4.0f*d01*d12*d20);
 		if (c2 < cos2thresh)
 			continue;

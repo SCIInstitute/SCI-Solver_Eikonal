@@ -18,7 +18,6 @@ For raw point clouds, fits plane to k nearest neighbors.
 #include "KDtree.h"
 #include "lineqn.h"
 #include <set>
-using std::set;
 
 
 // Helper class for finding k-nearest-neighbors: returns true iff
@@ -26,9 +25,9 @@ using std::set;
 class NotInSet : public KDtree::CompatFunc {
 private:
 	const float *plist;
-	const set<int> &s;
+  const std::set<int> &s;
 public:
-	NotInSet(const float *plist_, const set<int> &s_) :
+  NotInSet(const float *plist_, const std::set<int> &s_) :
 			plist(plist_), s(s_)
 		{}
 	virtual bool operator () (const float *p) const
@@ -76,7 +75,7 @@ void TriMesh::need_normals()
 		KDtree *kd = new KDtree(v0, nv);
 		for (int i = 0; i < nv; i++) {
 			const float *vi = &vertices[i][0];
-			set<int> s;
+      std::set<int> s;
 			s.insert(vi - v0);
 			for (int j = 0; j < k; j++) {
 				NotInSet ns(v0, s);
@@ -93,7 +92,7 @@ void TriMesh::need_normals()
 			}
 			// Compute covariance
 			float C[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
-			for (set<int>::iterator it = s.begin(); it != s.end(); it++) {
+      for (std::set<int>::iterator it = s.begin(); it != s.end(); it++) {
 				int ind = *it / 3;
 				if (ind == i)
 					continue;
