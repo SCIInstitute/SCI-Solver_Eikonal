@@ -15,7 +15,6 @@ ExternalProject_Add( gtest
     -Dgtest_build_tests:BOOL=OFF
     -DBUILD_GMOCK:BOOL=OFF
     -DBUILD_GTEST:BOOL=ON
-    -Dgtest_force_shared_crt:BOOL=${GTEST_SHARED_ARG}
 )                   
 ExternalProject_Add_Step( gtest copy_deps
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${GTEST_INSTALL_DIR}/src/gtest/googletest/include ${GTEST_INSTALL_DIR}/include

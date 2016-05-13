@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <vector>
 #include <cusp/array1d.h>
+#include <algorithm>
 typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
 typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
@@ -88,7 +89,7 @@ class meshFIM3dEikonal
       for (int i = 0; i < m_meshPtr->vertices.size(); i++)
       {
         double x = m_meshPtr->vertices[i][0];
-        minx = std::min(minx, x);
+        minx = (std::min)(minx, x);
       }
       printf("Min X is %.12f\n", minx);
 
