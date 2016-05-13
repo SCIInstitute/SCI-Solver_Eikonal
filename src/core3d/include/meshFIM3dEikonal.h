@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <vector>
 #include <cusp/array1d.h>
-#include <algorithm>
 typedef cusp::array1d<int, cusp::host_memory> IdxVector_h;
 typedef cusp::array1d<int, cusp::device_memory> IdxVector_d;
 
