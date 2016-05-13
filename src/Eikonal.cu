@@ -59,7 +59,7 @@ void Eikonal::writeVTK(bool all) {
 }
 
 void Eikonal::initSpeedMtxMultipliers(
-  std::vector<float> values) {
+    std::vector<float> values) {
   // num triangles size for 2D
   // num tets or num tets * 6 size for 3D
   this->speedMtxMultipliers_ = values;
@@ -246,8 +246,10 @@ void Eikonal::printErrorGraph(std::vector<float> solution) {
   float max_err = rmsError[0];
   float min_err = rmsError[rmsError.size() - 1];
   int max_log = -10, min_log = 10;
-  while (std::pow(static_cast<float>(10), max_log) < max_err) max_log++;
-  while (std::pow(static_cast<float>(10), min_log) > min_err) min_log--;
+  while (std::powf(static_cast<float>(10),
+        static_cast<float>(max_log)) < max_err) max_log++;
+  while (std::powf(static_cast<float>(10),
+        static_cast<float>(min_log)) > min_err) min_log--;
   // print the error graph
   printf("\n\nlog(Err)|\n");
   bool printTick = true;
@@ -258,8 +260,10 @@ void Eikonal::printErrorGraph(std::vector<float> solution) {
       printf("        |");
     }
     for (size_t j = 0; j < numIterations(); j++) {
-      if (rmsError[j] > std::pow(static_cast<float>(10), i) &&
-          rmsError[j] < std::pow(static_cast<float>(10), i + 1))
+      if (rmsError[j] > std::powf(static_cast<float>(10),
+            static_cast<float>(i)) &&
+          rmsError[j] < std::powf(static_cast<float>(10),
+            static_cast<float>(i + 1)))
         printf("*");
       else
         printf(" ");
